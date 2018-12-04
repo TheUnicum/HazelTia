@@ -1,7 +1,9 @@
 workspace "Hazel"
 	architecture "x64"
 
-	configurations 
+	startproject "Sandbox"
+
+	configurations
 	{
 		"Debug",
 		"Release",
@@ -26,13 +28,14 @@ project "Hazel"
 
 	includedirs
 	{
+		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include"
 	}
 
 	filter "system:windows"
 		cppdialect "C++17"
 		staticruntime "On"
-		systemversion "10.0.17134.0"
+		systemversion "latest"
 
 		defines
 		{
@@ -85,7 +88,7 @@ project "Sandbox"
 	filter "system:windows"
 		cppdialect "C++17"
 		staticruntime "On"
-		systemversion "10.0.17134.0"
+		systemversion "latest"
 
 		defines
 		{
@@ -97,7 +100,7 @@ project "Sandbox"
 		symbols "On"
 
 	filter "configurations:Release"
-		defines"HZ_RELEASE"
+		defines "HZ_RELEASE"
 		optimize "On"
 
 	filter "configurations:Dist"
