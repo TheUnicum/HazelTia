@@ -6,10 +6,13 @@
 #include "Hazel/Events/MouseEvent.h"
 #include "Hazel/Log.h"
 
+#include "GLFW/glfw3.h"
+
 namespace Hazel {
 	
 	Application::Application()
 	{
+		m_Window = std::unique_ptr<Window>(Window::Create());
 	}
 
 
@@ -19,20 +22,12 @@ namespace Hazel {
 
 	void Application::Run()
 	{
-		WindowResizeEvent winRes(1280, 720);
-		if (winRes.IsInCategory(EventCategoryApplication))
-			HZ_TRACE(winRes);
-
-		KeyPressedEvent keyPres(345, 34);
-		if (keyPres.IsInCategory(EventCategoryInput))
-			HZ_TRACE(keyPres);
-		
-		MouseButtonPressedEvent mousePres(77);
-		if (mousePres.IsInCategory(EventCategoryMouse))
-			HZ_TRACE(mousePres);
-
-
-		while (true);
+		while (m_Running)
+		{
+			glClearColor(1, 0, 1, 1);
+			glClear(GL_COLOR_BUFFER_BIT);
+			m_Window->OnUpdate();
+		}
 	}
 
 }
