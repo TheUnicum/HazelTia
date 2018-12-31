@@ -6,7 +6,7 @@
 #include "Hazel/Events/KeyEvent.h"
 
 namespace Hazel {
-
+	
 	static bool s_GLFWInitialized = false;
 
 	static void GLFWErrorCallback(int error, const char* description)
