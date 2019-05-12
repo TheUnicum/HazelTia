@@ -18,9 +18,18 @@ public:
 
 	virtual void OnImGuiRender() override
 	{
-		ImGui::Begin("Test");
-		ImGui::Text("Hello World!");
-		ImGui::End();
+		/*
+		Hazel\vendor\imgui\imconfig.h
+		uncomment line 21
+		#define IMGUI_API __declspec( dllexport )
+		or
+		in project properties define
+		#define IMGUI_API __declspec( dllexport )
+		*/	
+
+		//ImGui::Begin("Test");
+		//ImGui::Text("Hello World!");
+		//ImGui::End();
 	}
 
 	void OnEvent(Hazel::Event& event) override
