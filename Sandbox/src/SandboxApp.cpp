@@ -27,9 +27,16 @@ public:
 		#define IMGUI_API __declspec( dllexport )
 		*/	
 
-		//ImGui::Begin("Test");
-		//ImGui::Text("Hello World!");
-		//ImGui::End();
+		/*
+		PS Remember to update the submodule-files:
+		Hazel\vendor\imgui\premake5.lua
+		<Hazel\vendor\Glad\premake5.lua>
+		Hazel\vendor\GLFW\premake5.lua
+		*/
+
+		ImGui::Begin("Test");
+		ImGui::Text("Hello World!");
+		ImGui::End();
 	}
 
 	void OnEvent(Hazel::Event& event) override
