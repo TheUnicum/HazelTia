@@ -3,6 +3,8 @@
 
 #include <glad/glad.h>
 
+#include <glm/gtc/type_ptr.hpp>
+
 namespace Hazel {
 	// https://www.khronos.org/opengl/wiki/Shader_Compilation
 	Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc)
@@ -122,6 +124,12 @@ namespace Hazel {
 	void Shader::Unbind() const
 	{
 		glUseProgram(0);
+	}
+
+	void Shader::UpdloadUniformMat4(const std::string& name, const glm::mat4& matrix)
+	{
+		GLint location = glGetUniformLocation(m_RenderedID, name.c_str());
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 
 }
