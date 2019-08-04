@@ -126,6 +126,12 @@ namespace Hazel {
 		glUseProgram(0);
 	}
 
+	void Shader::UpdloadUniformFloat4(const std::string& name, const glm::vec4& values)
+	{
+		GLint location = glGetUniformLocation(m_RenderedID, name.c_str());
+		glUniform4f(location, values.x, values.y, values.z, values.w);
+	}
+
 	void Shader::UpdloadUniformMat4(const std::string& name, const glm::mat4& matrix)
 	{
 		GLint location = glGetUniformLocation(m_RenderedID, name.c_str());
