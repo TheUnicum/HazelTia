@@ -9,5 +9,11 @@ call vendor\bin\premake\premake5.exe vs2019
 popd
 
 PAUSE
+
+REM Smoother project generation (#83)
+REM IF %ERRORLEVEL% NEQ 0 (
+REM   PAUSE
+REM )
+
 :END
 endlocal
