@@ -4,7 +4,7 @@
 
 namespace Hazel {
 
-	class HAZEL_API Input
+	class Input
 	{
 	protected:
 		Input() = default;
@@ -18,7 +18,6 @@ namespace Hazel {
 		inline static std::pair<float, float> GetMousePosition() { return s_Instance->GetMousePositionImpl(); }
 		inline static float GetMouseX() { return s_Instance->GetMouseXImpl(); }
 		inline static float GetMouseY() { return s_Instance->GetMouseYImpl(); }
-
 	protected:
 		virtual bool IsKeyPressedImpl(int keycode) = 0;
 
