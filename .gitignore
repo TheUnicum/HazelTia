@@ -1,4 +1,4 @@
-# Directories
+# Directoris
 .vs/
 bin/
 bin-int/
@@ -7,3 +7,8 @@ bin-int/
 
 # Files
 *.user
+*.vcxproj
+*.filters
+
+# json Files
+*.json
