@@ -53,11 +53,20 @@ namespace Hazel {
 		std::ifstream in(filepath, std::ios::in | std::ios::binary);
 		if (in)
 		{
-			in.seekg(0, std::ios::end); // offset , and go to the end of file
-			result.resize(in.tellg());	// the pointer is already at the end of the file
-			in.seekg(0, std::ios::beg);
-			in.read(&result[0], result.size());
-			in.close();
+			in.seekg(0, std::ios::end);
+			size_t size = in.tellg();
+			if (size != -1)
+			{
+				in.seekg(0, std::ios::end); // offset, and go to the end of file
+				result.resize(in.tellg());	// the pointer is already at the end of the file
+				in.seekg(0, std::ios::beg);
+				in.read(&result[0], result.size());
+				in.close();
+			}
+			else
+			{
+				HZ_CORE_ERROR("Could not read from file '{0}'", filepath);
+			}
 		}
 		else
 		{
