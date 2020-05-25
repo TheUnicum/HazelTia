@@ -12,3 +12,6 @@ bin-int/
 
 # json Files
 *.json
+
+# Hazel files
+*.log
