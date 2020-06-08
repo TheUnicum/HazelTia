@@ -1,4 +1,4 @@
-workspace "Hazel"
+workspace "HazelTia"
     architecture "x86_64"
     startproject "Sandbox"
 
