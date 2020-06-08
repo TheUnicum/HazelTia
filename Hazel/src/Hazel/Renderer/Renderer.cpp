@@ -42,5 +42,4 @@ namespace Hazel {
 		vertexArray->Bind();
 		RenderCommand::DrawIndexed(vertexArray);
 	}
-
 }
