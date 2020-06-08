@@ -11,7 +11,7 @@ namespace Hazel {
 	class D3D11Context : public GraphicsContext
 	{
 	public:
-		D3D11Context(void* windowHandle);
+		D3D11Context(Window& windowHandle);
 
 		virtual void Init() override;
 		virtual void SwapBuffers() override;
@@ -19,7 +19,8 @@ namespace Hazel {
 		virtual RendererAPI::API GetAPI() override;
 		virtual RendererAPI::API MakeCurrent() override;
 	private:
-		HWND* m_WindowHandle;
+		Window& m_window;
+		HWND* m_windowHandle;
 
 		struct Struct_ppD3D
 		{

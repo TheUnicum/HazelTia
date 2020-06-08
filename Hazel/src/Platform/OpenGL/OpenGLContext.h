@@ -9,7 +9,7 @@ namespace Hazel {
 	class OpenGLContext : public GraphicsContext
 	{
 	public:
-		OpenGLContext(GLFWwindow* windowHandle);
+		OpenGLContext(Window& windowHandle);
 
 		virtual void Init() override;
 		virtual void SwapBuffers() override;
@@ -17,7 +17,8 @@ namespace Hazel {
 		virtual RendererAPI::API GetAPI() override;
 		virtual RendererAPI::API MakeCurrent() override;
 	private:
-		GLFWwindow* m_WindowHandle;
+		Window& m_window;
+		GLFWwindow* m_windowHandle;
 	};
 
 }

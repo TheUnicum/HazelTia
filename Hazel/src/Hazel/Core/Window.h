@@ -5,6 +5,8 @@
 #include "Hazel/Core/Base.h"
 #include "Hazel/Events/Event.h"
 
+#include "Hazel/Renderer/Renderer.h"
+
 namespace Hazel {
 
 	struct WindowProps
@@ -12,16 +14,18 @@ namespace Hazel {
 		std::string Title;
 		unsigned int Width;
 		unsigned int Height;
+		RendererAPI::API Api;
 
 		WindowProps(const std::string& title = "Hazel Engine",
-					unsigned int width = 1280,
-					unsigned int height = 720)
-			: Title(title), Width(width), Height(height)
+			unsigned int width = 1280,
+			unsigned int height = 720,
+			RendererAPI::API api = RendererAPI::API::OpenGL)
+			: Title(title), Width(width), Height(height), Api(api)
 		{
 		}
 	};
 
-	// Interface representing a desktop system based Window
+	// Interface representation a desktop system based Window
 	class Window
 	{
 	public:
@@ -33,6 +37,8 @@ namespace Hazel {
 
 		virtual unsigned int GetWidth() const = 0;
 		virtual unsigned int GetHeight() const = 0;
+		virtual RendererAPI::API GetAPI() const = 0;
+
 
 		// Window attributes
 		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;

@@ -9,10 +9,6 @@
 
 #include "Hazel/Renderer/Renderer.h"
 
-#include "Platform/OpenGL/OpenGLContext.h"
-
-
-
 // for D3D11
 #define GLFW_EXPOSE_NATIVE_WGL
 #define GLFW_EXPOSE_NATIVE_WIN32
@@ -49,6 +45,7 @@ namespace Hazel {
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
+		m_Data.Api = props.Api;
 
 		HZ_CORE_INFO("Creating window {0} ({1}, {2})", props.Title, props.Width, props.Height);
 
@@ -62,33 +59,37 @@ namespace Hazel {
 
 		{
 			HZ_PROFILE_SCOPE("glfwCreateWindow");
-			#if defined(HZ_DEBUG)
-			if (Renderer::GetAPI() == RendererAPI::API::OpenGL)
+
+			// Set glfw window Hint OPTIONS to generate appropriate glfwWindow based on API selected!
+			switch (m_Data.Api)
+			{
+			case RendererAPI::API::OpenGL:
+			{
+				glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+				#if defined(HZ_DEBUG)
 				glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
-			#endif
-			m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+				#endif	
+				m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+				m_pWin_handle = m_Window;
+				break;
+			}
+			case RendererAPI::API::D3D11:
+			{
+				glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+				m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+				HWND hWnd = glfwGetWin32Window(m_Window);
+				m_pWin_handle = &hWnd;
+				break;
+			}
+			default:
+				HZ_CORE_ASSERT(false, "Unknow RendererAPI!");
+				break;
+			}
 			++s_GLFWWindowCount;
 		}
 
-		//HWND hWnd;
-		//glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-		//m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
-		//hWnd = glfwGetWin32Window(m_Window);
-		//{
-		//	auto c = GraphicsContext::Resolve(RendererAPI::API::OpenGL, (void*)m_Window);
-		//	c->Init();
-		//}
-
-		m_Context = GraphicsContext::Resolve(RendererAPI::API::OpenGL, (void*)m_Window);
+		m_Context = GraphicsContext::Resolve(*this);
 		m_Context->Init();
-
-		//auto ctx = GraphicsContext::Resolve(RendererAPI::API::D3D11, (void*)&hWnd);
-		//ctx->Init();
-		//ctx->MakeCurrent();
-		//ctx->Init();
-
-
-
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
@@ -200,6 +201,8 @@ namespace Hazel {
 	void WindowsWindow::OnUpdate()
 	{
 		HZ_PROFILE_FUNCTION();
+
+		m_Context->MakeCurrent(); // Make GraphicContext to directly point on this context (the same glfw3 this window)
 
 		glfwPollEvents();
 		m_Context->SwapBuffers();

@@ -22,6 +22,17 @@ namespace Hazel {
 		m_Window = Window::Create();
 		m_Window->SetEventCallback(HZ_BIND_EVENT_FN(Application::OnEvent));
 
+		m_WindowsTest.emplace_back(Window::Create({ "2 D3D Test", 800, 600, RendererAPI::API::D3D11 }));
+		m_WindowsTest.emplace_back(Window::Create({ "3 D3D Test", 800, 600, RendererAPI::API::D3D11 }));
+		m_WindowsTest.emplace_back(Window::Create({ "4 GL Test", 800, 600, RendererAPI::API::OpenGL }));
+
+		m_Window->OnUpdate();
+
+		for (auto& win : m_WindowsTest)
+		{
+			win->SetEventCallback(HZ_BIND_EVENT_FN(Application::OnEvent));
+		}
+
 		Renderer::Init();
 
 		m_ImGuiLayer = new ImGuiLayer();
@@ -75,6 +86,8 @@ namespace Hazel {
 		{
 			HZ_PROFILE_SCOPE("RunLoop");
 
+			m_Window->OnUpdate(); // TODO: Remove, only for test also old GLFW code (glfwcurrentcontext)
+
 			float time = (float)glfwGetTime(); // Platform::GetTime()
 			Timestep timestep = time - m_LastFrameTime;
 			m_LastFrameTime = time;
@@ -98,7 +111,9 @@ namespace Hazel {
 				m_ImGuiLayer->End();
 			}
 
-			m_Window->OnUpdate();
+			for (auto& win : m_WindowsTest)
+				win->OnUpdate(); // m_Context->MakeCurrent() inside this function
+
 		}
 	}
 

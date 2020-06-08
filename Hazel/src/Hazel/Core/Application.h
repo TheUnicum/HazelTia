@@ -35,6 +35,7 @@ namespace Hazel {
 		bool OnWindowResize(WindowResizeEvent& e);
 	private:
 		std::unique_ptr<Window> m_Window;
+		std::vector<std::unique_ptr<Window>> m_WindowsTest;
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		bool m_Minimize = false;

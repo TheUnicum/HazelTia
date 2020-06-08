@@ -9,21 +9,21 @@ namespace wrl = Microsoft::WRL;
 
 namespace Hazel {
 
-	D3D11Context::D3D11Context(void* windowHandle)
-		: m_WindowHandle(static_cast<HWND*>(windowHandle))
+	D3D11Context::D3D11Context(Window& window)
+		: m_window(window), m_windowHandle(static_cast<HWND*>(window.GetNativeWindow()))
 	{
-		HZ_CORE_ASSERT(windowHandle, "Window handle is null!");
+		HZ_CORE_ASSERT(m_windowHandle, "Window handle is null!");
 	}
 
 	void D3D11Context::Init()
 	{
 
-		auto pp = std::static_pointer_cast<D3D11Context>(GraphicsContext::Resolve(GetAPI(), m_WindowHandle));
-		Microsoft::WRL::ComPtr<IDXGISwapChain> swap_i = pp->GetPP().m_pSwap;
-
-
-		auto pp1 = std::static_pointer_cast<D3D11Context>(Get_Active());
-		Microsoft::WRL::ComPtr<IDXGISwapChain> swap_s = pp->GetPP().m_pSwap;
+		//auto pp = std::static_pointer_cast<D3D11Context>(GraphicsContext::Resolve(GetAPI(), m_WindowHandle));
+		//Microsoft::WRL::ComPtr<IDXGISwapChain> swap_i = pp->GetPP().m_pSwap;
+		//
+		//
+		//auto pp1 = std::static_pointer_cast<D3D11Context>(Get_Active());
+		//Microsoft::WRL::ComPtr<IDXGISwapChain> swap_s = pp->GetPP().m_pSwap;
 
 
 		DXGI_SWAP_CHAIN_DESC sd = {};
@@ -38,7 +38,7 @@ namespace Hazel {
 		sd.SampleDesc.Quality = 0;
 		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		sd.BufferCount = 1;
-		sd.OutputWindow = *static_cast<HWND*>(m_WindowHandle);//  hWnd; //(HWND)696969;//
+		sd.OutputWindow = *m_windowHandle;//  hWnd; //(HWND)696969;//
 		sd.Windowed = TRUE;
 		sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;// DXGI_SWAP_EFFECT_DISCARD;
 		sd.Flags = 0;
@@ -86,7 +86,10 @@ namespace Hazel {
 
 	RendererAPI::API D3D11Context::MakeCurrent()
 	{
-		_s_active = Resolve(RendererAPI::API::OpenGL, (void*)m_WindowHandle);
+		if (_s_active.get() != this)
+		{
+			_s_active = Resolve(m_window);
+		}
 		return GetAPI();
 
 	}

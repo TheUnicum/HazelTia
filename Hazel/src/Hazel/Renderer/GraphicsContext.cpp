@@ -5,14 +5,16 @@
 #include "Platform/OpenGL/OpenGLContext.h"
 #include "Platform/D3D11/D3D11Context.h"
 
+#include <typeinfo>
+
 namespace Hazel {
 
 	Ref<GraphicsContext> GraphicsContext::_s_active;
 	std::unordered_map<std::string, Ref<GraphicsContext>> GraphicsContext::_s_map_context;
 
-	std::string GraphicsContext::GenerateUID(RendererAPI::API api, void* window)
+	std::string GraphicsContext::GenerateUID(RendererAPI::API api, Window& window)
 	{
-		return "#Api-" + std::to_string((int)api) + "@:" + std::to_string(reinterpret_cast<uintptr_t>(window));
+		return "#Api-" + std::to_string((int)api) + "@:" + std::to_string(reinterpret_cast<uintptr_t>(&window));
 	}
 
 	RendererAPI::API GraphicsContext::Get_API_Active()
@@ -24,13 +26,13 @@ namespace Hazel {
 	}
 
 	// Classes Factory
-	Ref<GraphicsContext> GraphicsContext::Create(void* window) { return Create(Renderer::GetAPI(), window); }
-	Ref<GraphicsContext> GraphicsContext::Create(RendererAPI::API api, void* window)
+	Ref<GraphicsContext> GraphicsContext::Create(Window& window) { return Create(Renderer::GetAPI(), window); }
+	Ref<GraphicsContext> GraphicsContext::Create(RendererAPI::API api, Window& window)
 	{
 		switch (api)
 		{
 		case RendererAPI::API::None:    HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return CreateRef<OpenGLContext>(static_cast<GLFWwindow*>(window));
+		case RendererAPI::API::OpenGL:  return CreateRef<OpenGLContext>(window);
 		case RendererAPI::API::D3D11:   return CreateRef<D3D11Context>(window);
 		}
 
@@ -38,8 +40,8 @@ namespace Hazel {
 		return nullptr;
 	}
 
-	Ref<GraphicsContext> GraphicsContext::Resolve(void* window) { return Resolve(Get_API_Active(), window); }
-	Ref<GraphicsContext> GraphicsContext::Resolve(RendererAPI::API api, void* window)
+	Ref<GraphicsContext> GraphicsContext::Resolve(Window& window, bool make_new_entity) { return Resolve(window.GetAPI(), window, make_new_entity); }
+	Ref<GraphicsContext> GraphicsContext::Resolve(RendererAPI::API api, Window& window, bool make_new_entity) // TODO: may be removed!
 	{
 		const auto key = GraphicsContext::GenerateUID(api, window);
 		const auto internal_context = _s_map_context.find(key);
@@ -51,11 +53,13 @@ namespace Hazel {
 		}
 		else
 		{
+			if (make_new_entity)
+				HZ_CORE_ASSERT(false, "CANT have duplicate of this CONTEXT!");
 			return internal_context->second;
 		}
 	}
 
-	void GraphicsContext::Release(RendererAPI::API api, void* window)
+	void GraphicsContext::Release(RendererAPI::API api, Window& window)
 	{
 		const auto key = GraphicsContext::GenerateUID(api, window);
 		const auto internal_context = _s_map_context.find(key);

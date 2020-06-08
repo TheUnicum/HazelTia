@@ -1,22 +1,24 @@
 #include "hzpch.h"
 #include "Platform/OpenGL/OpenGLContext.h"
 
+#
+
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
 namespace Hazel {
 
-	OpenGLContext::OpenGLContext(GLFWwindow* windowHandle)
-		:m_WindowHandle(windowHandle)
+	OpenGLContext::OpenGLContext(Window& window)
+		: m_window(window), m_windowHandle((GLFWwindow*)window.GetNativeWindow())
 	{
-		HZ_CORE_ASSERT(windowHandle, "Window handle is null!");
+		HZ_CORE_ASSERT(m_windowHandle, "Window handle is null!");
 	}
 
 	void OpenGLContext::Init()
 	{
 		HZ_PROFILE_FUNCTION();
 
-		glfwMakeContextCurrent(m_WindowHandle);
+		glfwMakeContextCurrent(m_windowHandle);
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		HZ_CORE_ASSERT(status, "Failed to initialize Glad!");
 
@@ -39,7 +41,7 @@ namespace Hazel {
 	{
 		HZ_PROFILE_FUNCTION();
 
-		glfwSwapBuffers(m_WindowHandle);
+		glfwSwapBuffers(m_windowHandle);
 	}
 
 	RendererAPI::API OpenGLContext::GetAPI()
@@ -49,8 +51,15 @@ namespace Hazel {
 
 	RendererAPI::API OpenGLContext::MakeCurrent()
 	{
-		glfwMakeContextCurrent(m_WindowHandle);
-		_s_active = Resolve(RendererAPI::API::OpenGL, (void*)m_WindowHandle);
+		if (m_windowHandle != glfwGetCurrentContext())
+		{
+			HZ_CORE_TRACE("NOt Same current");
+			glfwMakeContextCurrent(m_windowHandle);
+		}
+		if (_s_active.get() != this)
+		{
+			_s_active = Resolve(m_window);
+		}
 		return GetAPI();
 	}
 
