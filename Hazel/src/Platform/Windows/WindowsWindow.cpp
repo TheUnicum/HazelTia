@@ -11,8 +11,16 @@
 
 #include "Platform/OpenGL/OpenGLContext.h"
 
+
+
+// for D3D11
+#define GLFW_EXPOSE_NATIVE_WGL
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
+
+
 namespace Hazel {
-	
+
 	static uint8_t s_GLFWWindowCount = 0;
 
 	static void GLFWErrorCallback(int error, const char* description)
@@ -54,16 +62,33 @@ namespace Hazel {
 
 		{
 			HZ_PROFILE_SCOPE("glfwCreateWindow");
-		#if defined(HZ_DEBUG)
+			#if defined(HZ_DEBUG)
 			if (Renderer::GetAPI() == RendererAPI::API::OpenGL)
 				glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
-		#endif
+			#endif
 			m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 			++s_GLFWWindowCount;
 		}
 
-		m_Context = GraphicsContext::Create(m_Window);
+		//HWND hWnd;
+		//glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		//m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+		//hWnd = glfwGetWin32Window(m_Window);
+		//{
+		//	auto c = GraphicsContext::Resolve(RendererAPI::API::OpenGL, (void*)m_Window);
+		//	c->Init();
+		//}
+
+		m_Context = GraphicsContext::Resolve(RendererAPI::API::OpenGL, (void*)m_Window);
 		m_Context->Init();
+
+		//auto ctx = GraphicsContext::Resolve(RendererAPI::API::D3D11, (void*)&hWnd);
+		//ctx->Init();
+		//ctx->MakeCurrent();
+		//ctx->Init();
+
+
+
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);
@@ -92,24 +117,24 @@ namespace Hazel {
 
 			switch (action)
 			{
-				case GLFW_PRESS:
-				{
-					KeyPressedEvent event(static_cast<KeyCode>(key), 0);
-					data.EventCallback(event);
-					break;
-				}
-				case GLFW_RELEASE:
-				{
-					KeyReleasedEvent event(static_cast<KeyCode>(key));
-					data.EventCallback(event);
-					break;
-				}
-				case GLFW_REPEAT:
-				{
-					KeyPressedEvent event(static_cast<KeyCode>(key), 1);
-					data.EventCallback(event);
-					break;
-				}
+			case GLFW_PRESS:
+			{
+				KeyPressedEvent event(static_cast<KeyCode>(key), 0);
+				data.EventCallback(event);
+				break;
+			}
+			case GLFW_RELEASE:
+			{
+				KeyReleasedEvent event(static_cast<KeyCode>(key));
+				data.EventCallback(event);
+				break;
+			}
+			case GLFW_REPEAT:
+			{
+				KeyPressedEvent event(static_cast<KeyCode>(key), 1);
+				data.EventCallback(event);
+				break;
+			}
 			}
 		});
 
@@ -127,18 +152,18 @@ namespace Hazel {
 
 			switch (action)
 			{
-				case GLFW_PRESS:
-				{
-					MouseButtonPressedEvent event(static_cast<MouseCode>(button));
-					data.EventCallback(event);
-					break;
-				}
-				case GLFW_RELEASE:
-				{
-					MouseButtonReleasedEvent event(static_cast<MouseCode>(button));
-					data.EventCallback(event);
-					break;
-				}
+			case GLFW_PRESS:
+			{
+				MouseButtonPressedEvent event(static_cast<MouseCode>(button));
+				data.EventCallback(event);
+				break;
+			}
+			case GLFW_RELEASE:
+			{
+				MouseButtonReleasedEvent event(static_cast<MouseCode>(button));
+				data.EventCallback(event);
+				break;
+			}
 			}
 		});
 

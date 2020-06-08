@@ -26,12 +26,12 @@ namespace Hazel {
 		HZ_CORE_INFO("  Version: {0}", glGetString(GL_VERSION));
 
 		#ifdef HZ_ENABLE_ASSERTS
-			int versionMajor;
-			int versionMinor;
-			glGetIntegerv(GL_MAJOR_VERSION, &versionMajor);
-			glGetIntegerv(GL_MINOR_VERSION, &versionMinor);
+		int versionMajor;
+		int versionMinor;
+		glGetIntegerv(GL_MAJOR_VERSION, &versionMajor);
+		glGetIntegerv(GL_MINOR_VERSION, &versionMinor);
 
-			HZ_CORE_ASSERT(versionMajor > 4 || (versionMajor == 4 && versionMinor >= 5), "Hazel requires al least OpenGL version 4.5!");
+		HZ_CORE_ASSERT(versionMajor > 4 || (versionMajor == 4 && versionMinor >= 5), "Hazel requires al least OpenGL version 4.5!");
 		#endif
 	}
 
@@ -40,6 +40,18 @@ namespace Hazel {
 		HZ_PROFILE_FUNCTION();
 
 		glfwSwapBuffers(m_WindowHandle);
+	}
+
+	RendererAPI::API OpenGLContext::GetAPI()
+	{
+		return RendererAPI::API::OpenGL;
+	}
+
+	RendererAPI::API OpenGLContext::MakeCurrent()
+	{
+		glfwMakeContextCurrent(m_WindowHandle);
+		_s_active = Resolve(RendererAPI::API::OpenGL, (void*)m_WindowHandle);
+		return GetAPI();
 	}
 
 }

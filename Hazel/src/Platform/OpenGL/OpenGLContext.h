@@ -13,6 +13,9 @@ namespace Hazel {
 
 		virtual void Init() override;
 		virtual void SwapBuffers() override;
+
+		virtual RendererAPI::API GetAPI() override;
+		virtual RendererAPI::API MakeCurrent() override;
 	private:
 		GLFWwindow* m_WindowHandle;
 	};
