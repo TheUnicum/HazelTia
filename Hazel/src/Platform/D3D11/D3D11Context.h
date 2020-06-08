@@ -30,6 +30,7 @@ namespace Hazel {
 			Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_pTarget = nullptr;
 		};
 		Struct_ppD3D ppD3D;
+	public:
 		Struct_ppD3D& GetPP() { return ppD3D; }
 
 		// API functions

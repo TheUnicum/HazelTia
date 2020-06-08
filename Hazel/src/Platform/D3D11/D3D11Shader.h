@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Hazel/Renderer/Shader.h"
+#include "Hazel/Renderer/GraphicsContext.h"
+#include "Platform/D3D11/D3D11Context.h"
+
 #include <glm/glm.hpp>
 
 // TODO: REMOVE!
@@ -21,6 +24,8 @@ namespace Hazel {
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
+
+		//virtual Microsoft::WRL::ComPtr<ID3DBlob> GetpShaderBytecode() const override { return pBlobStoredCompiledVertex; }
 
 		virtual void SetInt(const std::string& name, int value) override {};
 		virtual void SetIntArray(const std::string& name, int* values, uint32_t count) override {};
@@ -48,6 +53,12 @@ namespace Hazel {
 	private:
 		uint32_t m_RendererID;
 		std::string m_Name;
+	public:
+		D3D11Context& _c;
+
+		//Microsoft::WRL::ComPtr<ID3DBlob> pBlobStoredCompiledVertex;
+		//Microsoft::WRL::ComPtr<ID3D11VertexShader> pVertexShader;
+		//Microsoft::WRL::ComPtr<ID3D11PixelShader> pPixelShader;
 	};
 
 }

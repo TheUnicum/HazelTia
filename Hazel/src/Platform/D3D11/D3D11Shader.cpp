@@ -7,6 +7,8 @@
 #include <d3dcompiler.h>
 namespace wrl = Microsoft::WRL;
 
+
+
 namespace Hazel {
 
 	static GLenum ShaderTypeFromString(const std::string& type)
@@ -21,6 +23,7 @@ namespace Hazel {
 	}
 
 	D3D11Shader::D3D11Shader(const std::string& filepath)
+		: _c(*(D3D11Context*)GraphicsContext::Get_Active().get()) // possible to store as a normal context and add 
 	{
 		HZ_PROFILE_FUNCTION();
 
@@ -37,7 +40,7 @@ namespace Hazel {
 	}
 
 	D3D11Shader::D3D11Shader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
-		: m_Name(name)
+		: m_Name(name), _c(*(D3D11Context*)GraphicsContext::Get_Active().get())
 	{
 		HZ_PROFILE_FUNCTION();
 
@@ -113,6 +116,8 @@ namespace Hazel {
 
 	void D3D11Shader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
 	{
+		wrl::ComPtr<ID3DBlob> pBlobCompiled;
+		wrl::ComPtr<ID3DBlob> pBlobErrorMsgs;
 		HRESULT hr;
 
 		UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
@@ -120,25 +125,16 @@ namespace Hazel {
 		flags |= D3DCOMPILE_DEBUG;
 		#endif
 
-
-		wrl::ComPtr<ID3DBlob> pBlobCompiled;
-		wrl::ComPtr<ID3DBlob> pBlobErrorMsgs;
-		wrl::ComPtr<ID3DBlob> pBlobStoredCompiledVertex;
-
 		for (auto& kv : shaderSources)
 		{
 			GLenum type = kv.first;
 			const std::string& source = kv.second;
 
-			std::string string_pTarget = "ps_4_0";
+			std::string string_pTarget;
 			switch (type)
 			{
-			case GL_VERTEX_SHADER:
-				string_pTarget = "vs_4_0";
-				break;
-			case GL_FRAGMENT_SHADER:
-				string_pTarget = "ps_4_0";
-				break;
+			case GL_VERTEX_SHADER:	string_pTarget = "vs_4_0"; break;
+			case GL_FRAGMENT_SHADER:string_pTarget = "ps_4_0"; break;
 			default:
 				break;
 			}
@@ -163,18 +159,15 @@ namespace Hazel {
 				break;
 			}
 
-			wrl::ComPtr<ID3D11VertexShader> pVertexShader;
-			wrl::ComPtr<ID3D11PixelShader> pPixelShader;
 			switch (type)
 			{
 			case GL_VERTEX_SHADER:
 				pBlobStoredCompiledVertex = pBlobCompiled;
-				//pDevice->CreatePixelShader(pBlobCompiled->GetBufferPointer(), pBlobCompiled->GetBufferSize(), nullptr, &pPixelShade));
-
+				_c.GetPP().m_pDevice->CreateVertexShader(pBlobCompiled->GetBufferPointer(), pBlobCompiled->GetBufferSize(), nullptr, &pVertexShader);
 				break;
 			case GL_FRAGMENT_SHADER:
 				string_pTarget = "ps_4_0";
-				//pDevice->CreatePixelShader(pBlobCompiled->GetBufferPointer(), pBlobCompiled->GetBufferSize(), nullptr, &pPixelShade));
+				_c.GetPP().m_pDevice->CreatePixelShader(pBlobCompiled->GetBufferPointer(), pBlobCompiled->GetBufferSize(), nullptr, &pPixelShader);
 
 				break;
 			default:
@@ -193,6 +186,9 @@ namespace Hazel {
 	void D3D11Shader::Bind() const
 	{
 		HZ_PROFILE_FUNCTION();
+
+		_c.GetPP().m_pContext->VSSetShader(pVertexShader.Get(), nullptr, 0u);
+		_c.GetPP().m_pContext->PSSetShader(pPixelShader.Get(), nullptr, 0u);
 
 		//glUseProgram(m_RendererID);
 	}

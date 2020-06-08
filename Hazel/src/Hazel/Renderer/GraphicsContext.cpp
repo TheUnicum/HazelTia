@@ -5,7 +5,6 @@
 #include "Platform/OpenGL/OpenGLContext.h"
 #include "Platform/D3D11/D3D11Context.h"
 
-#include <typeinfo>
 
 namespace Hazel {
 
@@ -20,7 +19,7 @@ namespace Hazel {
 	RendererAPI::API GraphicsContext::Get_API_Active()
 	{
 		if (_s_active)
-			return _s_active->Get_API_Active();
+			return _s_active->GetAPI();
 		else
 			return RendererAPI::API::OpenGL;
 	}

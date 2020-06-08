@@ -67,6 +67,7 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 		{
 
 			std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest());
+			cc->MakeCurrent();
 			cc->DrawTriangle_impl();
 		}
 	}

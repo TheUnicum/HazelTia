@@ -103,7 +103,7 @@ namespace Hazel {
 		#define GFX_THROW_INFO(x) x
 		#define GFX_THROW_INFO_ONLY(x) x
 
-		HRESULT hr;
+		//HRESULT hr;
 
 		struct Vertex
 		{
@@ -137,88 +137,11 @@ namespace Hazel {
 
 
 
-		/*
-		std::string filepath = "assets/shaders/D3D/FlatColor.hlsl";
-		//*******************
-		std::string result;
-		std::ifstream in(filepath, std::ios::in | std::ios::binary);
-		if (in)
-		{
-			in.seekg(0, std::ios::end);
-			size_t size = in.tellg();
-			if (size != -1)
-			{
-				result.resize(size);
-				in.seekg(0, std::ios::beg);
-				in.read(&result[0], size);
-			}
-			else
-			{
-				HZ_CORE_ERROR("Could not read from file '{0}'", filepath);
-			}
-		}
-		//*******************
-		else
-		{
-			HZ_CORE_ERROR("Could not open file '{0}'", filepath);
-		}
-
-		UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
-	#if defined( DEBUG ) || defined( _DEBUG )
-	flags |= D3DCOMPILE_DEBUG;
-		#endif
-
-		wrl::ComPtr<ID3DBlob> pBlobCompiled;
-		wrl::ComPtr<ID3DBlob> pBlobErrorMsgs;
-		hr = D3DCompile(
-			result.c_str(),
-			result.length(),
-			nullptr,						// LPCSTR                 pSourceName
-			nullptr,						// const D3D_SHADER_MACRO * pDefines
-			nullptr,						// ID3DInclude * pInclude,
-			"main",							// LPCSTR                 pEntrypoint,
-			"ps_4_0",						// LPCSTR                 pTarget,
-			flags,	// UINT                   Flags1,
-			0,								// UINT                   Flags2,
-			&pBlobCompiled,					// ID3DBlob               **ppCode,
-			&pBlobErrorMsgs							// ID3DBlob               **ppErrorMsgs
-		);
-		if (FAILED(hr))
-		{
-			HZ_CORE_ERROR("Error compile'", filepath);
-
-			int t = pBlobErrorMsgs->GetBufferSize();
-			OutputDebugStringA((char*)pBlobErrorMsgs->GetBufferPointer());
-			HZ_CORE_ERROR("{0}", (char*)pBlobErrorMsgs->GetBufferPointer()); //&infoLog[0]
-		}
-
-		wrl::ComPtr<ID3D11PixelShader> pPixelShader;
-		GFX_THROW_INFO(pDevice->CreatePixelShader(pBlobCompiled->GetBufferPointer(), pBlobCompiled->GetBufferSize(), nullptr, &pPixelShader));
-
-		*/
-
 		//create a pixel shader
-		wrl::ComPtr<ID3D11PixelShader> pPixelShader;
-		wrl::ComPtr<ID3DBlob> pBlob;
-		GFX_THROW_INFO(D3DReadFileToBlob(L"assets/shaders/PixelShader.cso", &pBlob));
-		GFX_THROW_INFO(ppD3D.m_pDevice->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pPixelShader));
-
-		// bind pixel shader
-		ppD3D.m_pContext->PSSetShader(pPixelShader.Get(), nullptr, 0u);
-
-
 		//create a vertex shader
-		wrl::ComPtr<ID3D11VertexShader> pVertexShader;
-		GFX_THROW_INFO(D3DReadFileToBlob(L"assets/shaders/VertexShader.cso", &pBlob));
-		GFX_THROW_INFO(ppD3D.m_pDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pVertexShader));
-
-		// bind vertex shader
-		ppD3D.m_pContext->VSSetShader(pVertexShader.Get(), nullptr, 0u);
-
-
-		//std::string filepath = "assets/shaders/D3D/FlatColor.hlsl";
-		//Ref<Shader> shader = Shader::Create(filepath);
-
+		Ref<Shader> shader = (Shader::Create("assets/shaders/D3D/FlatColor.hlsl"));
+		shader->Bind();
+		auto pBlob = shader->GetpShaderBytecode();
 
 
 
