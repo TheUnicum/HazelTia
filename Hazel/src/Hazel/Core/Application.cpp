@@ -23,10 +23,10 @@ namespace Hazel {
 		m_Window->SetEventCallback(HZ_BIND_EVENT_FN(Application::OnEvent));
 
 		m_WindowsTest.emplace_back(Window::Create({ "2 D3D Test", 800, 600, RendererAPI::API::D3D11 }));
-		m_WindowsTest.emplace_back(Window::Create({ "3 D3D Test", 800, 600, RendererAPI::API::D3D11 }));
-		m_WindowsTest.emplace_back(Window::Create({ "4 GL Test", 800, 600, RendererAPI::API::OpenGL }));
+		//m_WindowsTest.emplace_back(Window::Create({ "3 D3D Test", 800, 600, RendererAPI::API::D3D11 }));
+		//m_WindowsTest.emplace_back(Window::Create({ "4 GL Test", 800, 600, RendererAPI::API::OpenGL }));
 
-		m_Window->OnUpdate();
+		//m_Window->OnUpdate(); // to reset glfwcontext to main windows old implementation!
 
 		for (auto& win : m_WindowsTest)
 		{

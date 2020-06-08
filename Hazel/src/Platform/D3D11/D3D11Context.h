@@ -31,6 +31,11 @@ namespace Hazel {
 		};
 		Struct_ppD3D ppD3D;
 		Struct_ppD3D& GetPP() { return ppD3D; }
+
+		// API functions
+	public:
+		virtual void DrawTriangle_impl() override;
 	};
+
 
 }

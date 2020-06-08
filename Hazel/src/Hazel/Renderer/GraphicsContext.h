@@ -33,6 +33,10 @@ namespace Hazel {
 		static Ref<GraphicsContext> _s_active;
 		static std::unordered_map<std::string, Ref<GraphicsContext>> _s_map_context;
 
+	// API functions
+	public:
+		static void DrawTriangle() { GraphicsContext::Get_Active()->DrawTriangle_impl(); }
+		virtual void DrawTriangle_impl() {};
 	};
 
 }
