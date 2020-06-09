@@ -225,6 +225,13 @@ namespace Hazel {
 		//// Bind vertex buffer to pipeline
 		//ppD3D.m_pContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0u);
 
+
+
+		//Ref<IndexBuffer> ibuff = Bindable::_Resolve<IndexBuffer>((GraphicsContext&)GraphicsContext::Get_Active(),indices, int(sizeof(indices) / sizeof(float)));
+
+		//Ref<IndexBuffer> ib = IndexBuffer::re(indices, int(sizeof(indices) / sizeof(float)));
+	 
+	 
 		Ref<IndexBuffer> ibuff = IndexBuffer::Create(indices, int(sizeof(indices) / sizeof(float)));
 		ibuff->Bind();
 

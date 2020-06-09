@@ -27,7 +27,7 @@ namespace Hazel {
 	Ref<Shader> Shader::Create(const std::string& filepath) { return Create((GraphicsContext&)GraphicsContext::Get_Active(), filepath); }
 	Ref<Shader> Shader::Create(GraphicsContext& ctx, const std::string& filepath)
 	{
-		CREATE_2(OpenGLShader, D3D11Shader, filepath);
+		//CREATE_2(OpenGLShader, D3D11Shader, filepath);
 
 		switch (ctx.GetAPI())
 		{

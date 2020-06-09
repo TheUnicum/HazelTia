@@ -74,25 +74,28 @@ namespace Hazel {
 			return nullptr;
 		}
 
-		//template<class Shader, typename...params>
-		template<class T, typename...Params>
-		static Ref<Shader> ResolveT(Params&&...p)
-		{
-			return ResolveT<Shader>((GraphicsContext&)GraphicsContext::Get_Active(), std::forward<Params>(p)...);
-		}
-
-		#define CREATE_2(TOpenGL, TD3D11, arg0)\
-			switch (ctx.GetAPI())\
-			{\
-				case API::None:    HZ_CORE_ASSERT(false, "Rendererctx::None is currently not supported!"); return nullptr;\
-				case API::OpenGL:  return CreateRef<TOpenGL>(arg0);\
-				case API::D3D11:   return CreateRef<TD3D11>(arg0);\
-			}\
-			HZ_CORE_ASSERT(false, "Unknow Rendererctx!");\
-			return nullptr;\
-
-
+		////template<class Shader, typename...params>
+		//template<class T, typename...Params>
+		//static Ref<T> Make(Params&&...p)
+		//{
+		//	return Make<T>((GraphicsContext&)GraphicsContext::Get_Active(), std::forward<Params>(p)...);
+		//}
 		//
+		//#define CREATE_2(TOpenGL, TD3D11, arg0)\
+		//	switch (ctx.GetAPI())\
+		//	{\
+		//		case API::None:    HZ_CORE_ASSERT(false, "Rendererctx::None is currently not supported!"); return nullptr;\
+		//		case API::OpenGL:  return CreateRef<TOpenGL>(arg0);\
+		//		case API::D3D11:   return CreateRef<TD3D11>(arg0);\
+		//	}\
+		//	HZ_CORE_ASSERT(false, "Unknow Rendererctx!");\
+		//	return nullptr;\
+		//
+		//
+
+
+
+
 	public:
 		static std::unordered_map<std::string, Ref<Shader>> _s_map;
 
