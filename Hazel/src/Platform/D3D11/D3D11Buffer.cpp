@@ -30,8 +30,7 @@ namespace Hazel {
 
 	void D3D11IndexBuffer::Bind() const
 	{
-		//_c.GetPP().m_pDevice->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
-
+		_c.GetPP().m_pContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0u);
 	}
 
 	void D3D11IndexBuffer::Unbind() const

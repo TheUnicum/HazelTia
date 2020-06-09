@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Hazel/Renderer/GraphicsContext.h"
+
 namespace Hazel {
 
 	enum class ShaderDataType
@@ -129,6 +131,7 @@ namespace Hazel {
 		virtual uint32_t GetCount() const = 0;
 
 		static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count);
+		static Ref<IndexBuffer> Create(GraphicsContext& ctx, uint32_t* indices, uint32_t count);
 	};
 
 }

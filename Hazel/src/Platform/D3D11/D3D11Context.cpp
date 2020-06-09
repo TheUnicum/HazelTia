@@ -18,6 +18,7 @@ namespace dx = DirectX;
 #include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
 
 // Temp 
+#include "D3D11Buffer.h"
 #include "D3D11Shader.h" // TODO
 
 #define GFX_THROW_INFO(x) x
@@ -199,7 +200,7 @@ namespace Hazel {
 		ppD3D.m_pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
 
 
-		const uint32_t indices[] =
+	 uint32_t indices[] =
 		{
 		0,2,1, 2,3,1,
 		1,3,5, 3,7,5,
@@ -209,20 +210,24 @@ namespace Hazel {
 		0,1,4, 1,5,4
 		};
 
-		wrl::ComPtr<ID3D11Buffer> pIndexBuffer;
-		D3D11_BUFFER_DESC ibd = {};
-		ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-		ibd.Usage = D3D11_USAGE_DEFAULT;
-		ibd.CPUAccessFlags = 0u;
-		ibd.MiscFlags = 0u;
-		ibd.ByteWidth = sizeof(indices);
-		ibd.StructureByteStride = sizeof(uint32_t);
-		D3D11_SUBRESOURCE_DATA isd = {};
-		isd.pSysMem = indices;
-		GFX_THROW_INFO(ppD3D.m_pDevice->CreateBuffer(&ibd, &isd, &pIndexBuffer));
+		//wrl::ComPtr<ID3D11Buffer> pIndexBuffer;
+		//D3D11_BUFFER_DESC ibd = {};
+		//ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		//ibd.Usage = D3D11_USAGE_DEFAULT;
+		//ibd.CPUAccessFlags = 0u;
+		//ibd.MiscFlags = 0u;
+		//ibd.ByteWidth = sizeof(indices);
+		//ibd.StructureByteStride = sizeof(uint32_t);
+		//D3D11_SUBRESOURCE_DATA isd = {};
+		//isd.pSysMem = indices;
+		//GFX_THROW_INFO(ppD3D.m_pDevice->CreateBuffer(&ibd, &isd, &pIndexBuffer));
+		//
+		//// Bind vertex buffer to pipeline
+		//ppD3D.m_pContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0u);
 
-		// Bind vertex buffer to pipeline
-		ppD3D.m_pContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0u);
+		Ref<IndexBuffer> ibuff = IndexBuffer::Create(indices, int(sizeof(indices) / sizeof(float)));
+		ibuff->Bind();
+
 
 
 
