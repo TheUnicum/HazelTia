@@ -23,13 +23,14 @@ namespace Hazel {
 	}
 
 	D3D11Shader::D3D11Shader(const std::string& filepath)
-		: _c((D3D11Context&)GraphicsContext::Get_Active()) // possible to store as a normal context and add 
+		: Shader(GraphicsContext::Get_Active()),_c((D3D11Context&)this->_ctx)
 	{
 		HZ_PROFILE_FUNCTION();
 
 		std::string source = ReadFile(filepath);
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
+
 
 		//Extract name from filepath: assets/shaders/Texture.glsl
 		auto lastSlash = filepath.find_last_of("/\\");
@@ -40,7 +41,7 @@ namespace Hazel {
 	}
 
 	D3D11Shader::D3D11Shader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
-		: m_Name(name), _c((D3D11Context&)GraphicsContext::Get_Active())
+		: Shader(GraphicsContext::Get_Active()), _c((D3D11Context&)this->_ctx), m_Name(name)
 	{
 		HZ_PROFILE_FUNCTION();
 

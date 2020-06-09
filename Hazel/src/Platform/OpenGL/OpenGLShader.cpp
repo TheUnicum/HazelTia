@@ -20,6 +20,7 @@ namespace Hazel {
 	}
 	// https://www.khronos.org/opengl/wiki/Shader_Compilation
 	OpenGLShader::OpenGLShader(const std::string& filepath)
+		: Shader(GraphicsContext::Get_Active())
 	{
 		HZ_PROFILE_FUNCTION();
 
@@ -36,7 +37,7 @@ namespace Hazel {
 	}
 
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
-		: m_Name(name)
+		: Shader(GraphicsContext::Get_Active()), m_Name(name)
 	{
 		HZ_PROFILE_FUNCTION();
 

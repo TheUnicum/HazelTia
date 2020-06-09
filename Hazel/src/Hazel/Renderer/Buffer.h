@@ -122,51 +122,33 @@ namespace Hazel {
 	};
 
 	// Currently Hazel only supports 32-bit index
-	class IndexBuffer
+	class IndexBuffer : public Bindable
 	{
 	public:
+		IndexBuffer(GraphicsContext& ctx) : Bindable(ctx) {}
 		virtual ~IndexBuffer() = default;
-
-		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
-
 		virtual uint32_t GetCount() const = 0;
+		
 
+		static std::string IndexBuffer::GenerateUID(GraphicsContext& ctx, uint32_t* indices, uint32_t count);
+		
+		//static std::string IndexBuffer::GenerateUID(GraphicsContext& ctx, std::string& tag);
+
+		// Classes Factory
 		static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count);
 		static Ref<IndexBuffer> Create(GraphicsContext& ctx, uint32_t* indices, uint32_t count);
 
-
-		static std::string IndexBuffer::GenerateUID(GraphicsContext& ctx, uint32_t* indices, uint32_t count)
+		// IndexBuffer Resolver
+		static Ref<IndexBuffer> Resolve(uint32_t* indices, uint32_t count)
 		{
-			return ctx.GetAPI_TEXT() + "@:" + std::to_string(reinterpret_cast<uintptr_t>(&ctx)) +
-				"|";// +std::to_string(reinterpret_cast<uintptr_t>(indices) + "!" + std::to_string(count));
+			return std::static_pointer_cast<IndexBuffer>(Bindable::ResolvePctx<IndexBuffer>(indices, count));
 		}
-
-		//static Ref<Bindable> Make(uint32_t* indices, uint32_t count)
-		//{
-		//	return Bindable::Resolve<IndexBuffer>(indices, count);
-		//}
-		//static Ref<Bindable> Make(GraphicsContext& ctx, uint32_t* indices, uint32_t count)
-		//{
-		//	return Bindable::_Resolve<IndexBuffer>(ctx,indices, count);
-		//}
-	};
-
-
-	// Currently Hazel only supports 32-bit index
-	class IndexBufferX
-	{
+		static Ref<IndexBuffer> Resolve(GraphicsContext& ctx, uint32_t* indices, uint32_t count)
+		{
+			return std::static_pointer_cast<IndexBuffer>(Bindable::_Resolve<IndexBuffer>(ctx, indices, count));
+		}
 	public:
-		IndexBufferX(GraphicsContext& ctx, uint32_t* indices, uint32_t count) {};
-		virtual ~IndexBufferX() = default;
-
-
-		virtual void Bind() const {};
-		virtual void Unbind() const {};
-
-		virtual uint32_t GetCount() const { return 0; }// = 0;
-
-		//static Ref<IndexBufferX> Make(GraphicsContext& ctx, uint32_t* indices, uint32_t count);
+		std::string tag;
 	};
 
 }

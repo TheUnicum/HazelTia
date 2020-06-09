@@ -9,18 +9,22 @@ namespace Hazel {
 	class Bindable
 	{
 	public:
-		Bindable() = default;
+		Bindable(GraphicsContext& ctx);
 		virtual ~Bindable() = default;
 	
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 	
-		// Bindable Function to emable intellisense and automatic COLLECT TO ACTIVE CONTEXT if not manually inserted-	
+		virtual std::string GetUID() const { HZ_CORE_ASSERT(false, "GetUID NOT IMPLEMENTED!"); return ""; }
+		static std::string GenerateUID() { HZ_CORE_ASSERT(false, "GenerateUID NOT IMPLEMENTED!"); return ""; }
+	public:
+		GraphicsContext& _ctx;	// to initialize on creation!!
+
+		// STATIC FUNCTION AND ENTITY BINDABLE MANAGEMENT!!!
+
+		// Bindable Functions to enable intellisense and automatic COLLECT THE ACTIVE CONTEXT (if not manually inserted)	
 		template<class T, typename...Params>
 		static Ref<Bindable> ResolvePctx(Params&&...p) { return Bindable::_Resolve<T>((GraphicsContext&)GraphicsContext::Get_Active(), std::forward<Params>(p)...); }	
-		//template<class T, typename...Params>
-		//static Ref<Bindable> ResolveP2(GraphicsContext& ctx, Params&&...p) { return Bindable::_Resolve<T>(std::forward<Params>(p)...); }
-	
 	
 		template<class T, typename...Params>
 		static Ref<Bindable> _Resolve(Params&&...p)
@@ -71,7 +75,7 @@ namespace Hazel {
 #endif
 
 
-#define MAKER_ON_ctx_1arg(T_OPENGL, T_D3D11, arg0)\
+#define MAKER_ON_ctx_args_1(T_OPENGL, T_D3D11, arg0)\
 	switch (ctx.GetAPI())\
 	{\
 		case API::None:    HZ_CORE_ASSERT(false, "Rendererctx::None is currently not supported!"); return nullptr;\
@@ -81,7 +85,7 @@ namespace Hazel {
 	HZ_CORE_ASSERT(false, "Unknow Rendererctx!");\
 	return nullptr;\
 
-#define MAKER_ON_ctx_arg2(T_OPENGL, T_D3D11, arg0, arg1)\
+#define MAKER_ON_ctx_args_2(T_OPENGL, T_D3D11, arg0, arg1)\
 	switch (ctx.GetAPI())\
 	{\
 		case API::None:    HZ_CORE_ASSERT(false, "Rendererctx::None is currently not supported!"); return nullptr;\
@@ -91,7 +95,7 @@ namespace Hazel {
 	HZ_CORE_ASSERT(false, "Unknow Rendererctx!");\
 	return nullptr;\
 
-#define MAKER_ON_ctx_arg3(T_OPENGL, T_D3D11, arg0, arg1, arg2)\
+#define MAKER_ON_ctx_args_3(T_OPENGL, T_D3D11, arg0, arg1, arg2)\
 	switch (ctx.GetAPI())\
 	{\
 		case API::None:    HZ_CORE_ASSERT(false, "Rendererctx::None is currently not supported!"); return nullptr;\

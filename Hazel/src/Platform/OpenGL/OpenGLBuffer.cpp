@@ -59,7 +59,7 @@ namespace Hazel {
 	/////////////////////////////////////////////////////////////////////////////
 
 	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count)
-		:m_Count(count)
+		: IndexBuffer(GraphicsContext::Get_Active()), m_Count(count)
 	{
 		HZ_PROFILE_FUNCTION();
 

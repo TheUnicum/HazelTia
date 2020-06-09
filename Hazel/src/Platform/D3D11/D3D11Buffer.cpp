@@ -8,7 +8,7 @@
 namespace Hazel {
 
 	Hazel::D3D11IndexBuffer::D3D11IndexBuffer(uint32_t* indices, uint32_t count)
-		: m_Count(count), _c((D3D11Context&)GraphicsContext::Get_Active()) // possible to store as a normal context and add 
+		: IndexBuffer(GraphicsContext::Get_Active()), _c((D3D11Context&)this->_ctx), m_Count(count)
 	{
 		//INFOMAN(gfx);
 
