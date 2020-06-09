@@ -8,24 +8,29 @@
 
 namespace Hazel {
 
-	//class D3D11VertexBuffer : public VertexBuffer
-	//{
-	//public:
-	//	D3D11VertexBuffer(uint32_t size);
-	//	D3D11VertexBuffer(float* vertices, uint32_t size);
-	//	virtual ~D3D11VertexBuffer();
-	//
-	//	virtual void Bind() const override;
-	//	virtual void Unbind() const override;
-	//
-	//	virtual void SetData(const void* data, uint32_t size) override;
-	//
-	//	//virtual const BufferLayout& GetLayout() const override { return m_Layout; }
-	//	//virtual void SetLayout(const BufferLayout& layout) override { m_Layout = layout; }
-	//private:
-	//	uint32_t m_RendererID;
-	//	BufferLayout m_Layout;
-	//};
+	class D3D11VertexBuffer : public VertexBuffer
+	{
+	public:
+		D3D11VertexBuffer(uint32_t size);
+		D3D11VertexBuffer(std::string& tag, uint32_t size);
+		D3D11VertexBuffer(float* vertices, uint32_t size);
+		D3D11VertexBuffer(std::string& tag, float* vertices, uint32_t size);
+		virtual ~D3D11VertexBuffer();
+	
+		virtual void Bind() const override;
+		virtual void Unbind() const override;
+
+		virtual void SetData(const void* data, uint32_t size) override;
+	
+		virtual const BufferLayout& GetLayout() const override { return m_Layout; }
+		virtual void SetLayout(const BufferLayout& layout) override { m_Layout = layout; }
+	private:
+		Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
+		BufferLayout m_Layout;
+		std::string m_tag;
+	public:
+		D3D11Context& _c;
+	};
 
 	class D3D11IndexBuffer : public IndexBuffer
 	{

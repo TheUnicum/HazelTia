@@ -8,8 +8,38 @@ namespace Hazel {
 	/////////////////////////////////////////////////////////////////////////////
 	// VertexBuffer /////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////
-
 	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size)
+		: VertexBuffer(GraphicsContext::Get_Active())
+	{
+		InitDynamic(size);
+	}
+
+	OpenGLVertexBuffer::OpenGLVertexBuffer(std::string& tag, uint32_t size)
+		: VertexBuffer(GraphicsContext::Get_Active())
+	{
+		InitDynamic(size);
+	}
+
+	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size)
+		: VertexBuffer(GraphicsContext::Get_Active())
+	{
+		InitStatic(vertices, size);
+	}
+
+	OpenGLVertexBuffer::OpenGLVertexBuffer(std::string& tag, float* vertices, uint32_t size)
+		: VertexBuffer(GraphicsContext::Get_Active())
+	{
+		InitStatic(vertices, size);
+	}
+
+	OpenGLVertexBuffer::~OpenGLVertexBuffer()
+	{
+		HZ_PROFILE_FUNCTION();
+
+		glDeleteBuffers(1, &m_RendererID);
+	}
+
+	void OpenGLVertexBuffer::InitDynamic(uint32_t size)
 	{
 		HZ_PROFILE_FUNCTION();
 
@@ -18,20 +48,13 @@ namespace Hazel {
 		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
 	}
 
-	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size)
+	void OpenGLVertexBuffer::InitStatic(float* vertices, uint32_t size)
 	{
 		HZ_PROFILE_FUNCTION();
 
 		glCreateBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
 		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
-	}
-
-	OpenGLVertexBuffer::~OpenGLVertexBuffer()
-	{
-		HZ_PROFILE_FUNCTION();
-
-		glDeleteBuffers(1, &m_RendererID);
 	}
 
 	void OpenGLVertexBuffer::Bind() const

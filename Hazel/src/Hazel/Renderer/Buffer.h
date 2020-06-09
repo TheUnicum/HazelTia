@@ -104,22 +104,70 @@ namespace Hazel {
 		uint32_t m_Stride = 0;
 	};
 
-	class VertexBuffer
+	class VertexBuffer : public Bindable
 	{
 	public:
+		VertexBuffer(GraphicsContext& ctx) : Bindable(ctx) {}
 		virtual ~VertexBuffer() = default;
-
-		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
 
 		virtual void SetData(const void* data, uint32_t size) = 0;
 
 		virtual const BufferLayout& GetLayout() const = 0;
 		virtual void SetLayout(const BufferLayout& layout) = 0;
 
+	protected:
+		static std::string GenerateUID_(std::string tag);
+	public:
+		static std::string Get_ID_NR() { return std::to_string(std::time(0)); }
+		template<typename...Ignore>
+		static std::string GenerateUID(GraphicsContext& ctx, const std::string& tag, Ignore&&...ignore)
+		{
+			return GenerateUID_(tag);
+		}
+
+		// Classes Factory
 		static Ref<VertexBuffer> Create(uint32_t size);
+		static Ref<VertexBuffer> Create(std::string& tag, uint32_t size);
+		static Ref<VertexBuffer> Create(GraphicsContext& ctx, std::string& tag, uint32_t size);
+		// 2.
 		static Ref<VertexBuffer> Create(float* vertices, uint32_t size);
+		static Ref<VertexBuffer> Create(GraphicsContext& ctx, float* vertices, uint32_t size);
+		static Ref<VertexBuffer> Create(std::string& tag, float* vertices, uint32_t size);
+		static Ref<VertexBuffer> Create(GraphicsContext& ctx, std::string& tag, float* vertices, uint32_t size);
+
+		// 1. VertexBuffer Resolver (Star of chain of Class creation)
+		static Ref<VertexBuffer> Resolve(uint32_t size)
+		{
+			return std::static_pointer_cast<VertexBuffer>(Bindable::ResolvePctx<VertexBuffer>(VertexBuffer::Get_ID_NR(), size));
+		}
+		static Ref<VertexBuffer> Resolve(std::string& tag, uint32_t size)
+		{
+			return std::static_pointer_cast<VertexBuffer>(Bindable::ResolvePctx<VertexBuffer>(tag, size));
+		}
+		static Ref<VertexBuffer> Resolve(GraphicsContext& ctx, std::string& tag, uint32_t size)
+		{
+			return std::static_pointer_cast<VertexBuffer>(Bindable::_Resolve<VertexBuffer>(ctx, tag, size));
+		}
+
+		// 2. VertexBuffer Resolver (Star of chain of Class creation)
+		static Ref<VertexBuffer> Resolve(float* vertices, uint32_t size)
+		{
+			return std::static_pointer_cast<VertexBuffer>(Bindable::ResolvePctx<VertexBuffer>(VertexBuffer::Get_ID_NR(), vertices, size));
+		}
+		static Ref<VertexBuffer> Resolve(GraphicsContext& ctx, float* vertices, uint32_t size)
+		{
+			return std::static_pointer_cast<VertexBuffer>(Bindable::_Resolve<VertexBuffer>(ctx, VertexBuffer::Get_ID_NR(), vertices, size));
+		}
+		static Ref<VertexBuffer> Resolve(std::string& tag, float* vertices, uint32_t size)
+		{
+			return std::static_pointer_cast<VertexBuffer>(Bindable::ResolvePctx<VertexBuffer>(tag, vertices, size));
+		}
+		static Ref<VertexBuffer>Resolve(GraphicsContext& ctx, std::string& tag, float* vertices, uint32_t size)
+		{
+			return std::static_pointer_cast<VertexBuffer>(Bindable::_Resolve<VertexBuffer>(ctx, tag, vertices, size));
+		}
 	};
+
 
 	// Currently Hazel only supports 32-bit index
 	class IndexBuffer : public Bindable
@@ -130,14 +178,11 @@ namespace Hazel {
 		virtual uint32_t GetCount() const = 0;
 		
 	protected:
-		static std::string GenerateUID_(std::string _tag);
+		static std::string GenerateUID_(std::string tag);
 	public:
 		static std::string Get_ID_NR() { return std::to_string(std::time(0));}
+		static std::string GenerateUID(GraphicsContext& ctx, const std::string& _tag, uint32_t* indices, uint32_t count);
 
-		static std::string GenerateUID(GraphicsContext& ctx, const std::string& _tag, uint32_t* indices, uint32_t count)
-		{
-			return GenerateUID_(_tag);
-		}
 		// Classes Factory
 		static Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count);
 		static Ref<IndexBuffer> IndexBuffer::Create(GraphicsContext& ctx, uint32_t* indices, uint32_t count);
@@ -149,18 +194,19 @@ namespace Hazel {
 		{
 			return std::static_pointer_cast<IndexBuffer>(Bindable::ResolvePctx<IndexBuffer>(IndexBuffer::Get_ID_NR(), indices, count));
 		}
-		static Ref<IndexBuffer> Resolve(std::string& tag, uint32_t* indices, uint32_t count)
-		{
-			return std::static_pointer_cast<IndexBuffer>(Bindable::ResolvePctx<IndexBuffer>(tag, indices, count));
-		}
 		static Ref<IndexBuffer> Resolve(GraphicsContext& ctx, uint32_t* indices, uint32_t count)
 		{
 			return std::static_pointer_cast<IndexBuffer>(Bindable::_Resolve<IndexBuffer>(ctx, IndexBuffer::Get_ID_NR(), indices, count));
 		}
+		static Ref<IndexBuffer> Resolve(std::string& tag, uint32_t* indices, uint32_t count)
+		{
+			return std::static_pointer_cast<IndexBuffer>(Bindable::ResolvePctx<IndexBuffer>(tag, indices, count));
+		}
+		static Ref<IndexBuffer> Resolve(GraphicsContext& ctx, std::string& tag, uint32_t* indices, uint32_t count)
+		{
+			return std::static_pointer_cast<IndexBuffer>(Bindable::_Resolve<IndexBuffer>(ctx, tag, indices, count));
+		}
 	public:
-
-
-		//
 
 	};
 
