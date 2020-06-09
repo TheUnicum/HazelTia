@@ -9,5 +9,5 @@ float4 main(float2 pos : Position) : SV_Position
 #type fragment
 float4 main() : SV_Target
 {
-    return float4(8.0f, 0.1f, 0.2f, 1.0f);
+    return float4(3.0f, 0.8f, 0.2f, 1.0f);
 }

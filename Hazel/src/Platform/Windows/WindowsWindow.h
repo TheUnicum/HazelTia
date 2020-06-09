@@ -17,7 +17,8 @@ namespace Hazel
 
 		unsigned int GetWidth() const override { return m_Data.Width; }
 		unsigned int GetHeight() const override { return m_Data.Height; }
-		RendererAPI::API GetAPI() const override { return m_Data.Api; }
+		API GetAPI() const override { return m_Data.Api; }
+		void* GetCfx() const override { return m_Context.get(); }
 
 		// Window attributes
 		void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallback = callback; }
@@ -37,7 +38,7 @@ namespace Hazel
 		{
 			std::string Title;
 			unsigned int Width, Height;
-			RendererAPI::API Api;
+			API Api;
 			bool VSync;
 
 			EventCallbackFn EventCallback;

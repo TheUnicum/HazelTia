@@ -8,6 +8,7 @@
 #include "Hazel/Events/KeyEvent.h"
 
 #include "Hazel/Renderer/Renderer.h"
+#include "Hazel/Renderer/GraphicsContext.h"
 
 // for D3D11
 #define GLFW_EXPOSE_NATIVE_WGL
@@ -63,7 +64,7 @@ namespace Hazel {
 			// Set glfw window Hint OPTIONS to generate appropriate glfwWindow based on API selected!
 			switch (m_Data.Api)
 			{
-			case RendererAPI::API::OpenGL:
+			case API::OpenGL:
 			{
 				glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 				#if defined(HZ_DEBUG)
@@ -73,7 +74,7 @@ namespace Hazel {
 				m_pWin_handle = m_Window;
 				break;
 			}
-			case RendererAPI::API::D3D11:
+			case API::D3D11:
 			{
 				glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 				m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);

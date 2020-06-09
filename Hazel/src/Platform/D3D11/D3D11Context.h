@@ -16,8 +16,9 @@ namespace Hazel {
 		virtual void Init() override;
 		virtual void SwapBuffers() override;
 
-		virtual RendererAPI::API GetAPI() override;
-		virtual RendererAPI::API MakeCurrent() override;
+		virtual API GetAPI() const override { return API::D3D11; };
+		virtual std::string GetAPI_TEXT() const override { return "D3D11"; };
+		virtual API MakeCurrent() override;
 	private:
 		Window& m_window;
 		HWND* m_windowHandle;

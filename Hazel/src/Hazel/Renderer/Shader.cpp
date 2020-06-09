@@ -5,64 +5,66 @@
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Platform/D3D11/D3D11Shader.h"
 
-#include "Hazel/Renderer/GraphicsContext.h"
-
 
 namespace Hazel {
 
 	std::unordered_map<std::string, Ref<Shader>> Shader::_s_map;
 
-	std::string Shader::GenerateUID(RendererAPI__API api, const std::string& filepath)
+	std::string Shader::GenerateUID(GraphicsContext& ctx, const std::string& filepath)
 	{
-		return "#Api-" + std::to_string((int)api) + "@:" + filepath;
+		return ctx.GetAPI_TEXT() + "@:" + std::to_string(reinterpret_cast<uintptr_t>(&ctx)) +
+			"|" + std::to_string(reinterpret_cast<uintptr_t>(&filepath));
 	}
 
-	std::string Shader::GenerateUID(RendererAPI__API api, const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
+	std::string Shader::GenerateUID(GraphicsContext& ctx, const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 	{
-		return "#Api-" + std::to_string((int)api) + "@:" + name +
+		return ctx.GetAPI_TEXT() + "@:" + std::to_string(reinterpret_cast<uintptr_t>(&ctx)) +
 			"V" + std::to_string(vertexSrc.length()) + vertexSrc.substr(0, 10) +
 			"F" + std::to_string(fragmentSrc.length()) + fragmentSrc.substr(0, 10);
 	}
 
 	// Classes Factory
-	Ref<Shader> Shader::Create(const std::string& filepath) { return Create((RendererAPI__API)GraphicsContext::Get_API_Active(), filepath); }
-	Ref<Shader> Shader::Create(RendererAPI__API api, const std::string& filepath)
+	Ref<Shader> Shader::Create(const std::string& filepath) { return Create((GraphicsContext&)GraphicsContext::Get_Active(), filepath); }
+	Ref<Shader> Shader::Create(GraphicsContext& ctx, const std::string& filepath)
 	{
-		switch ((RendererAPI::API)api)
-		{
-		case RendererAPI::API::None:    HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return CreateRef<OpenGLShader>(filepath);
-		case RendererAPI::API::D3D11:   return CreateRef<D3D11Shader>(filepath);
-		}
+		if (!&ctx) return CreateRef<OpenGLShader>(filepath);
 
-		HZ_CORE_ASSERT(false, "Unknow RendererAPI!");
-		return nullptr;
-	}
-
-	Ref<Shader> Shader::Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc) { return Create((RendererAPI__API)GraphicsContext::Get_API_Active(), name, vertexSrc, fragmentSrc); }
-	Ref<Shader> Shader::Create(RendererAPI__API api, const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
-	{
-		switch ((RendererAPI::API)api)
+		switch (ctx.GetAPI())
 		{
-		case RendererAPI::API::None:    HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		case RendererAPI::API::OpenGL:  return CreateRef<OpenGLShader>(name, vertexSrc, fragmentSrc);
-		case RendererAPI::API::D3D11:   return CreateRef<D3D11Shader>(name, vertexSrc, fragmentSrc);
+			case API::None:    HZ_CORE_ASSERT(false, "Rendererctx::None is currently not supported!"); return nullptr;
+			case API::OpenGL:  return CreateRef<OpenGLShader>(filepath);
+			case API::D3D11:   return CreateRef<D3D11Shader>(filepath);
 
 		}
 
-		HZ_CORE_ASSERT(false, "Unknow RendererAPI!");
+		HZ_CORE_ASSERT(false, "Unknow Rendererctx!");
+		return nullptr;
+	}
+
+	Ref<Shader> Shader::Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc) { return Create((GraphicsContext&)GraphicsContext::Get_Active(), name, vertexSrc, fragmentSrc); }
+	Ref<Shader> Shader::Create(GraphicsContext& ctx, const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
+	{
+		switch (ctx.GetAPI())
+		{
+			case API::None:    HZ_CORE_ASSERT(false, "Rendererctx::None is currently not supported!"); return nullptr;
+			case API::OpenGL:  return CreateRef<OpenGLShader>(name, vertexSrc, fragmentSrc);
+			case API::D3D11:   return CreateRef<D3D11Shader>(name, vertexSrc, fragmentSrc);
+
+		}
+
+		HZ_CORE_ASSERT(false, "Unknow Rendererctx!");
 		return nullptr;
 	}
 
 
-	Ref<Shader> Shader::Resolve(const std::string& filepath, bool make_new_only) { return Resolve((RendererAPI__API)GraphicsContext::Get_API_Active(), filepath, make_new_only); }
-	Ref<Shader> Shader::Resolve(RendererAPI__API api, const std::string& filepath, bool make_new_only)
+	Ref<Shader> Shader::Resolve(const std::string& filepath, bool make_new_only) { return Resolve((GraphicsContext&)GraphicsContext::Get_Active(), filepath, make_new_only); }
+	Ref<Shader> Shader::Resolve(GraphicsContext& ctx, const std::string& filepath, bool make_new_only)
 	{
-		const auto key = Shader::GenerateUID(api, filepath);
+		const auto key = Shader::GenerateUID(ctx, filepath);
 		const auto internal_context = _s_map.find(key);
 		if (internal_context == _s_map.end())
 		{
-			Ref<Shader> new_context = Create(api, filepath);
+			Ref<Shader> new_context = Create(ctx, filepath);
 			_s_map[key] = new_context;
 			return new_context;
 		}

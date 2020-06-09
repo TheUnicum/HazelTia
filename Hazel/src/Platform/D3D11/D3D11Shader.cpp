@@ -23,7 +23,7 @@ namespace Hazel {
 	}
 
 	D3D11Shader::D3D11Shader(const std::string& filepath)
-		: _c(*(D3D11Context*)GraphicsContext::Get_Active().get()) // possible to store as a normal context and add 
+		: _c((D3D11Context&)GraphicsContext::Get_Active()) // possible to store as a normal context and add 
 	{
 		HZ_PROFILE_FUNCTION();
 
@@ -40,7 +40,7 @@ namespace Hazel {
 	}
 
 	D3D11Shader::D3D11Shader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
-		: m_Name(name), _c(*(D3D11Context*)GraphicsContext::Get_Active().get())
+		: m_Name(name), _c((D3D11Context&)GraphicsContext::Get_Active())
 	{
 		HZ_PROFILE_FUNCTION();
 

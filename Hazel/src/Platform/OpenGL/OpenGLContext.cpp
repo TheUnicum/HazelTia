@@ -1,7 +1,7 @@
 #include "hzpch.h"
 #include "Platform/OpenGL/OpenGLContext.h"
 
-#
+#include "Hazel/Core/Window.h"
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
@@ -44,12 +44,7 @@ namespace Hazel {
 		glfwSwapBuffers(m_windowHandle);
 	}
 
-	RendererAPI::API OpenGLContext::GetAPI()
-	{
-		return RendererAPI::API::OpenGL;
-	}
-
-	RendererAPI::API OpenGLContext::MakeCurrent()
+	API OpenGLContext::MakeCurrent()
 	{
 		if (m_windowHandle != glfwGetCurrentContext())
 		{
@@ -58,7 +53,7 @@ namespace Hazel {
 		}
 		if (_s_active.get() != this)
 		{
-			_s_active = Resolve(m_window);
+			_s_active = Resolve(API::OpenGL, m_window); // I need to use RESOLVE to 
 		}
 		return GetAPI();
 	}

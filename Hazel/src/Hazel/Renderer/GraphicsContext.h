@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Renderer.h"
+//#include "Renderer.h" // TODO: Remove RendereAPI from Renderer and put in here.
 #include "Hazel/Core/Window.h"
 
 namespace Hazel {
@@ -13,29 +13,33 @@ namespace Hazel {
 		virtual void Init() = 0;
 		virtual void SwapBuffers() = 0;
 
-		virtual RendererAPI::API GetAPI() = 0;
-		virtual RendererAPI::API MakeCurrent() = 0;
-
+		virtual API GetAPI() const = 0;
+		virtual std::string GetAPI_TEXT() const = 0;
+		virtual API MakeCurrent() = 0;
 
 		// static
-		static std::string GenerateUID(RendererAPI::API api, Window& window);
-		static Ref<GraphicsContext> Get_Active() { return _s_active; }
-		static RendererAPI::API Get_API_Active();
+		static std::string GenerateUID(API api, Window& window);
+		static GraphicsContext& Get_Active() 
+		{
+			HZ_CORE_ASSERT(_s_active, "Graphiccs Context not initialized!");
+			return *_s_active; 
+		}
+		static API Get_API_Active();
 
 		// Classes Factory
 		static Ref<GraphicsContext> Create(Window& window);
-		static Ref<GraphicsContext> Create(RendererAPI::API api, Window& window);
+		static Ref<GraphicsContext> Create(API api, Window& window);
 
 		static Ref<GraphicsContext> Resolve(Window& window, bool make_new_entity = false);
-		static Ref<GraphicsContext> Resolve(RendererAPI::API api, Window& window, bool make_new_entity = false);
-		static void Release(RendererAPI::API api, Window& window);
+		static Ref<GraphicsContext> Resolve(API api, Window& window, bool make_new_entity = false);
+		static void Release(API api, Window& window);
 	public:
 		static Ref<GraphicsContext> _s_active;
 		static std::unordered_map<std::string, Ref<GraphicsContext>> _s_map_context;
 
 	// API functions
 	public:
-		static void DrawTriangle() { GraphicsContext::Get_Active()->DrawTriangle_impl(); }
+		static void DrawTriangle() { GraphicsContext::Get_Active().DrawTriangle_impl(); }
 		virtual void DrawTriangle_impl() {};
 	};
 

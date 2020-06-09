@@ -10,7 +10,7 @@
 #include <wrl.h>
 #endif
 
-enum class RendererAPI__API;
+#include "Hazel/Renderer/GraphicsContext.h"
 
 namespace Hazel {
 
@@ -36,17 +36,17 @@ namespace Hazel {
 		virtual const std::string& GetName() const = 0;
 
 		// static
-		static std::string GenerateUID(RendererAPI__API api, const std::string& filepath);
-		static std::string GenerateUID(RendererAPI__API api, const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
+		static std::string GenerateUID(GraphicsContext& ctx, const std::string& filepath);
+		static std::string GenerateUID(GraphicsContext& ctx, const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 
 		// Classes Factory
 		static Ref<Shader> Create(const std::string& filepath);
-		static Ref<Shader> Create(RendererAPI__API api, const std::string& filepath);
+		static Ref<Shader> Create(GraphicsContext& ctx, const std::string& filepath);
 		static Ref<Shader> Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
-		static Ref<Shader> Create(RendererAPI__API api, const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
+		static Ref<Shader> Create(GraphicsContext& ctx, const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 
 		static Ref<Shader> Resolve(const std::string& filepath, bool make_new_only = false);
-		static Ref<Shader> Resolve(RendererAPI__API api, const std::string& filepath, bool make_new_only = false);
+		static Ref<Shader> Resolve(GraphicsContext& ctx, const std::string& filepath, bool make_new_only = false);
 	public:
 		static std::unordered_map<std::string, Ref<Shader>> _s_map;
 

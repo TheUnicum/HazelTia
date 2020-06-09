@@ -1,7 +1,9 @@
 #include "hzpch.h"
 #include "Platform/D3D11/D3D11Context.h"
-#include <d3dcompiler.h>
 
+#include "Hazel/Core/Window.h"
+
+#include <d3dcompiler.h>
 namespace wrl = Microsoft::WRL;
 
 #pragma comment(lib,"d3d11.lib")
@@ -9,7 +11,7 @@ namespace wrl = Microsoft::WRL;
 
 
 // Temp 
-#include "D3D11Shader.h" 
+#include "D3D11Shader.h" // TODO
 
 namespace Hazel {
 
@@ -83,12 +85,7 @@ namespace Hazel {
 		ppD3D.m_pSwap->Present(1u, 0u);
 	}
 
-	RendererAPI::API D3D11Context::GetAPI()
-	{
-		return RendererAPI::API::D3D11;
-	}
-
-	RendererAPI::API D3D11Context::MakeCurrent()
+	API D3D11Context::MakeCurrent()
 	{
 		if (_s_active.get() != this)
 		{
