@@ -236,8 +236,15 @@ namespace Hazel {
 		ibuff->Bind();
 
 
+		auto x = std::time(0);
+		Ref<IndexBuffer> ibuffA = IndexBuffer::Resolve(std::string("MATTO"), indices, int(sizeof(indices) / sizeof(float)));
+		//ibuff->Bind();
+		//Ref<IndexBuffer> ibuffB = IndexBuffer::Resolve(indices, int(sizeof(indices) / sizeof(float)));
+		//ibuff->Bind();
 
-
+		Ref<IndexBuffer> ibuff1 = IndexBuffer::Resolve(GraphicsContext::Get_Active(), indices, int(sizeof(indices) / sizeof(float)));
+		Ref<IndexBuffer> ibuff2 = IndexBuffer::Resolve(std::string("MATTO"), indices, int(sizeof(indices) / sizeof(float)));
+		auto tag = ibuff1->GetUID();
 		// create constant buffer for transformation matrix
 		struct ConstantBuffer
 		{

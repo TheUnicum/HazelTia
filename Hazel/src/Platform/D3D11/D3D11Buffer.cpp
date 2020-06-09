@@ -8,9 +8,23 @@
 namespace Hazel {
 
 	Hazel::D3D11IndexBuffer::D3D11IndexBuffer(uint32_t* indices, uint32_t count)
-		: IndexBuffer(GraphicsContext::Get_Active()), _c((D3D11Context&)this->_ctx), m_Count(count)
+		: IndexBuffer(GraphicsContext::Get_Active()), _c((D3D11Context&)this->_ctx), m_Count(count) 
 	{
-		//INFOMAN(gfx);
+		Init(indices, count);
+	}
+
+	D3D11IndexBuffer::D3D11IndexBuffer(std::string& tag, uint32_t* indices, uint32_t count)
+		: IndexBuffer(GraphicsContext::Get_Active()), _c((D3D11Context&)this->_ctx), m_Count(count), m_tag(tag)
+	{
+		Init(indices, count);
+	}
+
+	D3D11IndexBuffer::~D3D11IndexBuffer()
+	{
+	}
+
+	void D3D11IndexBuffer::Init(uint32_t* indices, uint32_t count)
+	{		//INFOMAN(gfx);
 
 		D3D11_BUFFER_DESC ibd = {};
 		ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
@@ -22,10 +36,6 @@ namespace Hazel {
 		D3D11_SUBRESOURCE_DATA isd = {};
 		isd.pSysMem = indices;
 		GFX_THROW_INFO(_c.GetPP().m_pDevice->CreateBuffer(&ibd, &isd, &pIndexBuffer));
-	}
-
-	D3D11IndexBuffer::~D3D11IndexBuffer()
-	{
 	}
 
 	void D3D11IndexBuffer::Bind() const

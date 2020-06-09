@@ -129,26 +129,39 @@ namespace Hazel {
 		virtual ~IndexBuffer() = default;
 		virtual uint32_t GetCount() const = 0;
 		
+	protected:
+		static std::string GenerateUID_(std::string _tag);
+	public:
+		static std::string Get_ID_NR() { return std::to_string(std::time(0));}
 
-		static std::string IndexBuffer::GenerateUID(GraphicsContext& ctx, uint32_t* indices, uint32_t count);
-		
-		//static std::string IndexBuffer::GenerateUID(GraphicsContext& ctx, std::string& tag);
-
+		static std::string GenerateUID(GraphicsContext& ctx, const std::string& _tag, uint32_t* indices, uint32_t count)
+		{
+			return GenerateUID_(_tag);
+		}
 		// Classes Factory
-		static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count);
-		static Ref<IndexBuffer> Create(GraphicsContext& ctx, uint32_t* indices, uint32_t count);
+		static Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count);
+		static Ref<IndexBuffer> IndexBuffer::Create(GraphicsContext& ctx, uint32_t* indices, uint32_t count);
+		static Ref<IndexBuffer> IndexBuffer::Create(std::string& tag, uint32_t* indices, uint32_t count);
+		static Ref<IndexBuffer> IndexBuffer::Create(GraphicsContext& ctx, std::string& tag, uint32_t* indices, uint32_t count);
 
-		// IndexBuffer Resolver
+		// IndexBuffer Resolver (Star of chain of Class creation)
 		static Ref<IndexBuffer> Resolve(uint32_t* indices, uint32_t count)
 		{
-			return std::static_pointer_cast<IndexBuffer>(Bindable::ResolvePctx<IndexBuffer>(indices, count));
+			return std::static_pointer_cast<IndexBuffer>(Bindable::ResolvePctx<IndexBuffer>(IndexBuffer::Get_ID_NR(), indices, count));
+		}
+		static Ref<IndexBuffer> Resolve(std::string& tag, uint32_t* indices, uint32_t count)
+		{
+			return std::static_pointer_cast<IndexBuffer>(Bindable::ResolvePctx<IndexBuffer>(tag, indices, count));
 		}
 		static Ref<IndexBuffer> Resolve(GraphicsContext& ctx, uint32_t* indices, uint32_t count)
 		{
-			return std::static_pointer_cast<IndexBuffer>(Bindable::_Resolve<IndexBuffer>(ctx, indices, count));
+			return std::static_pointer_cast<IndexBuffer>(Bindable::_Resolve<IndexBuffer>(ctx, IndexBuffer::Get_ID_NR(), indices, count));
 		}
 	public:
-		std::string tag;
+
+
+		//
+
 	};
 
 }

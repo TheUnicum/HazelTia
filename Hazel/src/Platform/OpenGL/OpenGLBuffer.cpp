@@ -57,9 +57,26 @@ namespace Hazel {
 	/////////////////////////////////////////////////////////////////////////////
 	// IndexBuffer //////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////
-
 	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count)
 		: IndexBuffer(GraphicsContext::Get_Active()), m_Count(count)
+	{
+		Init(indices, count);
+	}
+
+	OpenGLIndexBuffer::OpenGLIndexBuffer(std::string& tag, uint32_t* indices, uint32_t count)
+		: IndexBuffer(GraphicsContext::Get_Active()), m_Count(count), m_tag(tag)
+	{
+		Init(indices, count);
+	}
+
+	OpenGLIndexBuffer::~OpenGLIndexBuffer()
+	{
+		HZ_PROFILE_FUNCTION();
+
+		glDeleteBuffers(1, &m_RendererID);
+	}
+
+	void OpenGLIndexBuffer::Init(uint32_t* indices, uint32_t count)
 	{
 		HZ_PROFILE_FUNCTION();
 
@@ -69,13 +86,6 @@ namespace Hazel {
 		// Binding with GL_ARRAY_BUFFER allows the data to be loaded regardless of VAO state. 
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
 		glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
-	}
-
-	OpenGLIndexBuffer::~OpenGLIndexBuffer()
-	{
-		HZ_PROFILE_FUNCTION();
-
-		glDeleteBuffers(1, &m_RendererID);
 	}
 
 	void OpenGLIndexBuffer::Bind() const

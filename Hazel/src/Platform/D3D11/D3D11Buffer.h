@@ -31,15 +31,19 @@ namespace Hazel {
 	{
 	public:
 		D3D11IndexBuffer(uint32_t* indices, uint32_t count);
+		D3D11IndexBuffer(std::string& tag, uint32_t* indices, uint32_t count);
 		virtual ~D3D11IndexBuffer();
+		void Init(uint32_t* indices, uint32_t count);
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
 		virtual uint32_t GetCount() const override { return m_Count; }
+		virtual std::string GetUID() const override { return GenerateUID_(m_tag); }
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Buffer> pIndexBuffer;
 		uint32_t m_Count;
+		std::string m_tag;
 	public:
 		D3D11Context& _c;
 	};
