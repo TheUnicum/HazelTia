@@ -345,10 +345,12 @@ namespace Hazel {
 
 		//create a pixel shader
 		//create a vertex shader
-		Ref<Shader> shader = (Shader::Create("assets/shaders/D3D/FlatColor.hlsl"));
-		shader->Bind();
+		Ref<Shader> shader = (Shader::Resolve("assets/shaders/D3D/FlatColor.hlsl"));
+		//shader->Bind();
 		auto pBlob = shader->GetpShaderBytecode();
 
+		Ref<Shader> s = Shader::Resolve("assets/shaders/D3D/FlatColor.hlsl");
+		s->Bind();
 
 
 		// input (vertex) layout (2d position only)

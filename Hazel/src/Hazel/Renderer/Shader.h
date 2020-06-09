@@ -10,6 +10,7 @@
 	#include <wrl.h>
 #endif
 
+#include "Hazel/Renderer/Bindable.h"
 #include "Hazel/Renderer/GraphicsContext.h"
 
 class OpenGLShader;
@@ -17,13 +18,13 @@ class D3D11Shader;
 
 namespace Hazel {
 
-	class Shader
+	class Shader : public Bindable
 	{
 	public:
 		virtual ~Shader() = default;
 
-		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
+		//virtual void Bind() const = 0;
+		//virtual void Unbind() const = 0;
 
 		#ifdef HZ_PLATFORM_WINDOWS
 		virtual Microsoft::WRL::ComPtr<ID3DBlob> GetpShaderBytecode() const { return pBlobStoredCompiledVertex; }
@@ -48,8 +49,8 @@ namespace Hazel {
 		static Ref<Shader> Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 		static Ref<Shader> Create(GraphicsContext& ctx, const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 
-		static Ref<Shader> Resolve(const std::string& filepath, bool make_new_only = false);
-		static Ref<Shader> Resolve(GraphicsContext& ctx, const std::string& filepath, bool make_new_only = false);
+		//static Ref<Shader> Resolve(const std::string& filepath, bool make_new_only = false);
+		//static Ref<Shader> Resolve(GraphicsContext& ctx, const std::string& filepath, bool make_new_only = false);
 
 		//
 
@@ -93,6 +94,15 @@ namespace Hazel {
 		//
 		//
 
+		static Ref<Shader> Resolve(const std::string& filepath)
+		{
+			return std::static_pointer_cast<Shader>(Bindable::ResolvePctx<Shader>(filepath));
+		}
+		static Ref<Shader> Resolve(GraphicsContext& ctx, const std::string& filepath)
+		{
+			return std::static_pointer_cast<Shader>(Bindable::_Resolve<Shader>(ctx, filepath));
+		}
+		//static Ref<Shader> ResolveX(GraphicsContext& ctx, const std::string& filepath, bool make_new_only = false)
 
 
 

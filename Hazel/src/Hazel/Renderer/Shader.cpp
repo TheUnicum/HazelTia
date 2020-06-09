@@ -13,7 +13,7 @@ namespace Hazel {
 	std::string Shader::GenerateUID(GraphicsContext& ctx, const std::string& filepath)
 	{
 		return ctx.GetAPI_TEXT() + "@:" + std::to_string(reinterpret_cast<uintptr_t>(&ctx)) +
-			"|" + std::to_string(reinterpret_cast<uintptr_t>(&filepath));
+			"|" + filepath;
 	}
 
 	std::string Shader::GenerateUID(GraphicsContext& ctx, const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
@@ -56,24 +56,24 @@ namespace Hazel {
 	}
 
 	///
-	Ref<Shader> Shader::Resolve(const std::string& filepath, bool make_new_only) { return Resolve((GraphicsContext&)GraphicsContext::Get_Active(), filepath, make_new_only); }
-	Ref<Shader> Shader::Resolve(GraphicsContext& ctx, const std::string& filepath, bool make_new_only)
-	{
-		const auto key = Shader::GenerateUID(ctx, filepath);
-		const auto internal_context = _s_map.find(key);
-		if (internal_context == _s_map.end())
-		{
-			Ref<Shader> new_context = Create(ctx, filepath);
-			_s_map[key] = new_context;
-			return new_context;
-		}
-		else
-		{
-			if (make_new_only)
-				HZ_CORE_ASSERT(false, "CANT have duplicate of this CONTEXT!");
-			return internal_context->second;
-		}
-	}
+	//Ref<Shader> Shader::Resolve(const std::string& filepath, bool make_new_only) { return Resolve((GraphicsContext&)GraphicsContext::Get_Active(), filepath, make_new_only); }
+	//Ref<Shader> Shader::Resolve(GraphicsContext& ctx, const std::string& filepath, bool make_new_only)
+	//{
+	//	const auto key = Shader::GenerateUID(ctx, filepath);
+	//	const auto internal_context = _s_map.find(key);
+	//	if (internal_context == _s_map.end())
+	//	{
+	//		Ref<Shader> new_context = Create(ctx, filepath);
+	//		_s_map[key] = new_context;
+	//		return new_context;
+	//	}
+	//	else
+	//	{
+	//		if (make_new_only)
+	//			HZ_CORE_ASSERT(false, "CANT have duplicate of this CONTEXT!");
+	//		return internal_context->second;
+	//	}
+	//}
 
 
 

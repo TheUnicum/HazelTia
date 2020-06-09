@@ -1,52 +1,45 @@
 #pragma once
 
-#include "Hazel/Core/Base.h"
-#include "GraphicsContext.h"
 #include <unordered_map>
+
+#include "Hazel/Renderer/GraphicsContext.h"
 
 namespace Hazel {
 
-	//class Bindable
-	//{
-	//public:
-	//	Bindable() = default;
-	//	virtual ~Bindable() = default;
-	//
-	//	virtual void Bind() const = 0;
-	//	virtual void Unbind() const = 0;
-	//
-	//
-	//	template<class T, typename...Params>
-	//	static Ref<Bindable> Resolve(Params&&...p)
-	//	{
-	//		return Bindable::_Resolve<T>((GraphicsContext&)GraphicsContext::Get_Active(), std::forward<Params>(p)...);
-	//	}
-	//
-	//	template<class T, typename...Params>
-	//	static Ref<Bindable> Resolve(GraphicsContext& ctx, Params&&...p)
-	//	{
-	//		return Bindable::_Resolve<T>(std::forward<Params>(p)...);
-	//	}
-	//
-	//
-	//	template<class T, typename...Params>
-	//	static Ref<T> _Resolve(Params&&...p)
-	//	{
-	//		const auto key = T::GenerateUID(std::forward<Params>(p)...);
-	//		const auto bind = _s_map.find(key);
-	//		if (bind == _s_map.end())
-	//		{
-	//			Ref<T> new_context = T::Create(std::forward<Params>(p)...);
-	//			_s_map[key] = new_context;
-	//			return new_context;
-	//		}
-	//		else
-	//		{
-	//			return std::static_pointer_cast<T>(bind->second);
-	//		}
-	//	}
-	//	static std::unordered_map<std::string, Ref<Bindable>> _s_map;
-	//};
+	class Bindable
+	{
+	public:
+		Bindable() = default;
+		virtual ~Bindable() = default;
+	
+		virtual void Bind() const = 0;
+		virtual void Unbind() const = 0;
+	
+		// Bindable Function to emable intellisense and automatic COLLECT TO ACTIVE CONTEXT if not manually inserted-	
+		template<class T, typename...Params>
+		static Ref<Bindable> ResolvePctx(Params&&...p) { return Bindable::_Resolve<T>((GraphicsContext&)GraphicsContext::Get_Active(), std::forward<Params>(p)...); }	
+		//template<class T, typename...Params>
+		//static Ref<Bindable> ResolveP2(GraphicsContext& ctx, Params&&...p) { return Bindable::_Resolve<T>(std::forward<Params>(p)...); }
+	
+	
+		template<class T, typename...Params>
+		static Ref<Bindable> _Resolve(Params&&...p)
+		{
+			const auto key = T::GenerateUID(std::forward<Params>(p)...);
+			const auto bind = _s_map.find(key);
+			if (bind == _s_map.end())
+			{
+				Ref<T> new_context = T::Create(std::forward<Params>(p)...);
+				_s_map[key] = new_context;
+				return new_context;
+			}
+			else
+			{
+				return std::static_pointer_cast<T>(bind->second);
+			}
+		}
+		static std::unordered_map<std::string, Ref<Bindable>> _s_map;
+	};
 
 }
 
