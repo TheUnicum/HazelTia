@@ -27,8 +27,8 @@ namespace Hazel {
 		//m_Window->OnUpdate();
 
 		m_WindowsTest.emplace_back(Window::Create({ "2 D3D Test", 800, 600, API::D3D11 }));
-		m_WindowsTest.emplace_back(Window::Create({ "3 D3D Test", 800, 600, API::D3D11 }));
-		m_WindowsTest.emplace_back(Window::Create({ "4 GL Test", 800, 600, API::OpenGL }));
+		//m_WindowsTest.emplace_back(Window::Create({ "3 D3D Test", 800, 600, API::D3D11 }));
+		//m_WindowsTest.emplace_back(Window::Create({ "4 GL Test", 800, 600, API::OpenGL }));
 		static_cast<GraphicsContext*>(m_Window->GetCfx())->MakeCurrent();
 		//m_Window->OnUpdate(); // to reset glfwcontext to main windows old implementation!
 

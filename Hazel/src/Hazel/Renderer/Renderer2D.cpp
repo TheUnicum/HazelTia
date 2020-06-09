@@ -90,6 +90,14 @@ namespace Hazel {
 		for (int32_t i = 0; i < s_Data.MaxTextureSlots; i++)
 			samplers[i] = i;
 
+
+		Ref<Shader> sh0 = Shader::Create("assets/shaders/Texture.glsl");
+		//Ref<Shader> sh1 = Shader::ResolveT<Shader>("assets/shaders/Texture.glsl");
+		//Ref<Shader> sh2 = Shader::ResolveT<Shader>(GraphicsContext::Get_Active(), "assets/shaders/Texture.glsl");
+
+		//Ref<Shader> sh1 = Shader::ResolveT<Shader, OpenGLShader, D3D11Shader>(GraphicsContext::Get_Active(), "assets/shaders/Texture.glsl");
+
+
 		s_Data.TextureShader = Shader::Create("assets/shaders/Texture.glsl");
 		s_Data.TextureShader->Bind();
 		s_Data.TextureShader->SetIntArray("u_Textures", samplers, 32);

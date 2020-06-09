@@ -27,16 +27,15 @@ namespace Hazel {
 	Ref<Shader> Shader::Create(const std::string& filepath) { return Create((GraphicsContext&)GraphicsContext::Get_Active(), filepath); }
 	Ref<Shader> Shader::Create(GraphicsContext& ctx, const std::string& filepath)
 	{
-		if (!&ctx) return CreateRef<OpenGLShader>(filepath);
+		CREATE_2(OpenGLShader, D3D11Shader, filepath);
 
 		switch (ctx.GetAPI())
 		{
 			case API::None:    HZ_CORE_ASSERT(false, "Rendererctx::None is currently not supported!"); return nullptr;
 			case API::OpenGL:  return CreateRef<OpenGLShader>(filepath);
 			case API::D3D11:   return CreateRef<D3D11Shader>(filepath);
-
 		}
-
+	
 		HZ_CORE_ASSERT(false, "Unknow Rendererctx!");
 		return nullptr;
 	}
@@ -56,7 +55,7 @@ namespace Hazel {
 		return nullptr;
 	}
 
-
+	///
 	Ref<Shader> Shader::Resolve(const std::string& filepath, bool make_new_only) { return Resolve((GraphicsContext&)GraphicsContext::Get_Active(), filepath, make_new_only); }
 	Ref<Shader> Shader::Resolve(GraphicsContext& ctx, const std::string& filepath, bool make_new_only)
 	{

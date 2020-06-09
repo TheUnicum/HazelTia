@@ -39,8 +39,10 @@ namespace Hazel {
 
 	// API functions
 	public:
-		static void DrawTriangle() { GraphicsContext::Get_Active().DrawTriangle_impl(); }
-		virtual void DrawTriangle_impl() {};
+		static void DrawTriangle(float angle) { GraphicsContext::Get_Active().DrawTriangle_impl(angle); }
+		virtual void DrawTriangle_impl(float angle) {};
+		
+		virtual void ClearBuffer_impl(float red, float green, float blue) {};
 	};
 
 }

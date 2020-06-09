@@ -29,6 +29,7 @@ namespace Hazel {
 			Microsoft::WRL::ComPtr<IDXGISwapChain> m_pSwap = nullptr;
 			Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_pContext = nullptr;
 			Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_pTarget = nullptr;
+			Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_pDSV = nullptr;
 		};
 		Struct_ppD3D ppD3D;
 	public:
@@ -36,7 +37,9 @@ namespace Hazel {
 
 		// API functions
 	public:
-		virtual void DrawTriangle_impl() override;
+		virtual void DrawTriangle_impl(float angle) override;
+
+		virtual void ClearBuffer_impl(float red, float green, float blue) override;
 	};
 
 

@@ -6,11 +6,14 @@
 #include <glm/glm.hpp>
 
 #ifdef HZ_PLATFORM_WINDOWS
-#include <d3d11.h>
-#include <wrl.h>
+	#include <d3d11.h>
+	#include <wrl.h>
 #endif
 
 #include "Hazel/Renderer/GraphicsContext.h"
+
+class OpenGLShader;
+class D3D11Shader;
 
 namespace Hazel {
 
@@ -47,14 +50,57 @@ namespace Hazel {
 
 		static Ref<Shader> Resolve(const std::string& filepath, bool make_new_only = false);
 		static Ref<Shader> Resolve(GraphicsContext& ctx, const std::string& filepath, bool make_new_only = false);
+
+		//
+
+		//template<class T, typename...Params>
+		//static Ref<Shader> CreateT(API api, GraphicsContext& ctx, Params&&...p)
+		//{
+		//
+		//}
+
+		template<class T, typename...Params>
+		static Ref<T> ResolveT(GraphicsContext& ctx, Params&&...p)
+		{
+			switch (ctx.GetAPI())
+			{
+				case API::None:    HZ_CORE_ASSERT(false, "Rendererctx::None is currently not supported!"); return nullptr;
+				//case API::OpenGL:  return CreateRef<Shader>(std::forward<Params>(p)...);
+				//case API::OpenGL:  return std::make_shared<T>(std::forward<Params>(p)...);
+
+				//case API::D3D11:   return CreateRef<Shader>(std::forward<Params>(p)...);
+			}
+			HZ_CORE_ASSERT(false, "Unknow Rendererctx!");
+			return nullptr;
+		}
+
+		//template<class Shader, typename...params>
+		template<class T, typename...Params>
+		static Ref<Shader> ResolveT(Params&&...p)
+		{
+			return ResolveT<Shader>((GraphicsContext&)GraphicsContext::Get_Active(), std::forward<Params>(p)...);
+		}
+
+		#define CREATE_2(TOpenGL, TD3D11, arg0)\
+			switch (ctx.GetAPI())\
+			{\
+				case API::None:    HZ_CORE_ASSERT(false, "Rendererctx::None is currently not supported!"); return nullptr;\
+				case API::OpenGL:  return CreateRef<TOpenGL>(arg0);\
+				case API::D3D11:   return CreateRef<TD3D11>(arg0);\
+			}\
+			HZ_CORE_ASSERT(false, "Unknow Rendererctx!");\
+			return nullptr;\
+
+
+		//
 	public:
 		static std::unordered_map<std::string, Ref<Shader>> _s_map;
 
-		#ifdef HZ_PLATFORM_WINDOWS
+	#ifdef HZ_PLATFORM_WINDOWS
 		Microsoft::WRL::ComPtr<ID3DBlob> pBlobStoredCompiledVertex;
 		Microsoft::WRL::ComPtr<ID3D11VertexShader> pVertexShader;
 		Microsoft::WRL::ComPtr<ID3D11PixelShader> pPixelShader;
-		#endif
+	#endif
 	};
 
 

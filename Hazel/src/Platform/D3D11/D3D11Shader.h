@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Hazel/Renderer/Shader.h"
-#include "Hazel/Renderer/GraphicsContext.h"
+//#include "Hazel/Renderer/GraphicsContext.h"
 #include "Platform/D3D11/D3D11Context.h"
 
 #include <glm/glm.hpp>

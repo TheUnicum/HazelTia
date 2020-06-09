@@ -65,10 +65,13 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 
 		// Test Direc3D 11
 		{
-
+			static float rotation = 0.0f;
+			rotation += glm::radians(ts * 50.0f);
 			std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest());
 			cc->MakeCurrent();
-			cc->DrawTriangle_impl();
+			cc->ClearBuffer_impl(0.1f, 0.1f, 0.1f);
+			cc->DrawTriangle_impl(rotation);
+			cc->DrawTriangle_impl(-rotation);
 		}
 	}
 }
