@@ -19,12 +19,14 @@ namespace Hazel {
 		virtual uint32_t GetHeight() const override { return m_Height; }
 
 		virtual void SetData(void* data, uint32_t size) override;
+		
+		virtual void Bind(uint32_t) const override;
+		virtual void SetSlot(uint32_t slot) override { m_slot = slot; }
 
-		virtual void Bind(uint32_t slot = 0) const override;
+		virtual void Bind() const override { Bind(m_slot); }
+		virtual void Unbind() const override;
 
-		virtual bool operator==(const Texture& other) const override {
-			return false;
-		}
+		virtual bool operator==(const Texture& other) const override { return false; }
 		//{
 		//	return m_RendererID == ((D3D11Texture2D&)other).m_RendererID;
 		//};
@@ -33,6 +35,7 @@ namespace Hazel {
 		std::string m_Path;
 		uint32_t m_Widht, m_Height;
 		//GLenum m_InternalFormat, m_DataFormat;
+		uint32_t m_slot;
 		std::string m_tag;
 	public:
 		D3D11Context& _c;

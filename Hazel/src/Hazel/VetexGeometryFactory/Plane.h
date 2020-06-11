@@ -28,10 +28,12 @@ namespace Hazel {
 
 				for (int y = 0, i = 0; y < nVertices_y; y++)
 				{
-					float y_pos = (float(y) * tileSize_y) - side_y;
+					const float y_pos = (float(y) * tileSize_y) - side_y;
+					const float y_pos_tc = 1.0f - float(y) * tileSize_y;
 					for (int x = 0; x < nVertices_x; x++, i++)
 					{
 						vertices[i].pos = glm::vec3((float(x) * tileSize_x) - side_x, y_pos, 0.0f);
+						vertices[i].tex = glm::vec2((float(x) * tileSize_x), y_pos_tc);
 					}
 				}
 			}

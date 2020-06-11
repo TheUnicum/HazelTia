@@ -88,10 +88,17 @@ namespace Hazel {
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Widht, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
 	}
 
-	void OpenGLTexture2D::Bind(uint32_t slot /*= 0*/) const
+	void OpenGLTexture2D::Bind(uint32_t slot) const
 	{
 		HZ_PROFILE_FUNCTION();
 
 		glBindTextureUnit(slot, m_RendererID);
+	}
+
+	void OpenGLTexture2D::Unbind() const
+	{
+		HZ_PROFILE_FUNCTION();
+
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 }

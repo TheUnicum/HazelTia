@@ -20,6 +20,7 @@ namespace dx = DirectX;
 // Temp 
 #include "D3D11Buffer.h"
 #include "D3D11Shader.h" // TODO
+#include "D3D11Texture.h" // TODO
 
 // Test
 #include "Hazel/VetexGeometryFactory/Cube.h"
@@ -161,6 +162,203 @@ namespace Hazel {
 
 	}
 
+	void D3D11Context::DrawTriangle_impl(float angle)
+	{
+		#define GFX_THROW_INFO(x) x
+		#define GFX_THROW_INFO_ONLY(x) x
+
+		// generator
+		struct VertexPos
+		{
+			glm::vec3 pos;
+			glm::vec2 tex;
+		};
+
+		//auto c = Prism::MakeTesselated<VertexPos>(3);
+		auto c = Plane::Make<VertexPos>();
+		c.Transform(glm::rotate(glm::mat4(1.0f), PI / 2, glm::vec3(1.0f, 0.0f, .0f)));
+
+
+		wrl::ComPtr<ID3D11Buffer> pVertexBuffer;
+		D3D11_BUFFER_DESC bd = {};
+		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		bd.Usage = D3D11_USAGE_DEFAULT;
+		bd.CPUAccessFlags = 0u;
+		bd.MiscFlags = 0u;
+		bd.ByteWidth = (UINT)c.vertices.size() * sizeof(VertexPos); //sizeof(vertices);
+		bd.StructureByteStride = sizeof(VertexPos); //sizeof(Vertex);
+		D3D11_SUBRESOURCE_DATA sd = {};
+		sd.pSysMem = &c.vertices[0];// vertices;
+		GFX_THROW_INFO(ppD3D.m_pDevice->CreateBuffer(&bd, &sd, &pVertexBuffer));
+
+		// Bind vertex buffer to pipeline
+		const UINT stride = sizeof(VertexPos); //sizeof(Vertex);
+		const UINT offset = 0u;
+		ppD3D.m_pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
+
+
+		uint32_t indices[] =// No more used
+		{
+		0,2,1, 2,3,1,
+		1,3,5, 3,7,5,
+		2,6,3, 3,6,7,
+		4,5,7, 4,7,6,
+		0,4,2, 2,4,6,
+		0,1,4, 1,5,4
+		};
+
+		Ref<IndexBuffer> ibuff = IndexBuffer::Create(&c.indices[0], (uint32_t)c.indices.size());
+		ibuff->Bind();
+
+		// create constant buffer for transformation matrix
+		struct ConstantBuffer
+		{
+			dx::XMMATRIX transformation;
+
+		};
+		const ConstantBuffer cb = // This is a CCW rotation not a transposd!!!!!
+		{
+				dx::XMMatrixTranspose(
+				dx::XMMatrixRotationZ(0) *
+				dx::XMMatrixRotationX(-PI/2) *
+				dx::XMMatrixTranslation(0,0.0f,0 + 1.0f) *
+				dx::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 10.0f)
+				)
+		};
+
+
+		wrl::ComPtr<ID3D11Buffer> pConstantBuffer;
+		D3D11_BUFFER_DESC cbd;
+		cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		cbd.Usage = D3D11_USAGE_DYNAMIC;
+		cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		cbd.MiscFlags = 0u;
+		cbd.ByteWidth = sizeof(cb);
+		cbd.StructureByteStride = 0u;
+		D3D11_SUBRESOURCE_DATA csd = {};
+		csd.pSysMem = &cb;
+		GFX_THROW_INFO(ppD3D.m_pDevice->CreateBuffer(&cbd, &csd, &pConstantBuffer));
+
+		// bind constant buffer to vertex shader
+		ppD3D.m_pContext->VSSetConstantBuffers(0u, 1u, pConstantBuffer.GetAddressOf());
+
+
+		// lookup table for cube face colors
+		struct ConstantBuffer2
+		{
+			struct
+			{
+				float r;
+				float g;
+				float b;
+				float a;
+			} face_colors[6];
+		};
+		const ConstantBuffer2 cb2 =
+		{
+			{
+				{1.0f,0.0f,1.0f},
+				{1.0f,0.0f,0.0f},
+				{0.0f,1.0f,0.0f},
+				{0.0f,0.0f,1.0f},
+				{1.0f,1.0f,0.0f},
+				{0.0f,1.0f,1.0f},
+			}
+		};
+		wrl::ComPtr<ID3D11Buffer> pConstantBuffer2;
+		D3D11_BUFFER_DESC cbd2;
+		cbd2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		cbd2.Usage = D3D11_USAGE_DEFAULT;
+		cbd2.CPUAccessFlags = 0u;
+		cbd2.MiscFlags = 0u;
+		cbd2.ByteWidth = sizeof(cb2);
+		cbd2.StructureByteStride = 0u;
+		D3D11_SUBRESOURCE_DATA csd2 = {};
+		csd2.pSysMem = &cb2;
+		GFX_THROW_INFO(ppD3D.m_pDevice->CreateBuffer(&cbd2, &csd2, &pConstantBuffer2));
+
+		// bind constant buffer to pixel shader
+		ppD3D.m_pContext->PSSetConstantBuffers(0u, 1u, pConstantBuffer2.GetAddressOf());
+
+
+
+
+		//create a pixel shader
+		//create a vertex shader
+		//Ref<Shader> shader = (Shader::Resolve("assets/shaders/D3D/FlatColor.hlsl"));
+		Ref<Shader> shader = (Shader::Resolve("assets/shaders/D3D/Texture.hlsl"));
+		//shader->Bind();
+		auto pBlob = shader->GetpShaderBytecode();
+
+		shader->Bind();
+
+
+		// input (vertex) layout (2d position only)
+		wrl::ComPtr<ID3D11InputLayout> pInputLayout;
+		const D3D11_INPUT_ELEMENT_DESC ied[] =
+		{
+		{ "Position",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 },
+		{ "TexCoord",0,DXGI_FORMAT_R32G32_FLOAT,0,12,D3D11_INPUT_PER_VERTEX_DATA,0 },
+
+		};
+		GFX_THROW_INFO(ppD3D.m_pDevice->CreateInputLayout(
+			ied, (UINT)std::size(ied),
+			pBlob->GetBufferPointer(),
+			pBlob->GetBufferSize(),
+			&pInputLayout
+		));
+
+		// bind vertex layout
+		ppD3D.m_pContext->IASetInputLayout(pInputLayout.Get());
+
+
+		// bind render target
+		//ppD3D.m_pContext->OMSetRenderTargets(1u, ppD3D.m_pTarget.GetAddressOf(), nullptr);
+
+
+		// Set primitive topology to triangle list (group of 3 vertices)
+		ppD3D.m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		// configure viewport
+		D3D11_VIEWPORT vp;
+		vp.Width = 800;
+		vp.Height = 600;
+		vp.MinDepth = 0;
+		vp.MaxDepth = 1;
+		vp.TopLeftX = 0;
+		vp.TopLeftY = 0;
+		ppD3D.m_pContext->RSSetViewports(1u, &vp);
+
+
+
+
+
+		// Texture
+		Ref<Texture2D> texture = Texture2D::Create("assets/textures/Checkerboard.png");
+		texture->Bind(0);
+
+		Microsoft::WRL::ComPtr<ID3D11SamplerState> pSampler;
+
+		D3D11_SAMPLER_DESC samplerDesc = CD3D11_SAMPLER_DESC{ CD3D11_DEFAULT{} };
+		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; //D3D11_FILTER_ANISOTROPIC;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.MaxAnisotropy = D3D11_REQ_MAXANISOTROPY;
+
+		ppD3D.m_pDevice->CreateSamplerState(&samplerDesc, &pSampler);
+
+		ppD3D.m_pContext->PSSetSamplers(0, 1, pSampler.GetAddressOf());
+
+
+
+
+		//GFX_THROW_INFO_ONLY(ppD3D.m_pContext->Draw((UINT)std::size(vertices), 0u));
+		//ppD3D.m_pContext->DrawIndexed((UINT)std::size(indices), 0, 0);
+		ppD3D.m_pContext->DrawIndexed((UINT)(c.indices.size()), 0, 0);
+	}
+
+
+	/*
 	void D3D11Context::DrawTriangle_impl(float angle)
 	{
 		#define GFX_THROW_INFO(x) x
@@ -427,9 +625,30 @@ namespace Hazel {
 
 
 
+
+
+		// Texture
+		Ref<Texture2D> texture = Texture2D::Create("assets/textures/Checkerboard.png");
+
+
+		Microsoft::WRL::ComPtr<ID3D11SamplerState> pSampler;
+
+		D3D11_SAMPLER_DESC samplerDesc = CD3D11_SAMPLER_DESC{ CD3D11_DEFAULT{} };
+		samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+		samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		samplerDesc.MaxAnisotropy = D3D11_REQ_MAXANISOTROPY;
+
+		ppD3D.m_pDevice->CreateSamplerState(&samplerDesc, &pSampler);
+
+		ppD3D.m_pContext->PSSetSamplers(0, 1, pSampler.GetAddressOf());
+
+
+
+
 		//GFX_THROW_INFO_ONLY(ppD3D.m_pContext->Draw((UINT)std::size(vertices), 0u));
 		//ppD3D.m_pContext->DrawIndexed((UINT)std::size(indices), 0, 0);
 		ppD3D.m_pContext->DrawIndexed((UINT)(c.indices.size()), 0, 0);
 	}
-
+	*/
 }

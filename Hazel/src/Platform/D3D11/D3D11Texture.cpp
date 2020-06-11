@@ -28,7 +28,7 @@ namespace Hazel {
 			stbi_uc* data = nullptr;
 			{
 				HZ_PROFILE_SCOPE("stbi_load - D3D11Texture2D::D3D11Texture2D(const std:string&)");
-				data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+				data = stbi_load(path.c_str(), &width, &height, &channels, 4);
 			}
 			HZ_CORE_ASSERT(data, "Failed to load image!");
 			m_Widht = width;
@@ -42,7 +42,7 @@ namespace Hazel {
 			textureDesc.Height = m_Height;
 			textureDesc.MipLevels = 0;
 			textureDesc.ArraySize = 1;
-			textureDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+			textureDesc.Format = DXGI_FORMAT_B8G8R8X8_UNORM; //DXGI_FORMAT_B8G8R8A8_UNORM;
 			textureDesc.SampleDesc.Count = 1;
 			textureDesc.SampleDesc.Quality = 0;
 			textureDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -55,9 +55,13 @@ namespace Hazel {
 			));
 
 			//// write image data into top mip level
-			//GetContext(gfx)->UpdateSubresource(
-			//	pTexture.Get(), 0u, nullptr, s.GetBufferPtrConst(), s.GetWidth() * sizeof(Surface::Color), 0u
+			//_c.GetPP().m_pContext->UpdateSubresource(
+			//	pTexture.Get(), 0u, nullptr, data, GetWidth() * sizeof(float), 0u
 			//);
+			_c.GetPP().m_pContext->UpdateSubresource(
+				pTexture.Get(), 0u, nullptr, data, m_Widht * 4, 0u
+			);
+
 
 			// create the resource view on the texture
 			D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -82,6 +86,11 @@ namespace Hazel {
 	}
 
 	void D3D11Texture2D::Bind(uint32_t slot) const
+	{
+		_c.GetPP().m_pContext->PSSetShaderResources(slot, 1u, pTextureView.GetAddressOf());
+	}
+
+	void D3D11Texture2D::Unbind() const
 	{
 	}
 
