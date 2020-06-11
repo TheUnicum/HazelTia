@@ -23,6 +23,8 @@ namespace Hazel {
 		Shader(GraphicsContext& ctx) : Bindable(ctx) {}
 		virtual ~Shader() = default;
 
+		virtual uint32_t GetID() const { HZ_CORE_ASSERT(false,"Function not implememted!"); return -1; };
+
 		virtual void SetInt(const std::string& name, int value) = 0;
 		virtual void SetIntArray(const std::string& name, int* values, uint32_t count) = 0;
 		virtual void SetFloat(const std::string& name, float value) = 0;

@@ -70,11 +70,21 @@ namespace Hazel {
 			srvDesc.Texture2D.MostDetailedMip = 0;
 			srvDesc.Texture2D.MipLevels = -1;
 			GFX_THROW_INFO(_c.GetPP().m_pDevice->CreateShaderResourceView(
-				pTexture.Get(), &srvDesc, &pTextureView
+				pTexture.Get(), &srvDesc, &m_pTextureView
 			));
 
 			// generate the mip chain using the gpu rendering pipeline
-			_c.GetPP().m_pContext->GenerateMips(pTextureView.Get());
+			_c.GetPP().m_pContext->GenerateMips(m_pTextureView.Get());
+
+
+			// Sampler state
+			D3D11_SAMPLER_DESC samplerDesc = CD3D11_SAMPLER_DESC{ CD3D11_DEFAULT{} };
+			samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; //D3D11_FILTER_ANISOTROPIC;
+			samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+			samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+			samplerDesc.MaxAnisotropy = D3D11_REQ_MAXANISOTROPY;
+
+			_c.GetPP().m_pDevice->CreateSamplerState(&samplerDesc, &m_pSampler);
 	}
 
 	D3D11Texture2D::~D3D11Texture2D()
@@ -87,7 +97,9 @@ namespace Hazel {
 
 	void D3D11Texture2D::Bind(uint32_t slot) const
 	{
-		_c.GetPP().m_pContext->PSSetShaderResources(slot, 1u, pTextureView.GetAddressOf());
+		_c.GetPP().m_pContext->PSSetShaderResources(slot, 1u, m_pTextureView.GetAddressOf());
+
+		_c.GetPP().m_pContext->PSSetSamplers(0, 1, m_pSampler.GetAddressOf());
 	}
 
 	void D3D11Texture2D::Unbind() const

@@ -34,16 +34,31 @@ namespace Hazel {
 		bd.Usage = D3D11_USAGE_DEFAULT;
 		bd.CPUAccessFlags = 0u;
 		bd.MiscFlags = 0u;
-		bd.ByteWidth = 0;										//------ UINT(vbuf.SizeBytes());
-		bd.StructureByteStride = 0;								//-------stride;
+		bd.ByteWidth = size;
+		bd.StructureByteStride = 0;//-------stride: not strictly necessary!!!
 		D3D11_SUBRESOURCE_DATA sd = {};
-		sd.pSysMem = vertices;								// vbuf.GetData();
+		sd.pSysMem = vertices;
 		GFX_THROW_INFO(_c.GetPP().m_pDevice->CreateBuffer(&bd, &sd, &pVertexBuffer));
 	}
 
 	D3D11VertexBuffer::D3D11VertexBuffer(std::string& tag, float* vertices, uint32_t size)
 		: VertexBuffer(GraphicsContext::Get_Active()), _c((D3D11Context&)this->_ctx), m_tag(tag)
-	{
+	{		
+		//stride((UINT)vbuf.GetLayout().Size()),
+		//	tag(tag)
+		//{
+		//	INFOMAN(gfx);
+
+		D3D11_BUFFER_DESC bd = {};
+		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		bd.Usage = D3D11_USAGE_DEFAULT;
+		bd.CPUAccessFlags = 0u;
+		bd.MiscFlags = 0u;
+		bd.ByteWidth = size;
+		bd.StructureByteStride = 0;//-------stride: not strictly necessary!!!
+		D3D11_SUBRESOURCE_DATA sd = {};
+		sd.pSysMem = vertices;
+		GFX_THROW_INFO(_c.GetPP().m_pDevice->CreateBuffer(&bd, &sd, &pVertexBuffer));
 	}
 
 	D3D11VertexBuffer::~D3D11VertexBuffer()
@@ -52,10 +67,21 @@ namespace Hazel {
 
 	void D3D11VertexBuffer::Bind() const
 	{
+		const UINT stride = 0u;
+		const UINT offset = 0u;
+		_c.GetPP().m_pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
 	}
 
 	void D3D11VertexBuffer::Unbind() const
 	{
+	}
+
+	void D3D11VertexBuffer::BindTemp(uint32_t stride) const
+	{
+		//const UINT stride = stride;
+		const UINT offset = 0u;
+		_c.GetPP().m_pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &((UINT)stride), &offset);
+
 	}
 
 	void D3D11VertexBuffer::SetData(const void* data, uint32_t size)

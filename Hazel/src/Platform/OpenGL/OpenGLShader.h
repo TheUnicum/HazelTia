@@ -15,6 +15,8 @@ namespace Hazel {
 		OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 		virtual ~OpenGLShader();
 
+		virtual uint32_t GetID() const override { return m_RendererID; }
+
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 

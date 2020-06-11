@@ -21,6 +21,14 @@ namespace Hazel {
 	private:
 		Window& m_window;
 		GLFWwindow* m_windowHandle;
+
+		// API functions
+		public:
+		virtual void DrawTriangle_impl(float angle) override;
+
+		virtual void ClearBuffer_impl(float red, float green, float blue) override;
+
+
 	};
 
 }

@@ -27,7 +27,7 @@ namespace Hazel {
 		void PushOverlay(Layer* layer);
 
 		Window& GetWindow() { return *m_Window; }
-		Window& GetWindowTest() { return *m_WindowsTest[0]; } // TODO: remove, only for test
+		Window& GetWindowTest(int idx) { return *m_WindowsTest[idx]; } // TODO: remove, only for test
 
 		static Application& Get() { return *s_Instance; }
 	private:

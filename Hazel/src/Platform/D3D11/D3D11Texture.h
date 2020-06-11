@@ -31,7 +31,9 @@ namespace Hazel {
 		//	return m_RendererID == ((D3D11Texture2D&)other).m_RendererID;
 		//};
 	private:
-		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pTextureView;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_pTextureView;
+		// Temporary Sampler is in Texture (to simulate opengl)
+		Microsoft::WRL::ComPtr<ID3D11SamplerState> m_pSampler;
 		std::string m_Path;
 		uint32_t m_Widht, m_Height;
 		//GLenum m_InternalFormat, m_DataFormat;

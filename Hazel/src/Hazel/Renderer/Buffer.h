@@ -112,6 +112,8 @@ namespace Hazel {
 
 		virtual void SetData(const void* data, uint32_t size) = 0;
 
+		virtual void BindTemp(uint32_t stride) const {} // TEMPORANEA in attesa di aggiungere "stride in vb"
+
 		virtual const BufferLayout& GetLayout() const = 0;
 		virtual void SetLayout(const BufferLayout& layout) = 0;
 

@@ -5,6 +5,7 @@
 
 #include <d3d11.h>
 #include <wrl.h>
+#include <imstb_truetype.h>
 
 namespace Hazel {
 
@@ -19,6 +20,8 @@ namespace Hazel {
 	
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
+
+		virtual void BindTemp(uint32_t stride) const;
 
 		virtual void SetData(const void* data, uint32_t size) override;
 	

@@ -67,12 +67,26 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 		{
 			static float rotation = 0.0f;
 			rotation += glm::radians(ts * 50.0f);
-			std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest());
+			std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest(0));
 			cc->MakeCurrent();
 			cc->ClearBuffer_impl(0.1f, 0.1f, 0.1f);
 			cc->DrawTriangle_impl(rotation);
 			//cc->DrawTriangle_impl(-rotation);
 		}
+
+
+		// OpenGL
+		{
+			//static float rotation = 0.0f;
+			//rotation += glm::radians(ts * 50.0f);
+			//std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest(1));
+			//cc->MakeCurrent();
+			//cc->ClearBuffer_impl(0.1f, 0.1f, 0.1f);
+			//cc->DrawTriangle_impl(rotation);
+			////cc->DrawTriangle_impl(-rotation);
+		}
+		//std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindow());
+		//cc->MakeCurrent();
 	}
 }
 
