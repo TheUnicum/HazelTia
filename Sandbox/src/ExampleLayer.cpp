@@ -149,9 +149,9 @@ void ExampleLayer::OnUpdate(Hazel::Timestep ts)
 
 	auto textureShader = m_ShaderLibrary.Get("Texture");
 
-	m_Texture->Bind();
+	m_Texture->Bind(0);
 	Hazel::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
-	m_ChernoLogTexture->Bind();
+	m_ChernoLogTexture->Bind(0);
 	Hazel::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 	// Triangle

@@ -6,7 +6,8 @@
 namespace Hazel {
 
 	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
-		: m_Widht(width), m_Height(height)
+		: Texture2D(GraphicsContext::Get_Active()),
+		m_Widht(width), m_Height(height)
 	{
 		HZ_PROFILE_FUNCTION();
 
@@ -24,7 +25,8 @@ namespace Hazel {
 	}
 
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
-		: m_Path(path)
+		: Texture2D(GraphicsContext::Get_Active()),
+		m_Path(path)
 	{
 		HZ_PROFILE_FUNCTION();
 

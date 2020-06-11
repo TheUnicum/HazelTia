@@ -71,7 +71,7 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 			cc->MakeCurrent();
 			cc->ClearBuffer_impl(0.1f, 0.1f, 0.1f);
 			cc->DrawTriangle_impl(rotation);
-			cc->DrawTriangle_impl(-rotation);
+			//cc->DrawTriangle_impl(-rotation);
 		}
 	}
 }

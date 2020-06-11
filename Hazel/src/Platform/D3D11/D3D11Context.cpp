@@ -21,6 +21,14 @@ namespace dx = DirectX;
 #include "D3D11Buffer.h"
 #include "D3D11Shader.h" // TODO
 
+// Test
+#include "Hazel/VetexGeometryFactory/Cube.h"
+#include "Hazel/VetexGeometryFactory/Cone.h"
+#include "Hazel/VetexGeometryFactory/Prism.h"
+#include "Hazel/VetexGeometryFactory/Plane.h"
+#include "Hazel/VetexGeometryFactory/Sphere.h"
+#include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
+
 #define GFX_THROW_INFO(x) x
 
 namespace Hazel {
@@ -160,47 +168,69 @@ namespace Hazel {
 
 		//HRESULT hr;
 
-		struct Vertex
+		//struct Vertex
+		//{
+		//	struct
+		//	{
+		//		float x;
+		//		float y;
+		//		float z;
+		//	} pos;
+		//};
+		//
+		//// create vertex buffer (1 2d triangle at center of screen)
+		//const Vertex vertices[] =
+		//{
+		//{ -1.0f,-1.0f,-1.0f	 },
+		//{ 1.0f,-1.0f,-1.0f	 },
+		//{ -1.0f,1.0f,-1.0f	 },
+		//{ 1.0f,1.0f,-1.0f	  },
+		//{ -1.0f,-1.0f,1.0f	 },
+		//{ 1.0f,-1.0f,1.0f	  },
+		//{ -1.0f,1.0f,1.0f	 },
+		//{ 1.0f,1.0f,1.0f	 },
+		//};
+
+		// generator
+		struct VertexPos
 		{
-			struct
-			{
-				float x;
-				float y;
-				float z;
-			} pos;
+			glm::vec3 pos;
 		};
 
-		// create vertex buffer (1 2d triangle at center of screen)
-		const Vertex vertices[] =
-		{
-		{ -1.0f,-1.0f,-1.0f	 },
-		{ 1.0f,-1.0f,-1.0f	 },
-		{ -1.0f,1.0f,-1.0f	 },
-		{ 1.0f,1.0f,-1.0f	  },
-		{ -1.0f,-1.0f,1.0f	 },
-		{ 1.0f,-1.0f,1.0f	  },
-		{ -1.0f,1.0f,1.0f	 },
-		{ 1.0f,1.0f,1.0f	 },
-		};
+		
+		//auto c = Cone::MakeTesselated<VertexPos>(24);
+		//auto c = Cone::Make<VertexPos>();
+		
+		//	-ok auto c = Cone::Make<VertexPos>();
+		//  -okauto c = Cube::Make<VertexPos>();
+		//  --ok auto c = Plane::MakeTesselated<VertexPos>(4,5);
+
+		//auto c = Prism::MakeTesselated<VertexPos>(3);
+		auto c = Plane::Make<VertexPos>();
+		c.Transform(glm::rotate(glm::mat4(1.0f), PI/2, glm::vec3(1.0f, 0.0f, .0f)));
+		//angle = 0;
+
+
+
 		wrl::ComPtr<ID3D11Buffer> pVertexBuffer;
 		D3D11_BUFFER_DESC bd = {};
 		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		bd.Usage = D3D11_USAGE_DEFAULT;
 		bd.CPUAccessFlags = 0u;
 		bd.MiscFlags = 0u;
-		bd.ByteWidth = sizeof(vertices);
-		bd.StructureByteStride = sizeof(Vertex);
+		bd.ByteWidth = (UINT)c.vertices.size() * sizeof(VertexPos); //sizeof(vertices);
+		bd.StructureByteStride = sizeof(VertexPos); //sizeof(Vertex);
 		D3D11_SUBRESOURCE_DATA sd = {};
-		sd.pSysMem = vertices;
+		sd.pSysMem = &c.vertices[0];// vertices;
 		GFX_THROW_INFO(ppD3D.m_pDevice->CreateBuffer(&bd, &sd, &pVertexBuffer));
 
 		// Bind vertex buffer to pipeline
-		const UINT stride = sizeof(Vertex);
+		const UINT stride = sizeof(VertexPos); //sizeof(Vertex);
 		const UINT offset = 0u;
 		ppD3D.m_pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
 
 
-	 uint32_t indices[] =
+	 uint32_t indices[] =// No more used
 		{
 		0,2,1, 2,3,1,
 		1,3,5, 3,7,5,
@@ -231,8 +261,9 @@ namespace Hazel {
 
 		//Ref<IndexBuffer> ib = IndexBuffer::re(indices, int(sizeof(indices) / sizeof(float)));
 	 
-	 
-		Ref<IndexBuffer> ibuff = IndexBuffer::Create(indices, int(sizeof(indices) / sizeof(float)));
+		
+		//Ref<IndexBuffer> ibuff = IndexBuffer::Create(indices, int(sizeof(indices) / sizeof(float)));
+		Ref<IndexBuffer> ibuff = IndexBuffer::Create(&c.indices[0], (uint32_t)c.indices.size());
 		ibuff->Bind();
 
 
@@ -286,7 +317,7 @@ namespace Hazel {
 				//)
 
 				dx::XMMatrixTranspose(
-				dx::XMMatrixRotationZ(angle)*
+				dx::XMMatrixRotationZ(0)*
 				dx::XMMatrixRotationX(angle)*
 				dx::XMMatrixTranslation(0,0.0f,0 + 4.0f)*
 				dx::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 10.0f)
@@ -397,7 +428,8 @@ namespace Hazel {
 
 
 		//GFX_THROW_INFO_ONLY(ppD3D.m_pContext->Draw((UINT)std::size(vertices), 0u));
-		ppD3D.m_pContext->DrawIndexed((UINT)std::size(indices), 0, 0);
+		//ppD3D.m_pContext->DrawIndexed((UINT)std::size(indices), 0, 0);
+		ppD3D.m_pContext->DrawIndexed((UINT)(c.indices.size()), 0, 0);
 	}
 
 }
