@@ -15,7 +15,6 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 
-
 namespace Hazel {
 
 	static uint8_t s_GLFWWindowCount = 0;
@@ -67,9 +66,9 @@ namespace Hazel {
 			case API::OpenGL:
 			{
 				glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
-				#if defined(HZ_DEBUG)
+			#if defined(HZ_DEBUG)
 				glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
-				#endif	
+			#endif	
 				m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 				m_pWin_handle = m_Window;
 				break;
@@ -79,7 +78,13 @@ namespace Hazel {
 				glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 				m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
 				HWND hWnd = glfwGetWin32Window(m_Window);
-				m_pWin_handle = &hWnd;
+				
+				IsWindow(hWnd);
+				// This allow to 
+				//RECT rect;
+				//GetClientRect(hWnd, &rect);
+
+				m_pWin_handle = static_cast<void*>(&hWnd);
 				break;
 			}
 			default:
