@@ -63,6 +63,21 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 		Hazel::Renderer2D::EndScene();
 
 
+		// Test Vulkan
+		{
+			static float rotation = 0.0f;
+			rotation += glm::radians(ts * 50.0f);
+			std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest(0));
+			cc->MakeCurrent();
+
+			Hazel::Ref<Hazel::Shader> sh0 = Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl");
+
+			//cc->ClearBuffer_impl(0.1f, 0.1f, 0.1f);
+			//cc->DrawTriangle_impl(rotation);
+			//cc->DrawTriangle_impl(-rotation);
+		}
+
+
 		// Test Direc3D 11
 		//{
 		//	static float rotation = 0.0f;

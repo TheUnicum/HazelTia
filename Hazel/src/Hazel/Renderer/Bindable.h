@@ -53,6 +53,7 @@ namespace Hazel {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 #define GL_ON 1
 #define D3D_ON 1
+#define VULKAN_ON 1
 
 #if (GL_ON)
 	#define GL_CLASS_CREATION_1arg(T_OPENGL, arg0)				case API::OpenGL:  return CreateRef<T_OPENGL>(arg0)
@@ -74,7 +75,31 @@ namespace Hazel {
 	#define D3D_CLASS_CREATION_3arg(T_D3D11, arg0, arg1, arg2)
 #endif
 
+#if (VULKAN_ON)
+	#define VKN_CLASS_CREATION_1arg(T_VULKAN, arg0)				case API::Vulkan:  return CreateRef<T_VULKAN>(arg0)
+	#define VKN_CLASS_CREATION_2arg(T_VULKAN, arg0, arg1)		case API::Vulkan:  return CreateRef<T_VULKAN>(arg0, arg1)
+	#define VKN_CLASS_CREATION_3arg(T_VULKAN, arg0, arg1, arg2)	case API::Vulkan:  return CreateRef<T_VULKAN>(arg0, arg1, arg2)
+#else	
+	#define VLK_CLASS_CREATION_1arg(T_D3D11, arg0)
+	#define VLK_CLASS_CREATION_2arg(T_D3D11, arg0, arg1)
+	#define VLK_CLASS_CREATION_3arg(T_D3D11, arg0, arg1, arg2)
+#endif
 
+#define MAKER_ON_ctx3_args1(T_OPENGL, T_D3D11, T_VULKAN, arg0)\
+	switch (ctx.GetAPI())\
+	{\
+		case API::None:    HZ_CORE_ASSERT(false, "Rendererctx::None is currently not supported!"); return nullptr;\
+		GL_CLASS_CREATION_1arg(T_OPENGL, arg0);\
+		D3D_CLASS_CREATION_1arg(T_D3D11, arg0);\
+		VKN_CLASS_CREATION_1arg(T_VULKAN, arg0);\
+	}\
+	HZ_CORE_ASSERT(false, "Unknow Rendererctx!");\
+	return nullptr;\
+
+
+
+
+// old To Remove!!!! TODO
 #define MAKER_ON_ctx_args_1(T_OPENGL, T_D3D11, arg0)\
 	switch (ctx.GetAPI())\
 	{\

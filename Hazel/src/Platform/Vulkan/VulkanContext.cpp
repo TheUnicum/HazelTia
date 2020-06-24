@@ -63,7 +63,11 @@ namespace Hazel {
 
 	API VulkanContext::MakeCurrent()
 	{
-		return API();
+		if (_s_active.get() != this)
+		{
+			_s_active = Resolve(m_window);
+		}
+		return GetAPI();
 	}
 
 	void VulkanContext::CreateInstance()

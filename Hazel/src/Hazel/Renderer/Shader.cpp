@@ -3,6 +3,7 @@
 
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Platform/D3D11/D3D11Shader.h"
+#include "Platform/Vulkan/VulkanShader.h"
 
 namespace Hazel {
 
@@ -25,13 +26,15 @@ namespace Hazel {
 	Ref<Shader> Shader::Create(const std::string& filepath) { return Create((GraphicsContext&)GraphicsContext::Get_Active(), filepath); }
 	Ref<Shader> Shader::Create(GraphicsContext& ctx, const std::string& filepath)
 	{
-		MAKER_ON_ctx_args_1(OpenGLShader, D3D11Shader, filepath);
+		MAKER_ON_ctx3_args1(OpenGLShader, D3D11Shader, VulkanShader, filepath);
+		//MAKER_ON_ctx_args_1(OpenGLShader, D3D11Shader, filepath);
 		//
 		//switch (ctx.GetAPI())
 		//{
 		//	case API::None:    HZ_CORE_ASSERT(false, "Rendererctx::None is currently not supported!"); return nullptr;
 		//	case API::OpenGL:  return CreateRef<OpenGLShader>(filepath);
 		//	case API::D3D11:   return CreateRef<D3D11Shader>(filepath);
+		//	case API::Vulkan:  return CreateRef<VulkanShader>(filepath);
 		//}
 		//HZ_CORE_ASSERT(false, "Unknow Rendererctx!");
 		//return nullptr;
