@@ -6,6 +6,8 @@
 #define GL_FRAGMENT_SHADER 0x8B30
 #define GL_GEOMETRY_SHADER 0x8DD9
 
+#include "Shaderc/shaderc.hpp"
+
 namespace Hazel {
 
 	static GLenum ShaderTypeFromString(const std::string& type)
@@ -98,32 +100,32 @@ namespace Hazel {
 
 		for (auto& kv : shaderSources)
 		{
-			//GLenum type = kv.first;
-			//const std::string& source = kv.second;
-			//
-			//shaderc::Compiler compiler;
-			//shaderc::CompileOptions options;
-			//
-			////// Like -DMY_DEFINE=1
-			////options.AddMacroDefinition("MY_DEFINE", "1");
-			////
-			//shaderc_shader_kind kind;
-			//if (type == GL_VERTEX_SHADER)
-			//	kind = shaderc_glsl_default_vertex_shader;
-			//else
-			//	kind = shaderc_glsl_default_fragment_shader;
-			//std::string name = "main";
-			//shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(
-			//	source.c_str(), source.size(), kind, name.c_str(), options);
-			//
-			//if (module.GetCompilationStatus() !=
-			//	shaderc_compilation_status_success)
-			//{
-			//	std::cout << module.GetErrorMessage();
-			//}
-			//
-			//std::vector<uint32_t> result(module.cbegin(), module.cend());
-			//shaderModules[type] = CreateShaderModule(result);
+			GLenum type = kv.first;
+			const std::string& source = kv.second;
+
+			shaderc::Compiler compiler;
+			shaderc::CompileOptions options;
+
+			//// Like -DMY_DEFINE=1
+			//options.AddMacroDefinition("MY_DEFINE", "1");
+
+			shaderc_shader_kind kind;
+			if (type == GL_VERTEX_SHADER)
+				kind = shaderc_glsl_default_vertex_shader;
+			else
+				kind = shaderc_glsl_default_fragment_shader;
+			std::string name = "main";
+			shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(
+				source.c_str(), source.size(), kind, name.c_str(), options);
+
+			if (module.GetCompilationStatus() !=
+				shaderc_compilation_status_success)
+			{
+				std::cout << module.GetErrorMessage();
+			}
+
+			std::vector<uint32_t> result(module.cbegin(), module.cend());
+			shaderModules[type] = CreateShaderModule(result);
 		}
 	}
 

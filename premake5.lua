@@ -87,6 +87,7 @@ project "Hazel"
         "ImGui",
         --"opengl32.lib",
         "vulkan-1.lib",
+        "shaderc_combined.lib",
     }
 
     filter "system:windows"
@@ -100,16 +101,19 @@ project "Hazel"
         defines "HZ_DEBUG"
         runtime "Debug"
         symbols "on"
+        libdirs "%{prj.name}/vendor/Vulkan/Lib/Debug"
 
     filter "configurations:Release"
         defines "HZ_RELEASE"
         runtime "Release"
         optimize "on"
+        libdirs "%{prj.name}/vendor/Vulkan/Lib/Release"
 
     filter "configurations:Dist"
         defines "HZ_DIST"
         runtime "Release"
         optimize "on"
+        libdirs "%{prj.name}/vendor/Vulkan/Lib/Release"
 
 project "Sandbox"
     location "Sandbox"

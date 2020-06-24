@@ -50,6 +50,7 @@ namespace Hazel {
 
 	private:
 		std::string m_Name;
+		std::unordered_map<GLenum, VkShaderModule> shaderModules;
 	public:
 		VulkanContext& _c;
 	};
