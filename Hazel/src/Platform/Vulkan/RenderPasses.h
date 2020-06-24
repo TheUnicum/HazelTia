@@ -12,13 +12,13 @@ namespace Hazel {
 		RenderPasses(VulkanContext& ctx);
 		virtual ~RenderPasses() = default;
 
-		void CleanUp();
+		void Cleanup();
 
-		void Set();
+		void Bind();
 		VkRenderPass& Get() { return m_RenderPass; }
 	private:
 		VulkanContext& m_ctx;
-		VkRenderPass m_RenderPass;
+		VkRenderPass m_RenderPass = nullptr;
 	};
 
 }

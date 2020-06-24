@@ -65,11 +65,16 @@ namespace Hazel {
 		void CreateSwapChain();
 		void CreateImageViews();
 
+		void BindRenderPass();
+
+
+
 		bool DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT msgSvrty, VkDebugUtilsMessageTypeFlagsEXT msgTyp, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
 
 	public:
+		VkDevice& GetDevice() { return m_Device; }
 		const VkFormat& GetswapChainImageFormat() const { return m_SwapChainImageFormat; }
-		//const VkFormat& GetDepthFormat() const { return VK_FORMAT_UNDEFINED; }// m_DepthResources->GetDepthFormat(); }
+		const VkFormat& GetDepthFormat() const { return VK_FORMAT_UNDEFINED; }// m_DepthResources->GetDepthFormat(); }
 	};
 
 }

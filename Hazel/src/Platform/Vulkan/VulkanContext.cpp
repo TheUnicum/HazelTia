@@ -11,6 +11,8 @@ namespace Hazel {
 		: m_window(window), m_windowHandle((GLFWwindow*)window.GetNativeWindow())
 	{
 		HZ_CORE_ASSERT(m_windowHandle, "Window handle is null!");
+
+		m_RenderPasses = std::make_shared<RenderPasses>(*this);
 	}
 
 	VulkanContext::~VulkanContext()
@@ -30,6 +32,8 @@ namespace Hazel {
 
 	void VulkanContext::CleanUpSwapChain()
 	{
+		m_RenderPasses->Cleanup();
+
 		for (auto imageView : m_SwapChainImageViews)
 		{
 			vkDestroyImageView(m_Device, imageView, nullptr);
@@ -47,6 +51,8 @@ namespace Hazel {
 		CreateLogicalDevice();
 		CreateSwapChain();
 		CreateImageViews();
+		
+		BindRenderPass();
 	}
 
 	void VulkanContext::SwapBuffers()
@@ -304,6 +310,12 @@ namespace Hazel {
 				HZ_CORE_ASSERT(false, "Failed to create image views!");
 			}
 		}
+	}
+
+	void VulkanContext::BindRenderPass()
+	{
+		m_RenderPasses->Bind();
+
 	}
 
 	// Callback function
