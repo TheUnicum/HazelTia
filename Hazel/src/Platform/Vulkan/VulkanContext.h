@@ -7,6 +7,7 @@
 #include "vulkan/vulkan.h"
 
 #include "Platform/Vulkan/RenderPasses.h"
+#include "Platform/Vulkan/Pipeline.h"
 
 struct GLFWwindow;
 
@@ -55,6 +56,8 @@ namespace Hazel {
 
 	private:
 		Ref<RenderPasses> m_RenderPasses;
+		Ref<Pipeline> m_Pipeline;
+
 	private:
 		void CreateInstance();
 		void SetupDebugMessenger();
@@ -66,7 +69,7 @@ namespace Hazel {
 		void CreateImageViews();
 
 		void BindRenderPass();
-
+		void BindPipeline();
 
 
 		bool DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT msgSvrty, VkDebugUtilsMessageTypeFlagsEXT msgTyp, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);

@@ -13,6 +13,7 @@ namespace Hazel {
 		HZ_CORE_ASSERT(m_windowHandle, "Window handle is null!");
 
 		m_RenderPasses = std::make_shared<RenderPasses>(*this);
+		m_Pipeline = std::make_shared<Pipeline>(*this);
 	}
 
 	VulkanContext::~VulkanContext()
@@ -53,6 +54,7 @@ namespace Hazel {
 		CreateImageViews();
 		
 		BindRenderPass();
+		BindPipeline();
 	}
 
 	void VulkanContext::SwapBuffers()
@@ -315,6 +317,14 @@ namespace Hazel {
 	void VulkanContext::BindRenderPass()
 	{
 		m_RenderPasses->Bind();
+
+	}
+
+	void VulkanContext::BindPipeline()
+	{
+		PipelineSpecification pipSpec;
+		m_Pipeline->SetSpec(pipSpec);
+		m_Pipeline->Bind();
 
 	}
 
