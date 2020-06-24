@@ -5,6 +5,7 @@
 
 #include "Platform/OpenGL/OpenGLContext.h"
 #include "Platform/D3D11/D3D11Context.h"
+#include "Platform/Vulkan/VulkanContext.h"
 
 
 namespace Hazel {
@@ -34,6 +35,7 @@ namespace Hazel {
 			case API::None:    HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
 			case API::OpenGL:  return CreateRef<OpenGLContext>(window);
 			case API::D3D11:   return CreateRef<D3D11Context>(window);
+			case API::Vulkan:  return CreateRef<VulkanContext>(window);
 		}
 
 		HZ_CORE_ASSERT(false, "Unknow RendererAPI!");

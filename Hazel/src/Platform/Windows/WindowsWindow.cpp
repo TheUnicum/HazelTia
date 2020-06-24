@@ -87,6 +87,13 @@ namespace Hazel {
 				m_pWin_handle = static_cast<void*>(&hWnd);
 				break;
 			}
+			case API::Vulkan:
+			{
+				glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+				m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+				m_pWin_handle = m_Window;
+				break;
+			}
 			default:
 				HZ_CORE_ASSERT(false, "Unknow RendererAPI!");
 				break;

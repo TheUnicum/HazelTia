@@ -40,6 +40,7 @@ namespace Hazel {
 
 		// Window attributes
 		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
+		virtual void SetPonterContext(void* p_context) = 0; // only for Vulkan callback function
 		virtual void SetVSync(bool enabled) = 0;
 		virtual bool IsVSync() const = 0;
 

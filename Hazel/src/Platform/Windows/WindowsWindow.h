@@ -22,8 +22,10 @@ namespace Hazel
 
 		// Window attributes
 		void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallback = callback; }
+		void SetPonterContext(void* p_context) override { m_Data.p_ctx = p_context; }
 		virtual void SetVSync(bool enabled) override;
 		virtual bool IsVSync() const override;
+
 
 		virtual void* GetNativeWindow() const override { return m_pWin_handle; };
 	private:
@@ -33,7 +35,7 @@ namespace Hazel
 		GLFWwindow* m_Window;
 		void* m_pWin_handle;
 		Ref<GraphicsContext> m_Context;
-
+	public:
 		struct WindowData
 		{
 			std::string Title;
@@ -41,9 +43,12 @@ namespace Hazel
 			API Api;
 			bool VSync;
 
+			// Pointer to context
+			void* p_ctx; // for Vulkan debug!
+
 			EventCallbackFn EventCallback;
 		};
-
+	private:
 		WindowData m_Data;
 	};
 

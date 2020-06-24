@@ -23,6 +23,9 @@ IncludeDir["Glad"] = "Hazel/vendor/Glad/include"
 IncludeDir["ImGui"] = "Hazel/vendor/imgui"
 IncludeDir["glm"] = "Hazel/vendor/glm"
 IncludeDir["stb_image"] = "Hazel/vendor/stb_image"
+IncludeDir["Vulkan"] = "Hazel/vendor/Vulkan/include"
+
+
 
 group "Dependencies"
     include "Hazel/vendor/GLFW"
@@ -69,6 +72,12 @@ project "Hazel"
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.stb_image}",
+        "%{IncludeDir.Vulkan}",
+    }
+
+    libdirs 
+    {
+        "%{prj.name}/vendor/Vulkan/Lib",
     }
 
     links
@@ -76,7 +85,8 @@ project "Hazel"
         "GLFW",
         "Glad",
         "ImGui",
-        "opengl32.lib"
+        --"opengl32.lib",
+        "vulkan-1.lib",
     }
 
     filter "system:windows"
