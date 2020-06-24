@@ -44,7 +44,7 @@ namespace Hazel
 			bool VSync;
 
 			// Pointer to context
-			void* p_ctx; // for Vulkan debug!
+			void* p_ctx = nullptr; // for Vulkan debug!
 
 			EventCallbackFn EventCallback;
 		};

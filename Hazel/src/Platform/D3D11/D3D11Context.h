@@ -2,6 +2,7 @@
 
 #include "Hazel/Renderer/GraphicsContext.h"
 
+#define NOMINMAX
 #include <Windows.h> // TODO: make windows chili filter min max
 #include <d3d11.h>
 #include <wrl.h>
