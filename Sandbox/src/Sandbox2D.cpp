@@ -93,6 +93,10 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 			if (int(rotation) % 100 < 50)
 			{
 				PipeSpec1->Bind();
+				Hazel::RenderCommandX::MakeContextCurrent(Hazel::Application::Get().GetWindowTest(0));
+
+				Hazel::RenderCommandX::Clear();
+				Hazel::RenderCommandX::DrawArray();
 			}
 			else
 			{

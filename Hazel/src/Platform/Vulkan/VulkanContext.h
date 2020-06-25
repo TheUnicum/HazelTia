@@ -101,9 +101,17 @@ namespace Hazel {
 		VkPipeline& GetPipeline() { return m_Pipeline->Get(); }
 		VkPipelineLayout& GetPipelineLayout() { return m_Pipeline->GetLayout(); }
 
-		//Api
+		//Api Render
 	public:
 		void BindPipeline(Ref<Pipeline>& pipeline); // Bind Shader !
+		void UnbindPipeline(); // Bind Shader !
+
+		void CmdClear_impl() override;
+		void CmdDrawArrays_impl(uint32_t vertexCount, uint32_t offset = 0) override;
+		void CmdDrawArraysInstanced_impl(uint32_t vertexCount, uint32_t instanceCount) override;
+		void CmdDrawIndexted_impl(uint32_t indexCount, uint32_t offset = 0) override;
+		void CmdDrawIndextedInstanced_impl(uint32_t indexCount, uint32_t instanceCount) override;
+
 	};
 
 }

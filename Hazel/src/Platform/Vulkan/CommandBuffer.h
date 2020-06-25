@@ -31,6 +31,9 @@ namespace Hazel {
 		void Clenaup();
 
 		VkCommandBuffer& Get() { return m_cmdBuffer; }
+		std::vector<std::function<void(const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)>>& GetQueue() {
+			return m_Queue;
+		};
 	private:
 		VulkanContext& m_ctx;
 		VkCommandBuffer m_cmdBuffer;

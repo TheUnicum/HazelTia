@@ -1,9 +1,11 @@
 #pragma once
 
 //#include "Renderer.h" // TODO: Remove RendereAPI from Renderer and put in here.
-#include "Hazel/Core/Window.h"
+//#include "Hazel/Core/Window.h"
 
 namespace Hazel {
+
+	class Window;
 
 	class GraphicsContext
 	{
@@ -45,6 +47,13 @@ namespace Hazel {
 		virtual void DrawTriangle_impl(float angle) {};
 		
 		virtual void ClearBuffer_impl(float red, float green, float blue) {};
+
+		virtual void CmdClear_impl() {};
+		virtual void CmdDrawArrays_impl(uint32_t vertexCount, uint32_t offset = 0) {}; // = 0;
+		virtual void CmdDrawArraysInstanced_impl(uint32_t vertexCount, uint32_t indexCount) {}; // = 0;
+		virtual void CmdDrawIndexted_impl(uint32_t indexCount, uint32_t offset = 0) {}; // = 0;
+		virtual void CmdDrawIndextedInstanced_impl(uint32_t indexCount, uint32_t instanceCount) {}; // = 0;
+
 	};
 
 }

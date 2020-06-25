@@ -26,8 +26,8 @@ namespace Hazel
 		virtual void SetVSync(bool enabled) override;
 		virtual bool IsVSync() const override;
 
-
 		virtual void* GetNativeWindow() const override { return m_pWin_handle; };
+		virtual GraphicsContext& GetContext() const { return *m_Context; };
 	private:
 		virtual void Init(const WindowProps& props);
 		virtual void Shutdown();

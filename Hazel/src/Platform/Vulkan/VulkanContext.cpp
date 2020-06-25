@@ -4,6 +4,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+#include "Hazel/Core/Window.h"
 
 namespace Hazel {
 
@@ -77,8 +78,6 @@ namespace Hazel {
 	{
 		BindRenderPass();
 		CreateFramebuffers();
-
-		//BindPipeline();
 	}
 
 	void VulkanContext::SwapBuffers()
@@ -87,8 +86,7 @@ namespace Hazel {
 
 		m_CmdBuffer->BindPipeline(m_Pipeline);
 
-		m_CmdBuffer->Draw(3);
-
+		//m_CmdBuffer->Draw(3);
 
 
 		/*
@@ -477,28 +475,6 @@ namespace Hazel {
 		}
 	}
 
-	void VulkanContext::BindPipeline(Ref<Pipeline>& pipeline)
-	{
-		m_Pipeline = pipeline;
-	}
-
-	/*
-	void VulkanContext::BindPipeline()
-	{
-		// This will be extract from here
-
-		//MakeCurrent();		//m_Pipeline = std::make_shared<Pipeline>(*this);
-
-		//
-		//PipelineSpecification pipSpec;
-		//pipSpec.shader = Shader::Create("assets/shaders/Vulkan/FragColor.glsl");
-		//
-		//m_Pipeline->SetSpec(pipSpec);
-		//m_Pipeline->Bind();
-
-	}
-	*/
-
 	void VulkanContext::CreateCommandPool()
 	{
 		QueueFamilyIndices m_qfIndices = m_VU.FindQueueFamilies(m_PhysicalDevice, m_Surface); // I may store the results on member variables(?)
@@ -521,8 +497,6 @@ namespace Hazel {
 
 		//m_CmdBuffer->Rec();  To move on swapchain
 	}
-
-
 
 	// Callback function
 	bool VulkanContext::DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT msgSvrty, VkDebugUtilsMessageTypeFlagsEXT msgTyp, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
@@ -549,5 +523,70 @@ namespace Hazel {
 		}
 		return VK_FALSE;
 	}
+
+	void VulkanContext::BindPipeline(Ref<Pipeline>& pipeline)
+	{
+		m_Pipeline = pipeline;
+	}
+	void VulkanContext::UnbindPipeline()
+	{
+		m_Pipeline = nullptr;
+	}
+
+	//--------------------------
+//	void VulkanContextvkCmdClearAttachments
+
+
+
+	void VulkanContext::CmdClear_impl()
+	{
+		m_CmdBuffer->GetQueue().push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
+		{
+			VkClearAttachment clearAttachments = {};
+			clearAttachments.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			clearAttachments.clearValue.color = { 164.0f / 256.0f, 30.0f / 256.0f, 34.0f / 256.0f, 0.0f };
+			clearAttachments.colorAttachment = 0;
+		
+			VkClearRect clearRect = {};
+			clearRect.layerCount = 1;
+			clearRect.rect.offset = { 0, 0 };
+			clearRect.rect.extent = { m_SwapChainExtent.width, m_SwapChainExtent.height };
+		
+			vkCmdClearAttachments(drawCommandBuffer, 1, &clearAttachments, 1, &clearRect);
+		});
+	}
+
+	void VulkanContext::CmdDrawArrays_impl(uint32_t vertexCount, uint32_t offset)
+	{
+		m_CmdBuffer->GetQueue().push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
+		{
+			vkCmdDraw(drawCommandBuffer, vertexCount, 1, offset, 0);
+		});
+	}
+
+	void VulkanContext::CmdDrawArraysInstanced_impl(uint32_t vertexCount, uint32_t indexCount)
+	{
+		m_CmdBuffer->GetQueue().push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
+		{
+			vkCmdDraw(drawCommandBuffer, vertexCount, indexCount, 0, 0);
+		});
+	}
+
+	void VulkanContext::CmdDrawIndexted_impl(uint32_t indexCount, uint32_t offset)
+	{
+		m_CmdBuffer->GetQueue().push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
+		{
+			vkCmdDrawIndexed(drawCommandBuffer, indexCount, 1, offset, 0, 0);
+		});
+	}
+
+	void VulkanContext::CmdDrawIndextedInstanced_impl(uint32_t indexCount, uint32_t instanceCount)
+	{
+		m_CmdBuffer->GetQueue().push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
+		{
+			vkCmdDrawIndexed(drawCommandBuffer, indexCount, instanceCount, 0, 0, 0);
+		});
+	}
+
 
 }

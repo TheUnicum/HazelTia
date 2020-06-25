@@ -69,36 +69,36 @@ namespace Hazel {
 		// "The render pass can now begin!!!"
 		vkCmdBeginRenderPass(m_cmdBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
+		vkCmdBindPipeline(m_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_ctx.GetPipeline());
 
+		
+		
 
-
-		if (false)
-		{
-			// Basic drawing commands
-			//vkCmdBindPipeline(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline);
-			vkCmdBindPipeline(m_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_ctx.GetPipeline());
-
-			//--// Binding the vertex buffer
-			//--VkBuffer vertexBuffers[] = { vb.Get() };
-			//--VkDeviceSize offsets[] = { 0 };
-			//--vkCmdBindVertexBuffers(m_cmdBuffer, 0, 1, vertexBuffers, offsets);
-			//--
-			//--vkCmdBindIndexBuffer(m_cmdBuffer, ib.Get(), 0, VK_INDEX_TYPE_UINT32);
-			//--
-			//--// UBO
-			//--//vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
-			//--vkCmdBindDescriptorSets(m_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_ctx.GetPipelineLayout(), 0, 1, &m_ctx.GetDescriptorSets(), 0, nullptr);
-			//--
-			//--
-			//--vkCmdDrawIndexed(m_cmdBuffer, ib.Count(), 1, 0, 0, 0);
-
-			//vkCmdDraw(m_cmdBuffer, 3, 1, 0, 0);
-			vkCmdDraw(m_cmdBuffer, 3, 1, 0, 0);
-		}
+		//if (false)
+		//{
+		//	// Basic drawing commands
+		//	//vkCmdBindPipeline(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline);
+		//	vkCmdBindPipeline(m_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_ctx.GetPipeline());
+		//
+		//	//--// Binding the vertex buffer
+		//	//--VkBuffer vertexBuffers[] = { vb.Get() };
+		//	//--VkDeviceSize offsets[] = { 0 };
+		//	//--vkCmdBindVertexBuffers(m_cmdBuffer, 0, 1, vertexBuffers, offsets);
+		//	//--
+		//	//--vkCmdBindIndexBuffer(m_cmdBuffer, ib.Get(), 0, VK_INDEX_TYPE_UINT32);
+		//	//--
+		//	//--// UBO
+		//	//--//vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
+		//	//--vkCmdBindDescriptorSets(m_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_ctx.GetPipelineLayout(), 0, 1, &m_ctx.GetDescriptorSets(), 0, nullptr);
+		//	//--
+		//	//--
+		//	//--vkCmdDrawIndexed(m_cmdBuffer, ib.Count(), 1, 0, 0, 0);
+		//
+		//	//vkCmdDraw(m_cmdBuffer, 3, 1, 0, 0);
+		//	vkCmdDraw(m_cmdBuffer, 3, 1, 0, 0);
+		//}
 
 		Flush(framebuffer);
-
-
 
 		// Finishing up
 		vkCmdEndRenderPass(m_cmdBuffer);
