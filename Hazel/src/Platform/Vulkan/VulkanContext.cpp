@@ -20,6 +20,9 @@ namespace Hazel {
 	{
 		CleanUpSwapChain();
 
+		vkDestroySemaphore(m_Device, m_RenderFinishedSemaphore, nullptr);
+		vkDestroySemaphore(m_Device, m_ImageAvailableSemaphore, nullptr);
+
 		vkDestroyDevice(m_Device, nullptr);
 
 		if (m_VU.ValidationLayersEnabled())
@@ -33,6 +36,15 @@ namespace Hazel {
 
 	void VulkanContext::CleanUpSwapChain()
 	{
+		vkDestroyCommandPool(m_Device, m_CommandPool, nullptr);
+
+		for (auto framebuffer : m_SwapChainFramebuffers)
+		{
+			vkDestroyFramebuffer(m_Device, framebuffer, nullptr);
+		}
+
+		m_Pipeline->Cleanup();
+
 		m_RenderPasses->Cleanup();
 
 		for (auto imageView : m_SwapChainImageViews)
@@ -50,19 +62,102 @@ namespace Hazel {
 		CreateSurface();
 		PickPhysicalDevice();
 		CreateLogicalDevice();
+
+		CreateSyncObjects();
+
 		CreateSwapChain();
 		CreateImageViews();
-		
+		Bind();
 	}
 
 	void VulkanContext::Bind()
 	{
 		BindRenderPass();
 		BindPipeline();
+
+		CreateFramebuffers();
+		CreateCommandPool();
+		CreateCommandBuffers();
 	}
 
 	void VulkanContext::SwapBuffers()
 	{
+		/*
+		1.Acquire an image from the swap chain
+		2.Execute the command buffer with that image as attachment in the framebuffer
+		3.Return the image to the swap chain for presentation
+		*/
+
+		//-----------------------------------------------------1----------------------------
+		// 1.Acquiring an image from the swap chain
+		uint32_t imageIndex;
+		VkResult result = vkAcquireNextImageKHR(m_Device, m_SwapChain, UINT64_MAX, m_ImageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+
+		//-if (result == VK_ERROR_OUT_OF_DATE_KHR)
+		//-{
+		//-	RecreateSwapChain();
+		//-	return;
+		//-}
+		//-else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+		//-{
+		//-	throw std::runtime_error("failed to acquire swap chain image!");
+		//-}
+
+
+		//-----------------------------------------------------2----------------------------
+		// 2.Submitting the command buffer
+		VkSubmitInfo submitInfo{};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+		VkSemaphore waitSemaphores[] = { m_ImageAvailableSemaphore };
+		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+		submitInfo.waitSemaphoreCount = 1;
+		submitInfo.pWaitSemaphores = waitSemaphores;
+		submitInfo.pWaitDstStageMask = waitStages;
+
+		submitInfo.commandBufferCount = 1;
+		//
+		m_CmdBuffer->Rec(m_SwapChainFramebuffers[imageIndex]);      //TODO remove
+		//
+		submitInfo.pCommandBuffers = &m_CmdBuffer->Get(); // &m_cmdBufferFly;
+
+		VkSemaphore signalSemaphores[] = { m_RenderFinishedSemaphore };
+		submitInfo.signalSemaphoreCount = 1;
+		submitInfo.pSignalSemaphores = signalSemaphores;
+
+		//vkResetFences(m_device, 1, &m_inFlightFences[m_currentFrame]);
+		if (vkQueueSubmit(m_GraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE) != VK_SUCCESS)
+		{
+			HZ_CORE_ASSERT(false, "Failed to submit draw command buffer!");
+		}
+
+
+		//-----------------------------------------------------3----------------------------
+		// 3.Presentation  - Swap!  - Wait for signalSemaphores
+		VkPresentInfoKHR presentInfo{};
+		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+		presentInfo.waitSemaphoreCount = 1;
+		presentInfo.pWaitSemaphores = signalSemaphores;
+
+		VkSwapchainKHR swapChains[] = { m_SwapChain };
+		presentInfo.swapchainCount = 1;
+		presentInfo.pSwapchains = swapChains;
+		presentInfo.pImageIndices = &imageIndex;
+		presentInfo.pResults = nullptr; // Optional
+
+		result = vkQueuePresentKHR(m_PresentQueue, &presentInfo);
+		//--if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_framebufferResized)
+		//--{
+		//--	m_framebufferResized = false;
+		//--	RecreateSwapChain();
+		//--}
+		//--else if (result != VK_SUCCESS)
+		//--{
+		//--	throw std::runtime_error("failed to present swap chain image!");
+		//--}
+
+		vkDeviceWaitIdle(m_Device); //		ctx_vkDeviceWaitIdle(); // one frame at a time!!! for the moment
 	}
 
 	API VulkanContext::MakeCurrent()
@@ -231,6 +326,24 @@ namespace Hazel {
 		vkGetDeviceQueue(m_Device, m_qfIndices.presentFamily.value(), 0, &m_PresentQueue);
 	}
 
+	void VulkanContext::CreateSyncObjects()
+	{
+
+		VkSemaphoreCreateInfo semaphoreInfo{};
+		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+		//-VkFenceCreateInfo fenceInfo{};
+		//-fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+		//-fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+		if (vkCreateSemaphore(m_Device, &semaphoreInfo, nullptr, &m_ImageAvailableSemaphore) != VK_SUCCESS ||
+			vkCreateSemaphore(m_Device, &semaphoreInfo, nullptr, &m_RenderFinishedSemaphore) != VK_SUCCESS)// ||
+		{
+			HZ_CORE_ASSERT(false, "Failed to create synchronization objects for a frame!");
+		}
+
+	}
+
 	void VulkanContext::CreateSwapChain()
 	{
 		// This change during window resize.
@@ -321,7 +434,7 @@ namespace Hazel {
 			}
 		}
 	}
-
+	// ----------------Bind-------------------------------
 	void VulkanContext::BindRenderPass()
 	{
 		m_RenderPasses->Bind();
@@ -330,6 +443,8 @@ namespace Hazel {
 
 	void VulkanContext::BindPipeline()
 	{
+		MakeCurrent();
+
 		PipelineSpecification pipSpec;
 		pipSpec.shader = Shader::Create("assets/shaders/Vulkan/FragColor.glsl");
 
@@ -337,6 +452,60 @@ namespace Hazel {
 		m_Pipeline->Bind();
 
 	}
+
+	void VulkanContext::CreateFramebuffers()
+	{
+		m_SwapChainFramebuffers.resize(m_SwapChainImageViews.size());
+
+		for (size_t i = 0; i < m_SwapChainImageViews.size(); i++)
+		{
+			std::array<VkImageView, 1> attachments =
+			{
+				m_SwapChainImageViews[i],
+				//--m_DepthResources->GetimageView(),
+			};
+
+			VkFramebufferCreateInfo framebufferInfo{};
+			framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+			// We first need to specify with which renderPass the framebuffer needs to be compatible
+			framebufferInfo.renderPass = m_RenderPasses->Get(); // m_renderPass;
+			framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+			framebufferInfo.pAttachments = attachments.data();
+			framebufferInfo.width = m_SwapChainExtent.width;
+			framebufferInfo.height = m_SwapChainExtent.height;
+			framebufferInfo.layers = 1;
+
+			if (vkCreateFramebuffer(m_Device, &framebufferInfo, nullptr, &m_SwapChainFramebuffers[i]) != VK_SUCCESS)
+			{
+				HZ_CORE_ASSERT(false, "Failed to create Framebuffer!");
+			}
+		}
+	}
+
+	void VulkanContext::CreateCommandPool()
+	{
+		QueueFamilyIndices m_qfIndices = m_VU.FindQueueFamilies(m_PhysicalDevice, m_Surface); // I may store the results on member variables(?)
+
+		VkCommandPoolCreateInfo poolInfo{};
+		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		poolInfo.queueFamilyIndex = m_qfIndices.graphicsFamily.value();
+		poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;// 0; // Optional
+
+		if (vkCreateCommandPool(m_Device, &poolInfo, nullptr, &m_CommandPool) != VK_SUCCESS)
+		{
+			HZ_CORE_ASSERT(false, "Failed to create command pool!");
+		}
+	}
+
+	void VulkanContext::CreateCommandBuffers()
+	{
+		m_CmdBuffer = std::make_shared<CommandBuffer>(*this);
+
+
+		//m_CmdBuffer->Rec();  To move on swapchain
+	}
+
+
 
 	// Callback function
 	bool VulkanContext::DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT msgSvrty, VkDebugUtilsMessageTypeFlagsEXT msgTyp, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)

@@ -8,6 +8,7 @@
 
 #include "Platform/Vulkan/RenderPasses.h"
 #include "Platform/Vulkan/Pipeline.h"
+#include "Platform/Vulkan/CommandBuffer.h"
 
 struct GLFWwindow;
 
@@ -47,6 +48,9 @@ namespace Hazel {
 		VkQueue m_GraphicsQueue; // Device queues are implicitly cleaned up when the device is destroyed
 		VkQueue m_PresentQueue; // Device queues are implicitly cleaned up when the device is destroyed
 
+		VkSemaphore m_ImageAvailableSemaphore; // an image has been acquired and is ready for rendering.
+		VkSemaphore m_RenderFinishedSemaphore; // rendering has finished and presentation can happen.
+
 		// SwapChain
 		VkSwapchainKHR m_SwapChain;
 		std::vector<VkImage> m_SwapChainImages;
@@ -55,10 +59,12 @@ namespace Hazel {
 		std::vector<VkImageView> m_SwapChainImageViews;
 		std::vector<VkFramebuffer> m_SwapChainFramebuffers;
 
+		VkCommandPool m_CommandPool;
+
 	private:
 		Ref<RenderPasses> m_RenderPasses;
 		Ref<Pipeline> m_Pipeline;
-
+		Ref<CommandBuffer> m_CmdBuffer;
 	private:
 		void CreateInstance();
 		void SetupDebugMessenger();
@@ -66,12 +72,17 @@ namespace Hazel {
 		void PickPhysicalDevice();
 		void CreateLogicalDevice();
 
+		void CreateSyncObjects();
+
 		void CreateSwapChain();
 		void CreateImageViews();
 
 		void BindRenderPass();
 		void BindPipeline();
 
+		void CreateFramebuffers();
+		void CreateCommandPool();
+		void CreateCommandBuffers();
 
 		bool DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT msgSvrty, VkDebugUtilsMessageTypeFlagsEXT msgTyp, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
 
@@ -79,8 +90,14 @@ namespace Hazel {
 		VkDevice& GetDevice() { return m_Device; }
 		VkExtent2D& GeSwapchainExtent() { return m_SwapChainExtent; }
 		VkRenderPass& GetRenderPass() { return m_RenderPasses->Get(); }
+		
+		VkCommandPool& GetCommandPool() { return m_CommandPool; }
+
 		const VkFormat& GetswapChainImageFormat() const { return m_SwapChainImageFormat; }
 		const VkFormat& GetDepthFormat() const { return VK_FORMAT_UNDEFINED; }// m_DepthResources->GetDepthFormat(); }
+
+		VkPipeline& GetPipeline() { return m_Pipeline->Get(); }
+		VkPipelineLayout& GetPipelineLayout() { return m_Pipeline->GetLayout(); }
 	};
 
 }

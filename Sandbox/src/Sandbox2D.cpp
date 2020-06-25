@@ -68,8 +68,8 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 			static float rotation = 0.0f;
 			rotation += glm::radians(ts * 50.0f);
 			std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest(0));
-			cc->MakeCurrent();
-			cc->Bind();
+			//cc->MakeCurrent();
+			//cc->Bind();
 			//std::dynamic_pointer_cast<Hazel::VulkanContext>(cc)->Bind()
 
 			//Hazel::Ref<Hazel::Shader> sh0 = Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl");

@@ -40,6 +40,10 @@ namespace Hazel {
 
 	void VulkanShader::Cleanup()
 	{
+		for (auto& shader : shaderModules)
+		{
+			vkDestroyShaderModule(_c.GetDevice(), shader.second, nullptr);
+		}
 	}
 
 	VkShaderModule& VulkanShader::GetVertexShaderModule()
