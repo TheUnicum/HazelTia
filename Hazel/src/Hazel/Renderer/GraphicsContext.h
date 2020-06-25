@@ -13,6 +13,8 @@ namespace Hazel {
 		virtual void Init() = 0;
 		virtual void SwapBuffers() = 0;
 
+		virtual void Bind() {}; // for Vulkan pipeline management!
+
 		virtual API GetAPI() const = 0;
 		virtual std::string GetAPI_TEXT() const = 0;
 		virtual API MakeCurrent() = 0;

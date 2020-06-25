@@ -42,6 +42,16 @@ namespace Hazel {
 	{
 	}
 
+	VkShaderModule& VulkanShader::GetVertexShaderModule()
+	{
+		return shaderModules[GL_VERTEX_SHADER];
+	}
+
+	VkShaderModule& VulkanShader::GetFragmentShaderModule()
+	{
+		return shaderModules[GL_FRAGMENT_SHADER];
+	}
+
 	std::string VulkanShader::ReadFile(const std::string& filepath)
 	{
 		std::string result;

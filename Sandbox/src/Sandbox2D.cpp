@@ -69,8 +69,15 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 			rotation += glm::radians(ts * 50.0f);
 			std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest(0));
 			cc->MakeCurrent();
+			cc->Bind();
+			//std::dynamic_pointer_cast<Hazel::VulkanContext>(cc)->Bind()
 
-			Hazel::Ref<Hazel::Shader> sh0 = Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl");
+			//Hazel::Ref<Hazel::Shader> sh0 = Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl");
+			//Hazel::pipeli PipelineSpecification pspec;
+			// pspec.shader = std::make_shared<Shader>(*this, "src/assets/shaders/FlatColor.glsl");
+			//pspec.bufferLayout = std::make_shared<BufferLayout>();
+			//pspec.uniformBuffer = m_ubo;
+
 
 			//cc->ClearBuffer_impl(0.1f, 0.1f, 0.1f);
 			//cc->DrawTriangle_impl(rotation);

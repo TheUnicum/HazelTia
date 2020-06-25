@@ -20,6 +20,9 @@ namespace Hazel {
 		virtual void Bind() const override {};
 		virtual void Unbind() const override {};
 
+		VkShaderModule& GetVertexShaderModule();
+		VkShaderModule& GetFragmentShaderModule();
+
 		//virtual Microsoft::WRL::ComPtr<ID3DBlob> GetpShaderBytecode() const override { return pBlobStoredCompiledVertex; }
 
 		virtual void SetInt(const std::string& name, int value) override {};

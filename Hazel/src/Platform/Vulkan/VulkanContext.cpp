@@ -53,6 +53,10 @@ namespace Hazel {
 		CreateSwapChain();
 		CreateImageViews();
 		
+	}
+
+	void VulkanContext::Bind()
+	{
 		BindRenderPass();
 		BindPipeline();
 	}
@@ -327,6 +331,8 @@ namespace Hazel {
 	void VulkanContext::BindPipeline()
 	{
 		PipelineSpecification pipSpec;
+		pipSpec.shader = Shader::Create("assets/shaders/Vulkan/FragColor.glsl");
+
 		m_Pipeline->SetSpec(pipSpec);
 		m_Pipeline->Bind();
 

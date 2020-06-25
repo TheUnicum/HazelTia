@@ -2,13 +2,15 @@
 
 #include "vulkan/vulkan.h"
 
+#include "Hazel/Renderer/Shader.h"
+
 namespace Hazel {
 
 	class VulkanContext;
 
 	struct PipelineSpecification
 	{
-		//std::shared_ptr<Shader> shader;
+		std::shared_ptr<Shader> shader;
 		//std::shared_ptr<BufferLayout> bufferLayout;
 		//std::shared_ptr<UniformBuffer> uniformBuffer;
 	};

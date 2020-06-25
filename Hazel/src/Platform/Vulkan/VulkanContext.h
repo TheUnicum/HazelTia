@@ -24,6 +24,7 @@ namespace Hazel {
 		void CleanUpSwapChain();
 
 		virtual void Init() override;
+		virtual void Bind() override;
 
 		virtual void SwapBuffers() override;
 
@@ -76,6 +77,8 @@ namespace Hazel {
 
 	public:
 		VkDevice& GetDevice() { return m_Device; }
+		VkExtent2D& GeSwapchainExtent() { return m_SwapChainExtent; }
+		VkRenderPass& GetRenderPass() { return m_RenderPasses->Get(); }
 		const VkFormat& GetswapChainImageFormat() const { return m_SwapChainImageFormat; }
 		const VkFormat& GetDepthFormat() const { return VK_FORMAT_UNDEFINED; }// m_DepthResources->GetDepthFormat(); }
 	};
