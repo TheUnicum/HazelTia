@@ -6,6 +6,7 @@
 
 #include <memory>
 
+
 Sandbox2D::Sandbox2D()
 	: Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f), m_SquareColor({ 0.2f, 0.3f, 0.8f, 1.0f })
 {
@@ -16,6 +17,28 @@ void Sandbox2D::OnAttach()
 	HZ_PROFILE_FUNCTION();
 
 	m_CheckerboardTexture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
+
+
+	{
+		std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest(0));
+		cc->MakeCurrent();
+		//cc->Bind();
+
+		auto ss = Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl");
+
+		Hazel::PipelineCreateInfo createInfo;// { Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl"), nullptr};
+		createInfo.shader = ss;
+		PipeSpec1 = Hazel::PipelineSpecification::Create(createInfo);
+		PipeSpec1->Bind();
+
+
+		auto ssREd = Hazel::Shader::Create("assets/shaders/Vulkan/FragColor_Red.glsl");
+
+		createInfo.shader = ssREd;
+		PipeSpec2 = Hazel::PipelineSpecification::Create(createInfo);
+		PipeSpec2->Bind();
+
+	}
 }
 
 void Sandbox2D::OnDetach()
@@ -66,10 +89,35 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 		// Test Vulkan
 		{
 			static float rotation = 0.0f;
-			rotation += glm::radians(ts * 50.0f);
-			std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest(0));
+			rotation += (ts * 50.0f);
+			if (int(rotation) % 100 < 50)
+			{
+				PipeSpec1->Bind();
+			}
+			else
+			{
+				PipeSpec2->Bind();
+			}
+			//std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest(0));
 			//cc->MakeCurrent();
-			//cc->Bind();
+			////cc->Bind();
+			//
+			//auto ss =  Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl");
+			//
+			//Hazel::PipelineCreateInfo createInfo;// { Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl"), nullptr};
+			//createInfo.shader = ss;
+			//Hazel::Ref<Hazel::PipelineSpecification> PipeSpec = Hazel::PipelineSpecification::Create(createInfo);
+			//PipeSpec->Bind();
+				//auto m_Pipeline = Ref<Pipeline>(*this);
+				//
+				//PipelineSpecification pipSpec;
+				//pipSpec.shader = Shader::Create("assets/shaders/Vulkan/FragColor.glsl");
+				//
+				//m_Pipeline->SetSpec(pipSpec);
+				//m_Pipeline->Bind();
+
+
+
 			//std::dynamic_pointer_cast<Hazel::VulkanContext>(cc)->Bind()
 
 			//Hazel::Ref<Hazel::Shader> sh0 = Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl");

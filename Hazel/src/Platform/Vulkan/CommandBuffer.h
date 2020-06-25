@@ -3,7 +3,10 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
+#include <vector>
+
 //#include "VertexBuffer.h"
+#include "Platform/Vulkan/Pipeline.h"
 
 namespace Hazel {
 
@@ -16,8 +19,14 @@ namespace Hazel {
 		virtual ~CommandBuffer();
 
 		//void Rec(VkFramebuffer& framebuffer, VertexBuffer& vb, IndexBuffer& ib, UniformBuffer& ubo);
-		void Rec(VkFramebuffer& framebuffer);
-		void Submit();
+		void Bind(const VkFramebuffer& framebuffer);
+
+
+		void BindPipeline(const Ref<Pipeline>& pipeline);
+		void Draw(uint32_t vertexCount, uint32_t instanceCount = 1);
+
+
+		void Flush(const VkFramebuffer& framebuffer);
 
 		void Clenaup();
 
@@ -25,6 +34,8 @@ namespace Hazel {
 	private:
 		VulkanContext& m_ctx;
 		VkCommandBuffer m_cmdBuffer;
+
+		std::vector<std::function<void(const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)>> m_Queue;
 	};
 
 }

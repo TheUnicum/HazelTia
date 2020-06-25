@@ -74,15 +74,17 @@ namespace Hazel {
 
 		void CreateSyncObjects();
 
+		void CreateCommandPool();
+		void CreateCommandBuffers(); // need CommandPool
+
 		void CreateSwapChain();
 		void CreateImageViews();
 
-		void BindRenderPass();
-		void BindPipeline();
+		void BindRenderPass(); // need SwapChain
 
 		void CreateFramebuffers();
-		void CreateCommandPool();
-		void CreateCommandBuffers();
+
+
 
 		bool DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT msgSvrty, VkDebugUtilsMessageTypeFlagsEXT msgTyp, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
 
@@ -98,6 +100,10 @@ namespace Hazel {
 
 		VkPipeline& GetPipeline() { return m_Pipeline->Get(); }
 		VkPipelineLayout& GetPipelineLayout() { return m_Pipeline->GetLayout(); }
+
+		//Api
+	public:
+		void BindPipeline(Ref<Pipeline>& pipeline); // Bind Shader !
 	};
 
 }

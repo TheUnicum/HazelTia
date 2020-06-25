@@ -13,7 +13,7 @@ namespace Hazel {
 		HZ_CORE_ASSERT(m_windowHandle, "Window handle is null!");
 
 		m_RenderPasses = std::make_shared<RenderPasses>(*this);
-		m_Pipeline = std::make_shared<Pipeline>(*this);
+		
 	}
 
 	VulkanContext::~VulkanContext()
@@ -43,7 +43,7 @@ namespace Hazel {
 			vkDestroyFramebuffer(m_Device, framebuffer, nullptr);
 		}
 
-		m_Pipeline->Cleanup();
+		// m_Pipeline->Cleanup(); will be manage externally
 
 		m_RenderPasses->Cleanup();
 
@@ -62,8 +62,11 @@ namespace Hazel {
 		CreateSurface();
 		PickPhysicalDevice();
 		CreateLogicalDevice();
-
+		
 		CreateSyncObjects();
+		
+		CreateCommandPool();
+		CreateCommandBuffers();
 
 		CreateSwapChain();
 		CreateImageViews();
@@ -73,15 +76,21 @@ namespace Hazel {
 	void VulkanContext::Bind()
 	{
 		BindRenderPass();
-		BindPipeline();
-
 		CreateFramebuffers();
-		CreateCommandPool();
-		CreateCommandBuffers();
+
+		//BindPipeline();
 	}
 
 	void VulkanContext::SwapBuffers()
 	{
+		if (!m_Pipeline) return;
+
+		m_CmdBuffer->BindPipeline(m_Pipeline);
+
+		m_CmdBuffer->Draw(3);
+
+
+
 		/*
 		1.Acquire an image from the swap chain
 		2.Execute the command buffer with that image as attachment in the framebuffer
@@ -116,9 +125,7 @@ namespace Hazel {
 		submitInfo.pWaitDstStageMask = waitStages;
 
 		submitInfo.commandBufferCount = 1;
-		//
-		m_CmdBuffer->Rec(m_SwapChainFramebuffers[imageIndex]);      //TODO remove
-		//
+		m_CmdBuffer->Bind(m_SwapChainFramebuffers[imageIndex]); //          <<<--------Bind Command Buffer to current framebuffer---
 		submitInfo.pCommandBuffers = &m_CmdBuffer->Get(); // &m_cmdBufferFly;
 
 		VkSemaphore signalSemaphores[] = { m_RenderFinishedSemaphore };
@@ -441,18 +448,6 @@ namespace Hazel {
 
 	}
 
-	void VulkanContext::BindPipeline()
-	{
-		MakeCurrent();
-
-		PipelineSpecification pipSpec;
-		pipSpec.shader = Shader::Create("assets/shaders/Vulkan/FragColor.glsl");
-
-		m_Pipeline->SetSpec(pipSpec);
-		m_Pipeline->Bind();
-
-	}
-
 	void VulkanContext::CreateFramebuffers()
 	{
 		m_SwapChainFramebuffers.resize(m_SwapChainImageViews.size());
@@ -468,7 +463,7 @@ namespace Hazel {
 			VkFramebufferCreateInfo framebufferInfo{};
 			framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 			// We first need to specify with which renderPass the framebuffer needs to be compatible
-			framebufferInfo.renderPass = m_RenderPasses->Get(); // m_renderPass;
+			framebufferInfo.renderPass = m_RenderPasses->Get(); // <<<<<<<-------------------m_renderPass;
 			framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
 			framebufferInfo.pAttachments = attachments.data();
 			framebufferInfo.width = m_SwapChainExtent.width;
@@ -481,6 +476,28 @@ namespace Hazel {
 			}
 		}
 	}
+
+	void VulkanContext::BindPipeline(Ref<Pipeline>& pipeline)
+	{
+		m_Pipeline = pipeline;
+	}
+
+	/*
+	void VulkanContext::BindPipeline()
+	{
+		// This will be extract from here
+
+		//MakeCurrent();		//m_Pipeline = std::make_shared<Pipeline>(*this);
+
+		//
+		//PipelineSpecification pipSpec;
+		//pipSpec.shader = Shader::Create("assets/shaders/Vulkan/FragColor.glsl");
+		//
+		//m_Pipeline->SetSpec(pipSpec);
+		//m_Pipeline->Bind();
+
+	}
+	*/
 
 	void VulkanContext::CreateCommandPool()
 	{

@@ -59,33 +59,45 @@ namespace Hazel {
 
 	Pipeline::~Pipeline()
 	{
+		//Cleanup(); 
+		auto c = m_ctx.GetDevice();
 	}
 
 	void Pipeline::Cleanup()
 	{
-		std::dynamic_pointer_cast<VulkanShader>(m_spec.shader)->Cleanup();
+		//std::dynamic_pointer_cast<VulkanShader>(m_spec.shader)->Cleanup();
 
-		vkDestroyPipeline(m_ctx.GetDevice(), m_Pipeline, nullptr);
-		vkDestroyPipelineLayout(m_ctx.GetDevice(), m_PipelineLayout, nullptr);
-	}
-
-	void Pipeline::SetSpec(const PipelineSpecification& spec)
-	{
-		m_spec = spec;
+		if (m_Pipeline)
+		{ 
+			vkDestroyPipeline(m_ctx.GetDevice(), m_Pipeline, nullptr);
+			m_Pipeline = nullptr;
+		}
+		if (m_PipelineLayout)
+		{
+			vkDestroyPipelineLayout(m_ctx.GetDevice(), m_PipelineLayout, nullptr);
+			m_PipelineLayout = nullptr;
+		}
 	}
 
 	void Pipeline::Bind()
 	{
+		m_ctx.BindPipeline(CreateRef<Pipeline>(*this));
+	}
+
+	void Pipeline::Create(const PipelineCreateInfo& spec)
+	{
+		Cleanup();
+
 		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
 		vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-		vertShaderStageInfo.module = (std::dynamic_pointer_cast<VulkanShader>(m_spec.shader))->GetVertexShaderModule();
+		vertShaderStageInfo.module = (std::dynamic_pointer_cast<VulkanShader>(spec.shader))->GetVertexShaderModule();
 		vertShaderStageInfo.pName = "main";
 
 		VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
 		fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-		fragShaderStageInfo.module = (std::dynamic_pointer_cast<VulkanShader>(m_spec.shader))->GetFragmentShaderModule();
+		fragShaderStageInfo.module = (std::dynamic_pointer_cast<VulkanShader>(spec.shader))->GetFragmentShaderModule();
 		fragShaderStageInfo.pName = "main";
 
 		VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };

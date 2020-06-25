@@ -24,7 +24,7 @@ namespace Hazel {
 	{
 	}
 
-	void CommandBuffer::Rec(VkFramebuffer& framebuffer)
+	void CommandBuffer::Bind(const VkFramebuffer& framebuffer)
 	{
 		/*
 		VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT:
@@ -69,29 +69,34 @@ namespace Hazel {
 		// "The render pass can now begin!!!"
 		vkCmdBeginRenderPass(m_cmdBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-		// Basic drawing commands
-		//vkCmdBindPipeline(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline);
-		vkCmdBindPipeline(m_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_ctx.GetPipeline());
 
 
 
-		//--// Binding the vertex buffer
-		//--VkBuffer vertexBuffers[] = { vb.Get() };
-		//--VkDeviceSize offsets[] = { 0 };
-		//--vkCmdBindVertexBuffers(m_cmdBuffer, 0, 1, vertexBuffers, offsets);
-		//--
-		//--vkCmdBindIndexBuffer(m_cmdBuffer, ib.Get(), 0, VK_INDEX_TYPE_UINT32);
-		//--
-		//--// UBO
-		//--//vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
-		//--vkCmdBindDescriptorSets(m_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_ctx.GetPipelineLayout(), 0, 1, &m_ctx.GetDescriptorSets(), 0, nullptr);
-		//--
-		//--
-		//--vkCmdDrawIndexed(m_cmdBuffer, ib.Count(), 1, 0, 0, 0);
+		if (false)
+		{
+			// Basic drawing commands
+			//vkCmdBindPipeline(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline);
+			vkCmdBindPipeline(m_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_ctx.GetPipeline());
 
-		//vkCmdDraw(m_cmdBuffer, 3, 1, 0, 0);
-		vkCmdDraw(m_cmdBuffer, 3, 1, 0, 0);
+			//--// Binding the vertex buffer
+			//--VkBuffer vertexBuffers[] = { vb.Get() };
+			//--VkDeviceSize offsets[] = { 0 };
+			//--vkCmdBindVertexBuffers(m_cmdBuffer, 0, 1, vertexBuffers, offsets);
+			//--
+			//--vkCmdBindIndexBuffer(m_cmdBuffer, ib.Get(), 0, VK_INDEX_TYPE_UINT32);
+			//--
+			//--// UBO
+			//--//vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
+			//--vkCmdBindDescriptorSets(m_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_ctx.GetPipelineLayout(), 0, 1, &m_ctx.GetDescriptorSets(), 0, nullptr);
+			//--
+			//--
+			//--vkCmdDrawIndexed(m_cmdBuffer, ib.Count(), 1, 0, 0, 0);
 
+			//vkCmdDraw(m_cmdBuffer, 3, 1, 0, 0);
+			vkCmdDraw(m_cmdBuffer, 3, 1, 0, 0);
+		}
+
+		Flush(framebuffer);
 
 
 
@@ -105,8 +110,31 @@ namespace Hazel {
 
 	}
 
-	void CommandBuffer::Submit()
+	void CommandBuffer::BindPipeline(const Ref<Pipeline>& pipeline)
 	{
+		m_Queue.push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
+		{
+			vkCmdBindPipeline(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->Get());
+
+		});
+	}
+
+	void CommandBuffer::Draw(uint32_t vertexCount, uint32_t instanceCount)
+	{
+		m_Queue.push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
+		{
+			vkCmdDraw(drawCommandBuffer, vertexCount, instanceCount, 0, 0);
+		});
+	}
+
+
+	void CommandBuffer::Flush(const VkFramebuffer& framebuffer)
+	{
+		for (auto& cmd : m_Queue)
+		{
+			cmd(m_cmdBuffer, framebuffer);
+		}
+		m_Queue.clear();
 	}
 
 	void CommandBuffer::Clenaup()
