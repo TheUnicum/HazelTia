@@ -23,6 +23,8 @@
 #include "Hazel/Renderer/RenderCommand.h"
 #include "Hazel/Renderer/RenderCommandX.h"
 
+#include "Hazel/Renderer/VertexLayout.h"
+
 #include "Hazel/Renderer/GraphicsContext.h"
 #include "Hazel/Renderer/Buffer.h"
 #include "Hazel/Renderer/Shader.h"

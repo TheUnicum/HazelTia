@@ -18,6 +18,50 @@ void Sandbox2D::OnAttach()
 
 	m_CheckerboardTexture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
 
+	{
+
+		Hazel::VertexLayout::ElementType::AP_FLOAT2;
+
+		//Hazel::BufferLayout layout = {
+		//	{ Hazel::ShaderDataType::Float3, "a_Position"},
+		//	{ Hazel::ShaderDataType::Float4, "a_Color"},
+		//};
+		
+		Hazel::VertexLayout vl = {
+			{ Hazel::VertexLayout::ElementType::AP_FLOAT3, "a_Position"},
+			{ Hazel::VertexLayout::ElementType::AP_FLOAT4, "a_Color"},
+		};
+
+		vl.Append(Hazel::VertexLayout::ElementType::AP_FLOAT4, "a_Color2");
+		vl;
+		
+		auto c = vl.Resolve("a_Color2");
+		auto conunt = vl.GetElementCount();
+		auto stride = vl.Size();
+		auto s = vl.ResolveByIndex(1);
+		auto s2 = vl.ResolveByIndex(2);
+
+
+		using namespace Hazel;
+		VertexLayout vl2;
+		vl2.Append(VertexLayout::AP_FLOAT3, "Position3D")
+			.Append(VertexLayout::AP_FLOAT4, "Color_4");
+		VertexData vb(std::move(vl2));
+
+		vb.EmplaceBack(glm::vec3(1.23f, 4.5, 3), glm::vec4(1.0f));
+		vb.EmplaceBack(glm::vec3(1.23f, 4.5, 3), glm::vec4(1.0f));
+		vb.EmplaceBack(glm::vec3(.23f, 4.5, 3), glm::vec4(4.4f));
+		auto pos = vb[0].Attr<VertexLayout::AP_FLOAT3>("Position3D");
+		//glm::vec4 pos32 = *(glm::vec4*)(vb[2].Attrp("Color_4"));
+
+
+		const auto& cvb = vb;
+		auto& pos2 = cvb[0].Attr<VertexLayout::AP_FLOAT3>("Position3D");
+		//pos2 = glm::vec3(3);
+		//pos = vb[0].Attr<VertexLayout::AP_FLOAT3>("Position3D");
+
+	}
+
 
 	{
 		std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest(0));
