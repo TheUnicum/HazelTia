@@ -17,75 +17,56 @@ namespace Hazel
 		unsigned char b;
 	};
 
-	enum glFormat
-	{
-		GL_FORMAT_R32G32_FLOAT,			// Float2
-		GL_FORMAT_R32G32B32_FLOAT,		// Float3
-		GL_FORMAT_R32G32B32A32_FLOAT,	// Float4
-		
-		GL_FORMAT_R8G8B8A8_UNORM,		// rbga(Int)
-		//,, Mat3, Mat4, Int, Int2, Int3, Int4, Bool
-		GL_count
-	};
-
 	class VertexLayout
 	{
 	public:
+
 		enum ElementType
 		{
 			AP_FLOAT2,
 			AP_FLOAT3,
 			AP_FLOAT4,
-
 			//
 			count,
 		};
 
 		template<ElementType> struct Map;
-		template<> struct Map<AP_FLOAT2>
+		template<> struct Map<AP_FLOAT2> { using SysType = glm::vec2; };
+		template<> struct Map<AP_FLOAT3> { using SysType = glm::vec3; };
+		template<> struct Map<AP_FLOAT4> { using SysType = glm::vec4; };
+
+		static constexpr size_t id_size = 0;
+		static constexpr size_t id_count = 1;
+		static constexpr size_t id_format = 1;
+		static constexpr uint32_t size_and_count[count][2]
 		{
-			using SysType = glm::vec2;
-			static constexpr glFormat glFormat = GL_FORMAT_R32G32_FLOAT;
-			static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32_FLOAT;
-			//static constexpr VkFormat vkFormat = VK_FORMAT_R32G32_SFLOAT;
-		};
-		template<> struct Map<AP_FLOAT3>
-		{
-			using SysType = glm::vec3;
-			static constexpr glFormat glFormat = GL_FORMAT_R32G32B32_FLOAT;
-			static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
-			//static constexpr VkFormat vkFormat = VK_FORMAT_R32G32B32_SFLOAT;
-		};
-		template<> struct Map<AP_FLOAT4>
-		{
-			using SysType = glm::vec4;
-			static constexpr glFormat glFormat = GL_FORMAT_R32G32B32A32_FLOAT;
-			static constexpr DXGI_FORMAT dxgiFormat = DXGI_FORMAT_R32G32B32A32_FLOAT;
-			//static constexpr VkFormat vkFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
+			{sizeof(glm::vec2),		2},
+			{sizeof(glm::vec3),		3},
+			{sizeof(glm::vec4),		4},
 		};
 
-		static constexpr uint32_t ApSizeof(ElementType type)
+		static constexpr DXGI_FORMAT ele_format[count]
 		{
-			switch (type)
-			{
-				case ElementType::AP_FLOAT2:	return sizeof(typename Map<AP_FLOAT2>::SysType); // return 4;
-				case ElementType::AP_FLOAT3:	return sizeof(typename Map<AP_FLOAT3>::SysType); // return 4 * 2;
-				case ElementType::AP_FLOAT4:	return sizeof(typename Map<AP_FLOAT4>::SysType); // nreturn 4 * 3;
-			}
-			HZ_CORE_ASSERT(false, "Unknown ElementType!");
-			return 0;
-		}
-		static constexpr uint32_t ApComponentCountof(ElementType type)
+			DXGI_FORMAT_R32G32_FLOAT,
+			DXGI_FORMAT_R32G32B32_FLOAT,
+			DXGI_FORMAT_R32G32B32A32_FLOAT
+		};
+
+		// functions getter!
+		static constexpr uint32_t s_getEleSize(ElementType type)
 		{
-			switch (type)
-			{
-				case ElementType::AP_FLOAT2:	return 1;
-				case ElementType::AP_FLOAT3:	return 2;
-				case ElementType::AP_FLOAT4:	return 3;
-			}
-			HZ_CORE_ASSERT(false, "Unknown v!");
-			return 0;
+			return size_and_count[type][id_size];
 		}
+		static constexpr uint32_t s_get_EleComponenCountof(ElementType type)
+		{
+			return size_and_count[type][id_count];
+		}
+
+		static constexpr DXGI_FORMAT s_getEleDescFormat(ElementType type)
+		{
+			return ele_format[type];
+		}
+
 		class Element
 		{
 			friend class VertexLayout;
@@ -94,7 +75,7 @@ namespace Hazel
 				:
 				m_type(type),
 				m_name(name),
-				m_size(ApSizeof(type)),
+				m_size(s_getEleSize(type)),
 				m_offset(0),
 				m_normalized(normalized)
 			{}
@@ -102,16 +83,20 @@ namespace Hazel
 			const char* GetName() const { return m_name; }
 			size_t Size() const { return m_size; }
 			size_t GetOffset() const { return m_offset; }
-			size_t GetOffsetAfter() const { return m_offset + Size(); }
+			bool GetNormalize() const { return m_normalized; }
 
-			//D3D11_INPUT_ELEMENT_DESC GetDesc() const;
-			//const char* GetCode() const noexcept;
+			D3D11_INPUT_ELEMENT_DESC GenerateDesc() const
+			{
+				return { m_name ,0, s_getEleDescFormat(m_type), 0, (UINT)m_offset, D3D11_INPUT_PER_VERTEX_DATA,0 };
+			}
+			//const char* GetCode() const
 		private:
 			ElementType m_type;
 			const char* m_name;
 			uint32_t m_size;
 			size_t m_offset;
 			bool m_normalized;
+			size_t GetOffsetAfter() const { return m_offset + Size(); }
 		};
 	public:
 		// --class VertexLayout--
@@ -129,12 +114,10 @@ namespace Hazel
 				if (e.GetName() == name) return e;
 			}
 			HZ_CORE_ASSERT(false, "Could not resolve element Name: " + std::string(name));
-		
-		
 			return m_elements.front();
 		}
 		const Element& ResolveByIndex(uint32_t i) const
-		{ 
+		{
 			HZ_CORE_ASSERT(i < GetElementCount(), "VertexLayout-Resolve index out of bounds!");
 			return m_elements[i];
 		}
@@ -146,7 +129,7 @@ namespace Hazel
 		}
 		size_t Size() const { return m_stride; }
 		size_t GetElementCount() const { return m_elements.size(); }
-		//std::vector<D3D11_INPUT_ELEMENT_DESC> GetD3DLayout() const;
+		std::vector<D3D11_INPUT_ELEMENT_DESC> GetD3DLayout() const;
 		//std::string GetCode() const;
 
 
@@ -172,7 +155,7 @@ namespace Hazel
 		uint32_t m_stride = 0;
 	};
 
-	
+
 	class Vertex
 	{
 		friend class VertexData;
@@ -185,10 +168,10 @@ namespace Hazel
 			return *reinterpret_cast<typename VertexLayout::Map<Type>::SysType*>(pAttribute);
 		}
 
-		auto* Attrp(const char* name)
+		auto* Attrptr(const char* name)
 		{
 			const auto element = m_layout.Resolve(name);
-			auto pAttribute = m_pData + element.GetOffset();	
+			auto pAttribute = m_pData + element.GetOffset();
 			return pAttribute;
 		}
 		template<typename T>
@@ -220,7 +203,7 @@ namespace Hazel
 			m_pData(pData),
 			m_layout(layout)
 		{
-			HZ_CORE_ASSERT(m_pData, "Vertex canìt have nullptr as pData!");
+			HZ_CORE_ASSERT(m_pData, "Vertex can't have nullptr as pData!");
 		}
 	private:
 		// enables parameter pack setting of multiple parameters by element index
@@ -241,7 +224,7 @@ namespace Hazel
 			}
 			else
 			{
-				assert("Parameter attribute type mismatch" && false);
+				HZ_CORE_ASSERT(false, "Parameter attribute type mismatch");
 			}
 		}
 	private:
@@ -271,7 +254,9 @@ namespace Hazel
 	public:
 		VertexData(VertexLayout layout, size_t size = 0u)
 			:
-			m_layout(std::move(layout))	{ Resize(size); }
+			m_layout(std::move(layout)) {
+			Resize(size);
+		}
 		void Resize(size_t newSize)
 		{
 			const auto size = Size();

@@ -46,9 +46,11 @@ void Sandbox2D::OnAttach()
 		VertexLayout vl2;
 		vl2.Append(VertexLayout::AP_FLOAT3, "Position3D")
 			.Append(VertexLayout::AP_FLOAT4, "Color_4");
+		
+		auto desc = vl2.GetD3DLayout();
+		
 		VertexData vb(std::move(vl2));
-
-		vb.EmplaceBack(glm::vec3(1.23f, 4.5, 3), glm::vec4(1.0f));
+				vb.EmplaceBack(glm::vec3(1.23f, 4.5, 3), glm::vec4(1.0f));
 		vb.EmplaceBack(glm::vec3(1.23f, 4.5, 3), glm::vec4(1.0f));
 		vb.EmplaceBack(glm::vec3(.23f, 4.5, 3), glm::vec4(4.4f));
 		auto pos = vb[0].Attr<VertexLayout::AP_FLOAT3>("Position3D");
@@ -59,6 +61,15 @@ void Sandbox2D::OnAttach()
 		auto& pos2 = cvb[0].Attr<VertexLayout::AP_FLOAT3>("Position3D");
 		//pos2 = glm::vec3(3);
 		//pos = vb[0].Attr<VertexLayout::AP_FLOAT3>("Position3D");
+
+
+
+
+
+
+
+
+
 
 	}
 
