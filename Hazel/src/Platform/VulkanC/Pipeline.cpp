@@ -1,8 +1,8 @@
 #include "hzpch.h"
 #include "Pipeline.h"
 
-#include "Platform/Vulkan/VulkanContext.h"
-#include "Platform/Vulkan/VulkanShader.h"
+#include "Platform/VulkanC/VulkanContext.h"
+#include "Platform/VulkanC/VulkanShader.h"
 
 
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Hazel/Renderer/Shader.h"
-#include "Platform/Vulkan/VulkanContext.h"
+#include "Platform/VulkanC/VulkanContext.h"
 
 // TODO: REMOVE!
 typedef unsigned int GLenum;

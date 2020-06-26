@@ -3,7 +3,7 @@
 
 //#include "Platform/OpenGL/OpenGLPipelineSpec.h"
 //#include "Platform/D3D11/D3D11PipelineSpec"
-#include "Platform/Vulkan/VulkanPipelineSpec.h"
+#include "Platform/VulkanC/VulkanPipelineSpec.h"
 
 namespace Hazel {
 

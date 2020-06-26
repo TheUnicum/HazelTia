@@ -5,7 +5,7 @@
 
 #include "Platform/OpenGL/OpenGLContext.h"
 #include "Platform/D3D11/D3D11Context.h"
-#include "Platform/Vulkan/VulkanContext.h"
+#include "Platform/VulkanC/VulkanContext.h"
 
 
 namespace Hazel {

@@ -2,13 +2,13 @@
 
 #include "Hazel/Renderer/GraphicsContext.h"
 
-#include "Platform/Vulkan/VulkanUtiliy.h"
+#include "Platform/VulkanC/VulkanUtiliy.h"
 
 #include "vulkan/vulkan.h"
 
-#include "Platform/Vulkan/RenderPasses.h"
-#include "Platform/Vulkan/Pipeline.h"
-#include "Platform/Vulkan/CommandBuffer.h"
+#include "Platform/VulkanC/RenderPasses.h"
+#include "Platform/VulkanC/Pipeline.h"
+#include "Platform/VulkanC/CommandBuffer.h"
 
 struct GLFWwindow;
 

@@ -3,6 +3,18 @@
 
 namespace Hazel {
 
+
+	std::vector<D3D11_INPUT_ELEMENT_DESC> VertexLayout::GetD3DLayout() const
+	{
+		std::vector<D3D11_INPUT_ELEMENT_DESC> desc;
+		desc.reserve(GetElementCount());
+		for (const auto& e : m_elements)
+		{
+			desc.push_back(e.GenerateDesc());
+		}
+		return desc;
+	}
+
 	Vertex VertexData::Back()
 	{
 		assert(m_buffer.size() != 0u);
@@ -31,5 +43,6 @@ namespace Hazel {
 	{
 		return const_cast<VertexData&>(*this)[i];
 	}
+
 
 }

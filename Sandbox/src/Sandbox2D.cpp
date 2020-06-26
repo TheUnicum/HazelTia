@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "Platform/VulkanC/VulkanVertexLayout.h"
+
 
 Sandbox2D::Sandbox2D()
 	: Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f), m_SquareColor({ 0.2f, 0.3f, 0.8f, 1.0f })
@@ -44,21 +46,47 @@ void Sandbox2D::OnAttach()
 
 		using namespace Hazel;
 		VertexLayout vl2;
-		vl2.Append(VertexLayout::AP_FLOAT3, "Position3D")
+		vl2.Append(VertexLayout::AP_FLOAT3, "Pos3D")
+			.Append(VertexLayout::AP_FLOAT2, "444")
 			.Append(VertexLayout::AP_FLOAT4, "Color_4");
-		VertexData vb(std::move(vl2));
 
-		vb.EmplaceBack(glm::vec3(1.23f, 4.5, 3), glm::vec4(1.0f));
-		vb.EmplaceBack(glm::vec3(1.23f, 4.5, 3), glm::vec4(1.0f));
-		vb.EmplaceBack(glm::vec3(.23f, 4.5, 3), glm::vec4(4.4f));
-		auto pos = vb[0].Attr<VertexLayout::AP_FLOAT3>("Position3D");
-		//glm::vec4 pos32 = *(glm::vec4*)(vb[2].Attrp("Color_4"));
+		auto desc = vl2.GetD3DLayout();
+
+		//VertexData vb(std::move(vl2));
+		//
+		//vb.EmplaceBack(glm::vec3(1.23f, 4.5, 3), glm::vec2(1.0f), glm::vec4(3.3f));
+		//vb.EmplaceBack(glm::vec3(1.23f, 4.5, 3), glm::vec2(1.0f), glm::vec4(4.3f));
+		//vb.EmplaceBack(glm::vec3(.23f, 4.5, 3), glm::vec2(4.4f), glm::vec4(5.3f));
+		//auto pos = vb[0].Attr<VertexLayout::AP_FLOAT3>("Pos3D");
+		//glm::vec4 pos32 = *(glm::vec4*)(vb[2].Attrptr("Color_4"));
 
 
-		const auto& cvb = vb;
-		auto& pos2 = cvb[0].Attr<VertexLayout::AP_FLOAT3>("Position3D");
-		//pos2 = glm::vec3(3);
-		//pos = vb[0].Attr<VertexLayout::AP_FLOAT3>("Position3D");
+		//VulkanVertexLayout vlayout;
+		//vlayout.Append(VertexLayout::AP_FLOAT2, "inPosition")
+		//	.Append(VertexLayout::AP_FLOAT3, "inColor");
+		////auto vklayout = vlayout.GetAttributeDescriptions();
+		//
+		//
+		//
+		//
+		//
+		//VertexData vbuff(std::move(vlayout));
+		//vbuff.EmplaceBack(glm::vec2(1.23f, 3), glm::vec3(1.0f));
+		//vbuff.EmplaceBack(glm::vec2(1.5, 3), glm::vec3(1.0f));
+		//auto d3dlayout =  vbuff.GetLayout().GetD3DLayout();
+		////auto vklayout = vbuff.GetLayout()
+
+		
+
+
+
+
+
+
+
+
+
+
 
 	}
 

@@ -1,7 +1,7 @@
 #include "hzpch.h"
 #include "RenderPasses.h"
 
-#include "Platform/Vulkan/VulkanContext.h"
+#include "Platform/VulkanC/VulkanContext.h"
 
 namespace Hazel {
 

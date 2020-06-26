@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Hazel/Renderer/PipelineSpecification.h"
-#include "Platform/Vulkan/VulkanContext.h"
+#include "Platform/VulkanC/VulkanContext.h"
 
-#include "Platform/Vulkan/Pipeline.h"
+#include "Platform/VulkanC/Pipeline.h"
 
 
 namespace Hazel {

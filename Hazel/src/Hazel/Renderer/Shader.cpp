@@ -3,7 +3,7 @@
 
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Platform/D3D11/D3D11Shader.h"
-#include "Platform/Vulkan/VulkanShader.h"
+#include "Platform/VulkanC/VulkanShader.h"
 
 namespace Hazel {
 

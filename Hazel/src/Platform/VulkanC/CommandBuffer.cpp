@@ -1,7 +1,7 @@
 #include "hzpch.h"
 #include "CommandBuffer.h"
 
-#include "Platform/Vulkan/VulkanContext.h"
+#include "Platform/VulkanC/VulkanContext.h"
 
 namespace Hazel {
 
