@@ -33,9 +33,9 @@ namespace Hazel {
 			if (s_ctx) s_ctx->CmdClear_impl();
 		}
 	
-		static void DrawArray(uint32_t indexCount = 0)
+		static void DrawArray(uint32_t vertexCount = 0)
 		{
-			if (s_ctx) s_ctx->CmdDrawArrays_impl(3);
+			if (s_ctx) s_ctx->CmdDrawArrays_impl(vertexCount);
 		}
 	
 	

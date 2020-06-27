@@ -90,6 +90,8 @@ namespace Hazel {
 
 	public:
 		VkDevice& GetDevice() { return m_Device; }
+		VkPhysicalDevice& GetPhysicalDevice() { return m_PhysicalDevice; }
+
 		VkExtent2D& GeSwapchainExtent() { return m_SwapChainExtent; }
 		VkRenderPass& GetRenderPass() { return m_RenderPasses->Get(); }
 		
@@ -103,6 +105,7 @@ namespace Hazel {
 
 		//Api Render
 	public:
+		void BindVertexBuffer(const VkBuffer& vb);
 		void BindPipeline(Ref<Pipeline>& pipeline); // Bind Shader !
 		void UnbindPipeline(); // Bind Shader !
 

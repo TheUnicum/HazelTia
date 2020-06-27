@@ -3,7 +3,7 @@
 
 #include "Platform/Vulkan/VulkanContext.h"
 #include "Platform/Vulkan/VulkanShader.h"
-
+#include "Platform/Vulkan/VulkanVertexLayout.h"
 
 
 
@@ -88,6 +88,10 @@ namespace Hazel {
 	{
 		Cleanup();
 
+		VulkanVertexLayout::DescriptorData& c = *(VulkanVertexLayout::DescriptorData*)(spec.vertexLayout->GetDescriptorData());
+		c.InputBindingDescription;
+		c.VertexInputAttributeDescription_list;
+
 		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
 		vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -117,16 +121,16 @@ namespace Hazel {
 
 		//auto bindingDescription = m_spec.bufferLayout->GetBindingDescription();
 		//auto attributeDescriptions = spec.bufferLayout->GetAttributeDescriptions();
-		auto bindingDescription = nullptr; //GetBindingDescription();
-		auto attributeDescriptions = nullptr;// GetAttributeDescriptions();
+		auto bindingDescription = c.InputBindingDescription; //GetBindingDescription();
+		auto attributeDescriptions = c.VertexInputAttributeDescription_list;// GetAttributeDescriptions();
 
 		// Vertex input
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertexInputInfo.vertexBindingDescriptionCount = 0;
-		vertexInputInfo.pVertexBindingDescriptions = nullptr;// &bindingDescription;
-		vertexInputInfo.vertexAttributeDescriptionCount = 0;// static_cast<uint32_t>(attributeDescriptions.size());
-		vertexInputInfo.pVertexAttributeDescriptions = nullptr;// attributeDescriptions.data();
+		vertexInputInfo.vertexBindingDescriptionCount = 1;
+		vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+		vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
 		// Input assembly
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};

@@ -7,6 +7,9 @@
 //--#include "vulkan/vulkan.h"
 #include <d3d11.h>
 
+#include "Hazel/Renderer/GraphicsContext.h"
+#include "Hazel/Renderer/Bindable.h"
+
 namespace Hazel
 {
 	struct BGRAColor
@@ -99,6 +102,10 @@ namespace Hazel
 			size_t GetOffsetAfter() const { return m_offset + Size(); }
 		};
 	public:
+		// Classes Factory
+		static Ref<VertexLayout> VertexLayout::Create();
+		static Ref<VertexLayout> VertexLayout::Create(GraphicsContext& ctx);
+
 		// --class VertexLayout--
 		VertexLayout() = default;
 		VertexLayout(const std::initializer_list<Element>& elements)
@@ -131,7 +138,8 @@ namespace Hazel
 		size_t GetElementCount() const { return m_elements.size(); }
 		std::vector<D3D11_INPUT_ELEMENT_DESC> GetD3DLayout() const;
 		//std::string GetCode() const;
-
+		
+		virtual void* GetDescriptorData() { return nullptr; };
 
 		std::vector<Element>::iterator begin() { return m_elements.begin(); }
 		std::vector<Element>::iterator end() { return m_elements.end(); }
@@ -150,7 +158,7 @@ namespace Hazel
 			}
 		}
 
-	private:
+	protected:
 		std::vector<Element> m_elements;
 		uint32_t m_stride = 0;
 	};

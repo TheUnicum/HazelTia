@@ -524,6 +524,12 @@ namespace Hazel {
 		return VK_FALSE;
 	}
 
+
+	void VulkanContext::BindVertexBuffer(const VkBuffer& vb)
+	{
+		m_CmdBuffer->BindVertexBuffer(vb);
+	}
+
 	void VulkanContext::BindPipeline(Ref<Pipeline>& pipeline)
 	{
 		m_Pipeline = pipeline;
@@ -532,6 +538,7 @@ namespace Hazel {
 	{
 		m_Pipeline = nullptr;
 	}
+
 
 	//--------------------------
 //	void VulkanContextvkCmdClearAttachments

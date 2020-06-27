@@ -63,7 +63,7 @@ void Sandbox2D::OnAttach()
 		//pos = vb[0].Attr<VertexLayout::AP_FLOAT3>("Position3D");
 
 
-
+		
 
 
 
@@ -79,19 +79,48 @@ void Sandbox2D::OnAttach()
 		cc->MakeCurrent();
 		//cc->Bind();
 
-		auto ss = Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl");
-
+		//auto ss = Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl");
+		////auto vl = Hazel::VertexLayout::Cre
+		using namespace Hazel;
+		Hazel::Ref<VertexLayout> vl2 = VertexLayout::Create();
+		//auto* c = vl2->GetDescriptorData();
+		
+		vl2->Append(VertexLayout::AP_FLOAT2, "inPosition2")
+			.Append(VertexLayout::AP_FLOAT3, "inColor3");
+		
 		Hazel::PipelineCreateInfo createInfo;// { Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl"), nullptr};
-		createInfo.shader = ss;
-		PipeSpec1 = Hazel::PipelineSpecification::Create(createInfo);
-		PipeSpec1->Bind();
+		//createInfo.shader = ss;
+		//createInfo.vertexLayout = vl2;
+		//PipeSpec1 = Hazel::PipelineSpecification::Create(createInfo);
+		//PipeSpec1->Bind();
 
 
-		auto ssREd = Hazel::Shader::Create("assets/shaders/Vulkan/FragColor_Red.glsl");
+		auto ssREd = Hazel::Shader::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
 
 		createInfo.shader = ssREd;
+		createInfo.vertexLayout = vl2;
 		PipeSpec2 = Hazel::PipelineSpecification::Create(createInfo);
 		PipeSpec2->Bind();
+
+
+		struct Vertex {
+			glm::vec2 pos;
+			glm::vec3 color;
+		};
+		const std::vector<Vertex> vertices = {
+	{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+	{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+	{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+
+	{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+	{{-.5f, +0.5f}, {0.0f, 1.0f, 0.0f}},
+	{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+		};
+
+		//Hazel::Ref<Hazel::VertexBuffer> vbk = Hazel::VertexBuffer::Create((float*)vertices.data(), (uint32_t)(sizeof(Vertex) * vertices.size()));
+		m_vbk = Hazel::VertexBuffer::Create((float*)vertices.data(), (uint32_t)(sizeof(Vertex) * vertices.size()));
+
+
 
 	}
 }
@@ -143,19 +172,23 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 
 		// Test Vulkan
 		{
-			static float rotation = 0.0f;
-			rotation += (ts * 50.0f);
-			if (int(rotation) % 100 < 50)
+			//static float rotation = 0.0f;
+			//rotation += (ts * 50.0f);
+			//if (int(rotation) % 100 < 50)
+			//{
+			//	PipeSpec1->Bind();
+			//	Hazel::RenderCommandX::MakeContextCurrent(Hazel::Application::Get().GetWindowTest(0));
+			//
+			//	Hazel::RenderCommandX::Clear();
+			//	Hazel::RenderCommandX::DrawArray();
+			//}
+			//else
 			{
-				PipeSpec1->Bind();
 				Hazel::RenderCommandX::MakeContextCurrent(Hazel::Application::Get().GetWindowTest(0));
-
-				Hazel::RenderCommandX::Clear();
-				Hazel::RenderCommandX::DrawArray();
-			}
-			else
-			{
 				PipeSpec2->Bind();
+				m_vbk->Bind();
+				Hazel::RenderCommandX::DrawArray(6);
+
 			}
 			//std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest(0));
 			//cc->MakeCurrent();

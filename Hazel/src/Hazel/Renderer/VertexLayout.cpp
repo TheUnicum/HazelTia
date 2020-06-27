@@ -1,7 +1,39 @@
 #include "hzpch.h"
 #include "VertexLayout.h"
 
+//#include "Platform/OpenGL/OpenGLBuffer.h"
+//#include "Platform/D3D11/D3D11Buffer.h"
+#include "Platform/Vulkan/VulkanVertexLayout.h"
+
 namespace Hazel {
+
+
+
+	Ref<VertexLayout> VertexLayout::Create() { return Create((GraphicsContext&)GraphicsContext::Get_Active()); }
+	Ref<VertexLayout> VertexLayout::Create(GraphicsContext& ctx)
+	{
+		switch (ctx.GetAPI())
+		{
+		case API::None:    HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+		//case API::OpenGL:  return CreateRef<OpenGLVertexBuffer>(tag, vertices, size);
+		//case API::D3D11:   return CreateRef<D3D11VertexBuffer>(tag, vertices, size);
+		case API::Vulkan:  return CreateRef<VulkanVertexLayout>();   // DA aggiungere TAG!!!
+		}
+		HZ_CORE_ASSERT(false, "Unknow RendererAPI!");
+		return nullptr;
+		return Ref<VertexLayout>();
+	}
+
+
+
+
+
+
+
+
+
+
+
 
 	std::vector<D3D11_INPUT_ELEMENT_DESC> VertexLayout::GetD3DLayout() const
 	{
@@ -42,5 +74,14 @@ namespace Hazel {
 	{
 		return const_cast<VertexData&>(*this)[i];
 	}
+
+
+
+
+
+
+
+
+
 
 }

@@ -2,6 +2,7 @@
 #include "CommandBuffer.h"
 
 #include "Platform/Vulkan/VulkanContext.h"
+#include "Platform/Vulkan/VulkanBuffer.h"
 
 namespace Hazel {
 
@@ -109,6 +110,20 @@ namespace Hazel {
 		}
 
 	}
+
+
+
+	void CommandBuffer::BindVertexBuffer(const VkBuffer& vb)
+	{
+		m_Queue.push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
+		{
+			// Binding the vertex buffer
+			VkBuffer vertexBuffers[] = { vb };
+			VkDeviceSize offsets[] = { 0 };
+			vkCmdBindVertexBuffers(m_cmdBuffer, 0, 1, vertexBuffers, offsets);
+		});
+	}
+
 
 	void CommandBuffer::BindPipeline(const Ref<Pipeline>& pipeline)
 	{

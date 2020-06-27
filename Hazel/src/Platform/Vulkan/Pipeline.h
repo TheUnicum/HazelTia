@@ -4,6 +4,7 @@
 
 #include "Hazel/Renderer/PipelineSpecification.h"
 #include "Hazel/Renderer/Shader.h"
+#include "Hazel/Renderer/VertexLayout.h"
 
 namespace Hazel {
 

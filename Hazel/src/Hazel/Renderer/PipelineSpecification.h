@@ -4,6 +4,8 @@
 
 #include "Buffer.h"
 #include "Shader.h"
+#include "VertexLayout.h"
+
 
 namespace Hazel {
 
@@ -12,11 +14,13 @@ namespace Hazel {
 		Ref<Shader> shader;
 		Ref<BufferLayout> bufferLayout;
 		//std::shared_ptr<UniformBuffer> uniformBuffer;
+		Ref<VertexLayout> vertexLayout;
 
 		PipelineCreateInfo& operator=(const PipelineCreateInfo& other)
 		{
 			shader = other.shader;
 			bufferLayout = other.bufferLayout;
+			vertexLayout= other.vertexLayout;
 			return *this;
 		}
 	};

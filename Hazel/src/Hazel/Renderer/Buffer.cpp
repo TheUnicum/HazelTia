@@ -3,6 +3,7 @@
 
 #include "Platform/OpenGL/OpenGLBuffer.h"
 #include "Platform/D3D11/D3D11Buffer.h"
+#include "Platform/Vulkan/VulkanBuffer.h"
 
 namespace Hazel {
 
@@ -16,15 +17,16 @@ namespace Hazel {
 	Ref<VertexBuffer> VertexBuffer::Create(std::string& tag, uint32_t size) { return Create((GraphicsContext&)GraphicsContext::Get_Active(), Get_ID_NR(), size); }
 	Ref<VertexBuffer> VertexBuffer::Create(GraphicsContext& ctx, std::string& tag, uint32_t size)
 	{
-		MAKER_ON_ctx_args_2(OpenGLVertexBuffer, D3D11VertexBuffer, tag, size);
-		//switch (ctx.GetAPI())
-		//{
-		//	case API::None:    HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		//	case API::OpenGL:  return CreateRef<OpenGLVertexBuffer>(tag, size);
-		//	case API::D3D11:   return CreateRef<D3D11VertexBuffer>(tag, size);
-		//}
-		//HZ_CORE_ASSERT(false, "Unknow RendererAPI!");
-		//return nullptr;
+		//--MAKER_ON_ctx_args_2(OpenGLVertexBuffer, D3D11VertexBuffer, tag, size);
+		switch (ctx.GetAPI())
+		{
+			case API::None:    HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+			case API::OpenGL:  return CreateRef<OpenGLVertexBuffer>(tag, size);
+			case API::D3D11:   return CreateRef<D3D11VertexBuffer>(tag, size);
+			//case API::Vulkan:  return CreateRef<VulkanVertexBuffer>(size);
+		}
+		HZ_CORE_ASSERT(false, "Unknow RendererAPI!");
+		return nullptr;
 	}
 
 	// 2.
@@ -33,15 +35,16 @@ namespace Hazel {
 	Ref<VertexBuffer> VertexBuffer::Create(std::string& tag, float* vertices, uint32_t size) { return Create((GraphicsContext&)GraphicsContext::Get_Active(), tag, vertices, size); }
 	Ref<VertexBuffer> VertexBuffer::Create(GraphicsContext& ctx, std::string& tag, float* vertices, uint32_t size)
 	{
-		MAKER_ON_ctx_args_3(OpenGLVertexBuffer, D3D11VertexBuffer, tag, vertices, size);
-		//switch (ctx.GetAPI())
-		//{
-		//	case API::None:    HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		//	case API::OpenGL:  return CreateRef<OpenGLVertexBuffer>(tag, vertices, size);
-		//	case API::D3D11:  return CreateRef<D3D11VertexBuffer>(tag, vertices, size);
-		//}
-		//HZ_CORE_ASSERT(false, "Unknown RendererAPI!");
-		//return nullptr;
+		//--MAKER_ON_ctx_args_3(OpenGLVertexBuffer, D3D11VertexBuffer, tag, vertices, size);
+		switch (ctx.GetAPI())
+		{
+			case API::None:    HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+			case API::OpenGL:  return CreateRef<OpenGLVertexBuffer>(tag, vertices, size);
+			case API::D3D11:   return CreateRef<D3D11VertexBuffer>(tag, vertices, size);
+			case API::Vulkan:  return CreateRef<VulkanVertexBuffer>(vertices, size);   // DA aggiungere TAG!!!
+		}
+		HZ_CORE_ASSERT(false, "Unknown RendererAPI!");
+		return nullptr;
 	}
 
 
