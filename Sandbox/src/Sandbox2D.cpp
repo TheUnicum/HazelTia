@@ -111,16 +111,16 @@ void Sandbox2D::OnAttach()
 	{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
 	{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
 	{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-
-	{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-	{{-.5f, +0.5f}, {0.0f, 1.0f, 0.0f}},
-	{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+	{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
 		};
-
+		const std::vector<uint32_t> indices =
+		{
+		0, 1, 2, 2, 3, 0
+		};
 		//Hazel::Ref<Hazel::VertexBuffer> vbk = Hazel::VertexBuffer::Create((float*)vertices.data(), (uint32_t)(sizeof(Vertex) * vertices.size()));
 		m_vbk = Hazel::VertexBuffer::Create((float*)vertices.data(), (uint32_t)(sizeof(Vertex) * vertices.size()));
 
-
+		m_ibk = Hazel::IndexBuffer::Create((uint32_t*)indices.data(), indices.size());
 
 	}
 }
@@ -187,7 +187,9 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 				Hazel::RenderCommandX::MakeContextCurrent(Hazel::Application::Get().GetWindowTest(0));
 				PipeSpec2->Bind();
 				m_vbk->Bind();
-				Hazel::RenderCommandX::DrawArray(6);
+				m_ibk->Bind();
+				Hazel::RenderCommandX::CmdDrawIndexted(6);
+				//Hazel::RenderCommandX::DrawArray(6);
 
 			}
 			//std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest(0));

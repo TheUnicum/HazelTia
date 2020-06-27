@@ -37,7 +37,10 @@ namespace Hazel {
 		{
 			if (s_ctx) s_ctx->CmdDrawArrays_impl(vertexCount);
 		}
-	
+		static void CmdDrawIndexted(uint32_t indexCount = 0)
+		{
+			if (s_ctx) s_ctx->CmdDrawIndexted_impl(indexCount);
+		}
 	
 		//// Test
 		//static void DrawTriangle()

@@ -22,6 +22,13 @@ namespace Hazel {
 
 	class VulkanContext;
 
+
+	uint32_t findMemoryType(VulkanContext& m_ctx, uint32_t typeFilter, VkMemoryPropertyFlags properties);
+	void createBuffer(VulkanContext& m_ctx, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+	void copyBuffer(VulkanContext& m_ctx, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+
+
+
 	class VulkanVertexBuffer : public VertexBuffer
 	{
 	public:
@@ -50,6 +57,32 @@ namespace Hazel {
 		VkBuffer m_vertexBuffer;
 		VkDeviceMemory m_vertexBufferMemory;
 
+	};
+
+
+
+	class VulkanIndexBuffer : public IndexBuffer
+	{
+	public:
+		VulkanIndexBuffer(uint32_t* indices, uint32_t count);
+		~VulkanIndexBuffer();
+
+		virtual void Bind() const override
+		{
+			_c.BindIndexBuffer(m_indexBuffer);
+		};
+		virtual void Unbind() const override {};
+
+		virtual uint32_t GetCount() const { return m_Count; };
+		//void Cleanup();
+
+		VkBuffer& Get() { return m_indexBuffer; }
+	private:
+		VulkanContext& _c;
+
+		VkBuffer m_indexBuffer;
+		VkDeviceMemory m_indexBufferMemory;
+		uint32_t m_Count;
 	};
 
 }

@@ -530,6 +530,11 @@ namespace Hazel {
 		m_CmdBuffer->BindVertexBuffer(vb);
 	}
 
+	void VulkanContext::BindIndexBuffer(const VkBuffer& ib)
+	{
+		m_CmdBuffer->BindIndexBuffer(ib);
+	}
+
 	void VulkanContext::BindPipeline(Ref<Pipeline>& pipeline)
 	{
 		m_Pipeline = pipeline;

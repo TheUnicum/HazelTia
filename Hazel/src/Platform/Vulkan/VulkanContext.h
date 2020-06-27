@@ -103,9 +103,12 @@ namespace Hazel {
 		VkPipeline& GetPipeline() { return m_Pipeline->Get(); }
 		VkPipelineLayout& GetPipelineLayout() { return m_Pipeline->GetLayout(); }
 
+		VkQueue GetGraphicsQueue() { return m_GraphicsQueue; }
+		VkQueue GetPresentQueue() { return m_PresentQueue; }
 		//Api Render
 	public:
 		void BindVertexBuffer(const VkBuffer& vb);
+		void BindIndexBuffer(const VkBuffer& ib);
 		void BindPipeline(Ref<Pipeline>& pipeline); // Bind Shader !
 		void UnbindPipeline(); // Bind Shader !
 

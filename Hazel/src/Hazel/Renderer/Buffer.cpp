@@ -66,15 +66,16 @@ namespace Hazel {
 	Ref<IndexBuffer> IndexBuffer::Create(std::string& tag, uint32_t* indices, uint32_t count) { return Create((GraphicsContext&)GraphicsContext::Get_Active(), tag, indices, count); }
 	Ref<IndexBuffer> IndexBuffer::Create(GraphicsContext& ctx, std::string& tag, uint32_t* indices, uint32_t count)
 	{
-		MAKER_ON_ctx_args_3(OpenGLIndexBuffer, D3D11IndexBuffer, tag, indices, count);
-		//switch (ctx.GetAPI())
-		//{
-		//	case API::None:    HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		//	case API::OpenGL:  return CreateRef<OpenGLIndexBuffer>(tag, indices, count);
-		//	case API::D3D11:   return CreateRef<D3D11IndexBuffer>(tag, indices, count);
-		//}
-		//HZ_CORE_ASSERT(false, "Unknown RendererAPI!");
-		//return nullptr;
+		//MAKER_ON_ctx_args_3(OpenGLIndexBuffer, D3D11IndexBuffer, tag, indices, count);
+		switch (ctx.GetAPI())
+		{
+			case API::None:    HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+			case API::OpenGL:  return CreateRef<OpenGLIndexBuffer>(tag, indices, count);
+			case API::D3D11:   return CreateRef<D3D11IndexBuffer>(tag, indices, count);
+			case API::Vulkan:  return CreateRef<VulkanIndexBuffer>(indices, count);   // DA aggiungere TAG!!!
+		}
+		HZ_CORE_ASSERT(false, "Unknown RendererAPI!");
+		return nullptr;
 	}
 
 }

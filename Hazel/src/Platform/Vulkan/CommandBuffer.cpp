@@ -124,6 +124,14 @@ namespace Hazel {
 		});
 	}
 
+	void CommandBuffer::BindIndexBuffer(const VkBuffer& ib)
+	{
+		m_Queue.push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
+		{
+			vkCmdBindIndexBuffer(m_cmdBuffer, ib, 0, VK_INDEX_TYPE_UINT32);
+		});
+	}
+
 
 	void CommandBuffer::BindPipeline(const Ref<Pipeline>& pipeline)
 	{
