@@ -33,9 +33,10 @@ namespace Hazel {
 		void Compile(const std::unordered_map<ShaderType, std::string>& shaderSources);
 
 	public:
-		std::string glsl();
+		std::unordered_map<ShaderType, std::string> GetCodeGLSL();
 	private:
 		std::unordered_map<ShaderType, std::vector<uint32_t>> shaderCodePIRV;
+		std::unordered_map<ShaderCode::ShaderType, std::string> shaderCodeGLSL;
 	};
 
 }

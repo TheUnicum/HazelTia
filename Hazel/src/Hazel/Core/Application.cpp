@@ -41,8 +41,8 @@ namespace Hazel {
 
 		// Test shader CODE
 
-		Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Texture.glsl");
-		std::string c = sc->glsl();
+		Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor.glsl");
+		auto c = sc->GetCodeGLSL();
 		//
 
 

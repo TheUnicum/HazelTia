@@ -24,13 +24,13 @@ IncludeDir["ImGui"] = "Hazel/vendor/imgui"
 IncludeDir["glm"] = "Hazel/vendor/glm"
 IncludeDir["stb_image"] = "Hazel/vendor/stb_image"
 IncludeDir["Vulkan"] = "Hazel/vendor/Vulkan/include"
-
-
+IncludeDir["SPIRVCross"] = "Hazel/vendor/SPIRV-Cross"
 
 group "Dependencies"
     include "Hazel/vendor/GLFW"
     include "Hazel/vendor/Glad"
     include "Hazel/vendor/imgui"
+    include "Hazel/vendor/SPIRV-Cross"
 
 group ""
 
@@ -73,6 +73,7 @@ project "Hazel"
         "%{IncludeDir.glm}",
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.Vulkan}",
+        "%{IncludeDir.SPIRVCross}",
     }
 
     libdirs 
@@ -88,11 +89,11 @@ project "Hazel"
         --"opengl32.lib",
         "vulkan-1.lib",
         "shaderc_combined.lib",
+        "SPIRV-Cross",
     }
 
     filter "system:windows"
         systemversion "latest"
-
         defines
         {
         }
