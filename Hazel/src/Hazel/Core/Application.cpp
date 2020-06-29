@@ -10,6 +10,10 @@
 
 #include <GLFW/glfw3.h>
 
+// test Remeve at the end
+#include "Hazel/Renderer/ShaderCode.h"
+// 
+
 namespace Hazel {
 
 	Application* Application::s_Instance = nullptr;
@@ -33,6 +37,15 @@ namespace Hazel {
 		//m_WindowsTest.emplace_back(Window::Create({ "4 GL Test", 800, 600, API::OpenGL }));
 		static_cast<GraphicsContext*>(m_Window->GetCfx())->MakeCurrent();
 		//m_Window->OnUpdate(); // to reset glfwcontext to main windows old implementation!
+
+
+		// Test shader CODE
+
+		Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Texture.glsl");
+		std::string c = sc->glsl();
+		//
+
+
 
 		for (auto& win : m_WindowsTest)
 		{
