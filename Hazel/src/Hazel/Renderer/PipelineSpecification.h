@@ -32,11 +32,6 @@ namespace Hazel {
 					vertexLayout->Append(ele.type, ele.name.c_str());
 				}
 			}
-
-			for (const auto& ele : vertexLayout->GetElemets())
-			{
-				HZ_CORE_DEBUG("Type {}", ele.GetName());
-			}
 			return *this;
 		}
 	};

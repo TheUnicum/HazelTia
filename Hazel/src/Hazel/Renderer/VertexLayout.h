@@ -39,6 +39,7 @@ namespace Hazel
 		};
 
 		template<ElementType> struct Map;
+		template<> struct Map<AP_FLOAT> { using SysType = float; };
 		template<> struct Map<AP_FLOAT2> { using SysType = glm::vec2; };
 		template<> struct Map<AP_FLOAT3> { using SysType = glm::vec3; };
 		template<> struct Map<AP_FLOAT4> { using SysType = glm::vec4; };
@@ -48,6 +49,7 @@ namespace Hazel
 		static constexpr size_t id_format = 1;
 		static constexpr uint32_t size_and_count[count][2]
 		{
+			{sizeof(float),			1},
 			{sizeof(glm::vec2),		2},
 			{sizeof(glm::vec3),		3},
 			{sizeof(glm::vec4),		4},
@@ -55,6 +57,7 @@ namespace Hazel
 
 		static constexpr DXGI_FORMAT ele_format[count]
 		{
+			DXGI_FORMAT_R32_FLOAT,
 			DXGI_FORMAT_R32G32_FLOAT,
 			DXGI_FORMAT_R32G32B32_FLOAT,
 			DXGI_FORMAT_R32G32B32A32_FLOAT
@@ -79,7 +82,7 @@ namespace Hazel
 		{
 			friend class VertexLayout;
 		public:
-			Element(ElementType type, const char* name, bool normalized = false)
+			Element(ElementType type, const std::string& name, bool normalized = false)
 				:
 				m_type(type),
 				m_name(name),
@@ -88,19 +91,19 @@ namespace Hazel
 				m_normalized(normalized)
 			{}
 			ElementType GetType() const { return m_type; }
-			const char* GetName() const { return m_name; }
+			const std::string& GetName() const { return m_name; }
 			size_t Size() const { return m_size; }
 			size_t GetOffset() const { return m_offset; }
 			bool GetNormalize() const { return m_normalized; }
 
 			D3D11_INPUT_ELEMENT_DESC GenerateDesc() const
 			{
-				return { m_name ,0, s_getEleDescFormat(m_type), 0, (UINT)m_offset, D3D11_INPUT_PER_VERTEX_DATA,0 };
+				return { m_name.c_str() ,0, s_getEleDescFormat(m_type), 0, (UINT)m_offset, D3D11_INPUT_PER_VERTEX_DATA,0 };
 			}
 			//const char* GetCode() const
 		private:
 			ElementType m_type;
-			const char* m_name;
+			std::string m_name;
 			uint32_t m_size;
 			size_t m_offset;
 			bool m_normalized;
@@ -163,7 +166,6 @@ namespace Hazel
 				m_stride += element.m_size;
 			}
 		}
-
 	protected:
 		std::vector<Element> m_elements;
 		uint32_t m_stride = 0;

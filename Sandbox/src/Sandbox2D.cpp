@@ -49,19 +49,20 @@ void Sandbox2D::OnAttach()
 		
 		auto desc = vl2.GetD3DLayout();
 		
-		VertexData vb(std::move(vl2));
-				vb.EmplaceBack(glm::vec3(1.23f, 4.5, 3), glm::vec4(1.0f));
-		vb.EmplaceBack(glm::vec3(1.23f, 4.5, 3), glm::vec4(1.0f));
-		vb.EmplaceBack(glm::vec3(.23f, 4.5, 3), glm::vec4(4.4f));
-		auto pos = vb[0].Attr<VertexLayout::AP_FLOAT3>("Position3D");
-		//glm::vec4 pos32 = *(glm::vec4*)(vb[2].Attrp("Color_4"));
+		{
+			VertexData vb(std::move(vl2));
+			vb.EmplaceBack(glm::vec3(1.23f, 4.5, 3), glm::vec4(1.0f));
+			vb.EmplaceBack(glm::vec3(1.23f, 4.5, 3), glm::vec4(1.0f));
+			vb.EmplaceBack(glm::vec3(.23f, 4.5, 3), glm::vec4(4.4f));
+			auto pos = vb[0].Attr<VertexLayout::AP_FLOAT3>("Position3D");
+			//glm::vec4 pos32 = *(glm::vec4*)(vb[2].Attrp("Color_4"));
 
 
-		const auto& cvb = vb;
-		auto& pos2 = cvb[0].Attr<VertexLayout::AP_FLOAT3>("Position3D");
-		//pos2 = glm::vec3(3);
-		//pos = vb[0].Attr<VertexLayout::AP_FLOAT3>("Position3D");
-
+			const auto& cvb = vb;
+			auto& pos2 = cvb[0].Attr<VertexLayout::AP_FLOAT3>("Position3D");
+			//pos2 = glm::vec3(3);
+			//pos = vb[0].Attr<VertexLayout::AP_FLOAT3>("Position3D");
+		}
 
 		
 		// Test 
@@ -94,13 +95,26 @@ void Sandbox2D::OnAttach()
 		//PipeSpec1 = Hazel::PipelineSpecification::Create(createInfo);
 		//PipeSpec1->Bind();
 
+		
 
-		auto ssREd = Hazel::Shader::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
+
+		Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
+		auto c = sc->GetCodeGLSL();
+		auto hs = sc->GetCodeHLSL();
+		auto v = sc->GetVertexLayoutEleList();
+
+		//auto ssREd = Hazel::Shader::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
+		auto ssREd = Hazel::Shader::Create(sc);
 
 		createInfo.shader = ssREd;
-		createInfo.vertexLayout = vl2;
+		//createInfo.vertexLayout = vl2;
 		PipeSpec2 = Hazel::PipelineSpecification::Create(createInfo);
-		PipeSpec2->Bind();
+		PipeSpec2->Bind();;
+
+
+
+
+
 
 
 		struct Vertex {

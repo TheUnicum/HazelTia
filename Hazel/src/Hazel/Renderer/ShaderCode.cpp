@@ -169,12 +169,12 @@ namespace Hazel {
 				}
 
 				HZ_CORE_TRACE("InputAttribute <{}> location= {}, type= {}, nr= {}",
-					resource.name.c_str(),
+					resource.name,
 					iLoc,
 					base_type.basetype == spirv_cross::SPIRType::BaseType::Float ? "FLOAT" : "INT",
 				base_type.vecsize);
-				VertexLayout::ElementType attrType = VertexLayout::ElementType((int)VertexLayout::ElementType::AP_FLOAT + base_type.vecsize);
-				attribute_elements.push_back({ iLoc, attrType, resource.name.c_str() });
+				VertexLayout::ElementType attrType = VertexLayout::ElementType((int)VertexLayout::ElementType::AP_FLOAT + base_type.vecsize - 1);
+				attribute_elements.push_back({ iLoc, attrType, resource.name });
 			}
 		}
 		else
