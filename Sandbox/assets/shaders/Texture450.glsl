@@ -4,7 +4,6 @@
 #version 450 core
 #extension GL_ARB_separate_shader_objects : enable
 
-
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec4 a_Color;
 layout(location = 2) in vec2 a_TexCoord;
@@ -28,8 +27,7 @@ void main()
 	v_TexCoord = a_TexCoord;
 	v_TexIndex = a_TexIndex;
 	v_TilingFactor = a_TilingFactor;
-	//gl_Position = ubo.u_ViewProjection * vec4(a_Position, 1.0f);
-	gl_Position = vec4(a_Position, 1.0f);
+	gl_Position = ubo.u_ViewProjection * vec4(a_Position, 1.0f);
 }
 
 #type fragment
@@ -83,5 +81,4 @@ vec4 texColor = v_Color;
 		case 31: texColor *= texture(u_Textures[31], v_TexCoord * v_TilingFactor); break;
 	}
 	color = texColor;
-	color = vec4(1.0, 1.0, 0.0, 0.0);
 }

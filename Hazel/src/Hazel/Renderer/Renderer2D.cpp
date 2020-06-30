@@ -59,31 +59,20 @@ namespace Hazel {
 	{
 		HZ_PROFILE_FUNCTION();
 
-		//----------------------
-		// create constant buffer for transformation matrix
-		const cbstruct cb ={glm::mat4(1.0)};
-
+		const cbstruct cb;
 		s_Data.cBuff = ConstanBuffer::Create(cb);
 		s_Data.cBuff->SetSlot(0, 0);
 		s_Data.cBuff->Bind();
-		//-----------------------
 
 		s_Data.QuadVertexArray = VertexArray::Create(); // TODO: to remove !
 		s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(QuadVertex));
 
-		s_Data.TextureShader = Hazel::Shader::Create("assets/shaders/Texture.glsl");
-		//s_Data.TextureShader = Hazel::Shader::Create("assets/shaders/Texture.glsl");
-
-		Ref<VertexLayout> vl = Hazel::VertexLayout::Create();
-		vl->Append(VertexLayout::AP_FLOAT3, "a_Position")
-			.Append(VertexLayout::AP_FLOAT4, "a_Color")
-			.Append(VertexLayout::AP_FLOAT2, "a_TexCoord")
-			.Append(VertexLayout::AP_FLOAT, "a_TexIndex")
-			.Append(VertexLayout::AP_FLOAT, "a_TilingFactor");
+		Ref<ShaderCode> shaderCode = Hazel::ShaderCode::Create("assets/shaders/Texture450.glsl");
+		s_Data.TextureShader = Hazel::Shader::Create(shaderCode);
 
 		Hazel::PipelineCreateInfo createInfo;// { Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl"), nullptr};
 		createInfo.shader = s_Data.TextureShader;
-		createInfo.vertexLayout = vl;
+		createInfo.vertexLayout = nullptr;// vl;
 		s_Data.PipeSpec = PipelineSpecification::Create(createInfo);
 		s_Data.PipeSpec->Bind();
 
@@ -207,11 +196,8 @@ namespace Hazel {
 		HZ_PROFILE_FUNCTION();
 
 		s_Data.TextureShader->Bind();
-		//s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
-		//s_Data.TextureShader->SetMat4("ubo.u_ViewProjection", camera.GetViewProjectionMatrix());
-		const auto & cam= camera.GetViewProjectionMatrix();
-		std::dynamic_pointer_cast<OpenGLConstantBuffer<cbstruct>>(s_Data.cBuff)->Update(cbstruct{ cam });
-
+		std::dynamic_pointer_cast<OpenGLConstantBuffer<cbstruct>>(s_Data.cBuff)->Update(
+			cbstruct{ camera.GetViewProjectionMatrix() });
 
 		s_Data.QuadIndexCount = 0;
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
