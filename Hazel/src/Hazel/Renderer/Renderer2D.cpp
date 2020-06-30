@@ -50,15 +50,21 @@ namespace Hazel {
 	{
 		HZ_PROFILE_FUNCTION();
 
-		/*
 		s_Data.QuadVertexArray = VertexArray::Create(); // TODO: to remove !
 		s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(QuadVertex));
 
-		Ref<ShaderCode> sh0code = ShaderCode::Create("assets/shaders/Texture.glsl");
-		s_Data.TextureShader = Hazel::Shader::Create(sh0code);
+		s_Data.TextureShader = Hazel::Shader::Create("assets/shaders/Texture.glsl");
+
+		Ref<VertexLayout> vl = Hazel::VertexLayout::Create();
+		vl->Append(VertexLayout::AP_FLOAT3, "a_Position")
+			.Append(VertexLayout::AP_FLOAT4, "a_Color")
+			.Append(VertexLayout::AP_FLOAT2, "a_TexCoord")
+			.Append(VertexLayout::AP_FLOAT, "a_TexIndex")
+			.Append(VertexLayout::AP_FLOAT, "a_TilingFactor");
 
 		Hazel::PipelineCreateInfo createInfo;// { Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl"), nullptr};
 		createInfo.shader = s_Data.TextureShader;
+		createInfo.vertexLayout = vl;
 		s_Data.PipeSpec = PipelineSpecification::Create(createInfo);
 		s_Data.PipeSpec->Bind();
 
@@ -102,10 +108,10 @@ namespace Hazel {
 		s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPositions[2] = { 0.5f,  0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
-		*/
 
 
-		
+
+		/*
 		s_Data.QuadVertexArray = VertexArray::Create();
 
 		s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(QuadVertex));
@@ -167,7 +173,7 @@ namespace Hazel {
 		s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPositions[2] = { 0.5f,  0.5f, 0.0f, 1.0f };
 		s_Data.QuadVertexPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
-
+		*/
 	}
 
 	void Renderer2D::Shutdown()
@@ -184,10 +190,6 @@ namespace Hazel {
 		s_Data.TextureShader->Bind();
 		s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 		//s_Data.TextureShader->SetMat4("ubo.u_ViewProjection", camera.GetViewProjectionMatrix());
-		//s_Data.TextureShader->SetMat4("ubo.u_ViewProjection", camera.GetViewProjectionMatrix());
-		//layout(binding = 0) uniform UniformBufferObject {
-		//	mat4 u_ViewProjection;
-		//} ubo;
 
 		s_Data.QuadIndexCount = 0;
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
@@ -214,9 +216,9 @@ namespace Hazel {
 		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
 			s_Data.TextureSlots[i]->Bind(i);
 
-		//s_Data.QuadVertexArray->Bind();
+		//s_Data.QuadVertexArray->Bind();	// SHOUD BE MENAGED INSIDE PIPELINE!!
 		//s_Data.QuadVertexArray->GetIndexBuffer()->Bind();
-		//s_Data.PipeSpec->Bind();
+		s_Data.PipeSpec->Bind();
 		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
 		s_Data.Stats.DrawCalls++;
 	}
