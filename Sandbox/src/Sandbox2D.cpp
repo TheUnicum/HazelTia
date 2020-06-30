@@ -63,69 +63,39 @@ void Sandbox2D::OnAttach()
 			//pos2 = glm::vec3(3);
 			//pos = vb[0].Attr<VertexLayout::AP_FLOAT3>("Position3D");
 		}
-
-		
-		// Test 
-
-
-
-
-
-
 	}
 
 
 	{
 		std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest(0));
 		cc->MakeCurrent();
-		//cc->Bind();
 
-		//auto ss = Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl");
-		////auto vl = Hazel::VertexLayout::Cre
-		using namespace Hazel;
-		Hazel::Ref<VertexLayout> vl2 = VertexLayout::Create();
-		//auto* c = vl2->GetDescriptorData();
-		
-		vl2->Append(VertexLayout::AP_FLOAT2, "inPosition2")
-			.Append(VertexLayout::AP_FLOAT3, "inColor3");
-		
-		Hazel::PipelineCreateInfo createInfo;// { Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl"), nullptr};
-		//createInfo.shader = ss;
-		//createInfo.vertexLayout = vl2;
-		//PipeSpec1 = Hazel::PipelineSpecification::Create(createInfo);
-		//PipeSpec1->Bind();
-
-		
-
+		using namespace Hazel;	
+		//vl2->Append(VertexLayout::AP_FLOAT2, "inPosition2")
+		//	.Append(VertexLayout::AP_FLOAT3, "inColor3");
 
 		Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
-		auto c = sc->GetCodeGLSL();
-		auto hs = sc->GetCodeHLSL();
-		auto v = sc->GetVertexLayoutEleList();
-
-		//auto ssREd = Hazel::Shader::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
 		auto ssREd = Hazel::Shader::Create(sc);
 
+		auto c = sc->GetCodeGLSL();
+		auto hs = sc->GetCodeHLSL(); 
+		auto v = sc->GetVertexLayoutEleList();
+
+		Hazel::PipelineCreateInfo createInfo;// { Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl"), nullptr};
 		createInfo.shader = ssREd;
 		//createInfo.vertexLayout = vl2;
 		PipeSpec2 = Hazel::PipelineSpecification::Create(createInfo);
 		PipeSpec2->Bind();;
-
-
-
-
-
-
 
 		struct Vertex {
 			glm::vec2 pos;
 			glm::vec3 color;
 		};
 		const std::vector<Vertex> vertices = {
-	{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-	{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-	{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-	{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+			{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+			{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+			{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+			{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
 		};
 		const std::vector<uint32_t> indices =
 		{
@@ -133,7 +103,6 @@ void Sandbox2D::OnAttach()
 		};
 		//Hazel::Ref<Hazel::VertexBuffer> vbk = Hazel::VertexBuffer::Create((float*)vertices.data(), (uint32_t)(sizeof(Vertex) * vertices.size()));
 		m_vbk = Hazel::VertexBuffer::Create((float*)vertices.data(), (uint32_t)(sizeof(Vertex) * vertices.size()));
-
 		m_ibk = Hazel::IndexBuffer::Create((uint32_t*)indices.data(), indices.size());
 
 	}
