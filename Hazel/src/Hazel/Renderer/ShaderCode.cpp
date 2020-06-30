@@ -132,7 +132,8 @@ namespace Hazel {
 			if (module.GetCompilationStatus() !=
 				shaderc_compilation_status_success)
 			{
-				std::cout << module.GetErrorMessage(); //<------------------
+				HZ_CORE_ERROR("Shaderc messege error: \n{}", module.GetErrorMessage());
+				HZ_CORE_ASSERT(false, "<shaderc::Compiler> failure");
 			}
 
 			std::vector<uint32_t> result(module.cbegin(), module.cend());
@@ -181,6 +182,8 @@ namespace Hazel {
 		{
 			HZ_CORE_ASSERT(false, "ShaderCode has NOT a VERTEX CODE!");
 		}
+		std::sort(attribute_elements.begin(),
+			attribute_elements.end(), [](ShaderCode::Attribute& rhs, ShaderCode::Attribute& lhs) {return rhs.location < lhs.location; });
 		return attribute_elements;
 	}
 

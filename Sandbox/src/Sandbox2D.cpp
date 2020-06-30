@@ -19,7 +19,6 @@ void Sandbox2D::OnAttach()
 	m_CheckerboardTexture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
 
 	{
-
 		Hazel::VertexLayout::ElementType::AP_FLOAT2;
 
 		//Hazel::BufferLayout layout = {

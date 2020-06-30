@@ -47,6 +47,20 @@ namespace Hazel {
 		Compile(sources);
 	}
 
+	OpenGLShader::OpenGLShader(const Ref<ShaderCode> shaderCode)
+		: Shader(GraphicsContext::Get_Active())
+	{
+		m_shaderCode = shaderCode;
+		auto code_glsl = m_shaderCode->GetCodeGLSL();
+
+		// TODO! Remove GLenum Type and use only ShaderCode::ShaderType!
+		std::unordered_map<GLenum, std::string> sources;
+		sources[GL_VERTEX_SHADER] = code_glsl[ShaderCode::ShaderType::VERTEX];
+		sources[GL_FRAGMENT_SHADER] = code_glsl[ShaderCode::ShaderType::FRAGMENT];
+
+		Compile(sources);
+	}
+
 	OpenGLShader::~OpenGLShader()
 	{
 		HZ_PROFILE_FUNCTION();

@@ -13,6 +13,8 @@ namespace Hazel {
 	public:
 		OpenGLShader(const std::string& filepath);
 		OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
+		OpenGLShader(const Ref<ShaderCode> shaderCode);
+
 		virtual ~OpenGLShader();
 
 		virtual uint32_t GetID() const override { return m_RendererID; }

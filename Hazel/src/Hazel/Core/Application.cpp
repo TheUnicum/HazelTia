@@ -36,22 +36,22 @@ namespace Hazel {
 		m_WindowsTest.emplace_back(Window::Create({ "3 Vulkan ", 800, 600, API::Vulkan }));
 
 
-		// Test shader CODE
-		static_cast<GraphicsContext*>(m_WindowsTest[0]->GetCfx())->MakeCurrent();
-
-		Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
-		auto c = sc->GetCodeGLSL();
-		auto hs = sc->GetCodeHLSL();
-		auto v = sc->GetVertexLayoutEleList();
-
-		//auto ssREd = Hazel::Shader::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
-		auto ssREd = Hazel::Shader::Create(sc);
-		PipelineCreateInfo createInfo;
-		createInfo.shader = ssREd;
-		createInfo.vertexLayout = nullptr;
-		Ref<PipelineSpecification> PipeSpec2 = Hazel::PipelineSpecification::Create(createInfo);
-		//PipeSpec2->Bind();
-		//.....
+		//// Test shader CODE
+		//static_cast<GraphicsContext*>(m_WindowsTest[0]->GetCfx())->MakeCurrent();
+		//
+		//Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
+		//auto c = sc->GetCodeGLSL();
+		//auto hs = sc->GetCodeHLSL();
+		//auto v = sc->GetVertexLayoutEleList();
+		//
+		////auto ssREd = Hazel::Shader::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
+		//auto ssREd = Hazel::Shader::Create(sc);
+		//PipelineCreateInfo createInfo;
+		//createInfo.shader = ssREd;
+		//createInfo.vertexLayout = nullptr;
+		//Ref<PipelineSpecification> PipeSpec2 = Hazel::PipelineSpecification::Create(createInfo);
+		////PipeSpec2->Bind();
+		////.....
 
 
 

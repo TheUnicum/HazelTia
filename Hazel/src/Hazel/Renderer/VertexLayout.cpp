@@ -1,7 +1,7 @@
 #include "hzpch.h"
 #include "VertexLayout.h"
 
-//#include "Platform/OpenGL/OpenGLBuffer.h"
+#include "Platform/OpenGL/OpenGLVertexLayout.h"
 //#include "Platform/D3D11/D3D11Buffer.h"
 #include "Platform/Vulkan/VulkanVertexLayout.h"
 
@@ -15,7 +15,7 @@ namespace Hazel {
 		switch (ctx.GetAPI())
 		{
 		case API::None:    HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-		//case API::OpenGL:  return CreateRef<OpenGLVertexBuffer>(tag, vertices, size);
+		case API::OpenGL:  return CreateRef<OpenGLVertexLayout>();
 		//case API::D3D11:   return CreateRef<D3D11VertexBuffer>(tag, vertices, size);
 		case API::Vulkan:  return CreateRef<VulkanVertexLayout>();   // DA aggiungere TAG!!!
 		}
