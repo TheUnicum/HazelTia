@@ -26,9 +26,14 @@ namespace Hazel
 
 		enum ElementType
 		{
+			AP_FLOAT,
 			AP_FLOAT2,
 			AP_FLOAT3,
 			AP_FLOAT4,
+			AP_INT,		// NOT TESTED!
+			AP_INT2,
+			AP_INT3,
+			AP_INT4,
 			//
 			count,
 		};

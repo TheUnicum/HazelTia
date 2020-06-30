@@ -1,7 +1,10 @@
 #pragma once
 
+#include "Hazel/Renderer/VertexLayout.h"
+
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 
 namespace Hazel {
@@ -18,6 +21,14 @@ namespace Hazel {
 			GEOMETRY,
 			FRAGMENT,
 		};
+
+		struct Attribute
+		{
+			size_t location;
+			VertexLayout::ElementType type;
+			std::string name;
+		};
+
 		const ShaderType& PIXEL = ShaderType::FRAGMENT;
 
 	public:
@@ -33,7 +44,9 @@ namespace Hazel {
 		void Compile(const std::unordered_map<ShaderType, std::string>& shaderSources);
 
 	public:
+		std::vector<Attribute> GetVertexLayoutEleList();
 		std::unordered_map<ShaderType, std::string> GetCodeGLSL();
+		std::unordered_map<ShaderType, std::string> GetCodeHLSL();
 	private:
 		std::unordered_map<ShaderType, std::vector<uint32_t>> shaderCodePIRV;
 		std::unordered_map<ShaderCode::ShaderType, std::string> shaderCodeGLSL;

@@ -41,10 +41,10 @@ namespace Hazel {
 
 		// Test shader CODE
 
-		Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor.glsl");
+		Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
 		auto c = sc->GetCodeGLSL();
-		//
-
+		auto hs = sc->GetCodeHLSL();
+		auto v = sc->GetVertexLayoutEleList();
 
 
 		for (auto& win : m_WindowsTest)

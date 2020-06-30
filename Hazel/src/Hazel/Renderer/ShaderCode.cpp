@@ -6,6 +6,7 @@
 #include <fstream>
 #include "Shaderc/shaderc.hpp"
 #include "spirv_glsl.hpp"
+#include "spirv_hlsl.hpp"
 
 namespace Hazel {
 
@@ -139,6 +140,50 @@ namespace Hazel {
 		}
 	}
 
+	std::vector<ShaderCode::Attribute> ShaderCode::GetVertexLayoutEleList()
+	{
+		std::vector<Attribute> attribute_elements;
+		
+		if (shaderCodePIRV.find(ShaderCode::ShaderType::VERTEX) != shaderCodePIRV.end() )
+		{
+			spirv_cross::CompilerGLSL glsl_Vertex_code(shaderCodePIRV[ShaderCode::ShaderType::VERTEX]);
+	
+			// The SPIR-V is now parsed, and we can perform reflection on it.
+			spirv_cross::ShaderResources resources = glsl_Vertex_code.get_shader_resources();
+	
+			for (auto& resource : resources.stage_inputs)
+			{
+				const size_t iLoc = glsl_Vertex_code.get_decoration(resource.id, spv::DecorationLocation);
+				const auto& base_type = glsl_Vertex_code.get_type(resource.base_type_id);
+
+				VertexLayout::ElementType start_type;
+				switch (base_type.basetype)
+				{
+				case spirv_cross::SPIRType::BaseType::Float: start_type = VertexLayout::ElementType::AP_FLOAT;
+					break;
+				case spirv_cross::SPIRType::BaseType::Int: start_type = VertexLayout::ElementType::AP_INT;
+					break;
+				default:
+					HZ_CORE_ASSERT(false, "VertexAttribute types SUPPORTED are only FLOATx and INTx!");
+					break;
+				}
+
+				HZ_CORE_TRACE("InputAttribute <{}> location= {}, type= {}, nr= {}",
+					resource.name.c_str(),
+					iLoc,
+					base_type.basetype == spirv_cross::SPIRType::BaseType::Float ? "FLOAT" : "INT",
+				base_type.vecsize);
+				VertexLayout::ElementType attrType = VertexLayout::ElementType((int)VertexLayout::ElementType::AP_FLOAT + base_type.vecsize);
+				attribute_elements.push_back({ iLoc, attrType, resource.name.c_str() });
+			}
+		}
+		else
+		{
+			HZ_CORE_ASSERT(false, "ShaderCode has NOT a VERTEX CODE!");
+		}
+		return attribute_elements;
+	}
+
 	std::unordered_map<ShaderCode::ShaderType, std::string> ShaderCode::GetCodeGLSL()
 	{
 		std::unordered_map<ShaderType, std::string> shaderCodeGLSL;
@@ -150,20 +195,32 @@ namespace Hazel {
 
 			spirv_cross::CompilerGLSL glsl(spirvCode);
 
-			// The SPIR-V is now parsed, and we can perform reflection on it.
-			spirv_cross::ShaderResources resources = glsl.get_shader_resources();
-
-			// 
-			// Reflection!!!
-
-
 			// Set some options.
 			spirv_cross::CompilerGLSL::Options options;
-			options.version = 310;
-			options.es = true;
+			//options.version = 450;
+			//options.es = true;
 			glsl.set_common_options(options);
 
 			shaderCodeGLSL[type] = glsl.compile();
+		}
+		return shaderCodeGLSL;
+	}
+
+	std::unordered_map<ShaderCode::ShaderType, std::string> ShaderCode::GetCodeHLSL()
+	{
+		std::unordered_map<ShaderType, std::string> shaderCodeHLSL;
+
+		for (auto& kv : shaderCodePIRV)
+		{
+			ShaderCode::ShaderType type = kv.first;
+			auto& spirvCode = kv.second;
+
+			spirv_cross::CompilerHLSL hlsl(spirvCode);
+
+			// Set some options
+			// ...
+
+			shaderCodeGLSL[type] = hlsl.compile();
 		}
 		return shaderCodeGLSL;
 	}
