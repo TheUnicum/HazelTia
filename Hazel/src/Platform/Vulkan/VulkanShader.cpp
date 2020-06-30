@@ -7,6 +7,7 @@
 #define GL_GEOMETRY_SHADER 0x8DD9
 
 #include "Shaderc/shaderc.hpp"
+#include "VulkanShader.h"
 
 namespace Hazel {
 
@@ -32,6 +33,20 @@ namespace Hazel {
 	VulkanShader::VulkanShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 		: Shader(GraphicsContext::Get_Active()), _c((VulkanContext&)this->_ctx), m_Name(name)
 	{
+	}
+
+	VulkanShader::VulkanShader(const Ref<ShaderCode> shaderCode)
+		: Shader(GraphicsContext::Get_Active()), _c((VulkanContext&)this->_ctx)
+	{
+		m_shaderCode = shaderCode;
+		auto code_glsl = m_shaderCode->GetCodeGLSL();
+		
+		// TODO! Remove GLenum Type and use only ShaderCode::ShaderType!
+		std::unordered_map<GLenum, std::string> sources;
+		sources[GL_VERTEX_SHADER] = code_glsl[ShaderCode::ShaderType::VERTEX];
+		sources[GL_FRAGMENT_SHADER] = code_glsl[ShaderCode::ShaderType::FRAGMENT];
+		
+		Compile(sources);
 	}
 
 	VulkanShader::~VulkanShader()

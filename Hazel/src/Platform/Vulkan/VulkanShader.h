@@ -13,6 +13,7 @@ namespace Hazel {
 	public:
 		VulkanShader(const std::string& filepath);
 		VulkanShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
+		VulkanShader(const Ref<ShaderCode> shaderCode);
 
 		virtual ~VulkanShader();
 		void Cleanup();
@@ -22,7 +23,7 @@ namespace Hazel {
 
 		VkShaderModule& GetVertexShaderModule();
 		VkShaderModule& GetFragmentShaderModule();
-
+		
 		//virtual Microsoft::WRL::ComPtr<ID3DBlob> GetpShaderBytecode() const override { return pBlobStoredCompiledVertex; }
 
 		virtual void SetInt(const std::string& name, int value) override {};

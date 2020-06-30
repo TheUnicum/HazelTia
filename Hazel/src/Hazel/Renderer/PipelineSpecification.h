@@ -20,7 +20,23 @@ namespace Hazel {
 		{
 			shader = other.shader;
 			bufferLayout = other.bufferLayout;
-			vertexLayout= other.vertexLayout;
+			if (other.vertexLayout)
+			{
+				vertexLayout = other.vertexLayout;
+			}
+			else
+			{
+				vertexLayout = VertexLayout::Create();
+				for (auto& ele : shader->GetVertexLayoutEleList())
+				{
+					vertexLayout->Append(ele.type, ele.name.c_str());
+				}
+			}
+
+			for (const auto& ele : vertexLayout->GetElemets())
+			{
+				HZ_CORE_DEBUG("Type {}", ele.GetName());
+			}
 			return *this;
 		}
 	};

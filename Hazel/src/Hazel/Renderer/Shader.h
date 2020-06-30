@@ -12,6 +12,8 @@
 #include "Hazel/Renderer/Bindable.h"
 #include "Hazel/Renderer/GraphicsContext.h"
 
+#include "ShaderCode.h"
+
 class OpenGLShader;
 class D3D11Shader;
 
@@ -22,6 +24,8 @@ namespace Hazel {
 	public:
 		Shader(GraphicsContext& ctx) : Bindable(ctx) {}
 		virtual ~Shader() = default;
+
+		std::vector<ShaderCode::Attribute> GetVertexLayoutEleList();
 
 		virtual uint32_t GetID() const { HZ_CORE_ASSERT(false,"Function not implememted!"); return -1; };
 
@@ -43,6 +47,10 @@ namespace Hazel {
 		static Ref<Shader> Create(GraphicsContext& ctx, const std::string& filepath);
 		static Ref<Shader> Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 		static Ref<Shader> Create(GraphicsContext& ctx, const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
+		// With shaderCode
+		static Ref<Shader> Create(const Ref<ShaderCode> shaderCode);
+		static Ref<Shader> Create(GraphicsContext& ctx, const Ref<ShaderCode> shaderCode);
+
 
 		// Shader Resolver
 		static Ref<Shader> Resolve(const std::string& filepath)
@@ -53,6 +61,8 @@ namespace Hazel {
 		{
 			return std::static_pointer_cast<Shader>(Bindable::_Resolve<Shader>(ctx, filepath));
 		}
+	protected:
+		Ref<ShaderCode> m_shaderCode;
 	public:
 		static std::unordered_map<std::string, Ref<Shader>> _s_map;
 	#ifdef HZ_PLATFORM_WINDOWS 

@@ -12,6 +12,7 @@
 
 // test Remeve at the end
 #include "Hazel/Renderer/ShaderCode.h"
+#include "Hazel/Renderer/PipelineSpecification.h"
 // 
 
 namespace Hazel {
@@ -34,18 +35,29 @@ namespace Hazel {
 		//m_WindowsTest.emplace_back(Window::Create({ "3 OpenGL Test", 800, 600, API::OpenGL }));
 		m_WindowsTest.emplace_back(Window::Create({ "3 Vulkan ", 800, 600, API::Vulkan }));
 
-		//m_WindowsTest.emplace_back(Window::Create({ "4 GL Test", 800, 600, API::OpenGL }));
-		static_cast<GraphicsContext*>(m_Window->GetCfx())->MakeCurrent();
-		//m_Window->OnUpdate(); // to reset glfwcontext to main windows old implementation!
-
 
 		// Test shader CODE
+		static_cast<GraphicsContext*>(m_WindowsTest[0]->GetCfx())->MakeCurrent();
 
 		Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
 		auto c = sc->GetCodeGLSL();
 		auto hs = sc->GetCodeHLSL();
 		auto v = sc->GetVertexLayoutEleList();
 
+		//auto ssREd = Hazel::Shader::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
+		auto ssREd = Hazel::Shader::Create(sc);
+		PipelineCreateInfo createInfo;
+		createInfo.shader = ssREd;
+		createInfo.vertexLayout = nullptr;
+		Ref<PipelineSpecification> PipeSpec2 = Hazel::PipelineSpecification::Create(createInfo);
+		//PipeSpec2->Bind();
+
+
+
+
+		//m_WindowsTest.emplace_back(Window::Create({ "4 GL Test", 800, 600, API::OpenGL }));
+		static_cast<GraphicsContext*>(m_Window->GetCfx())->MakeCurrent();
+		//m_Window->OnUpdate(); // to reset glfwcontext to main windows old implementation!
 
 		for (auto& win : m_WindowsTest)
 		{

@@ -9,8 +9,6 @@
 
 namespace Hazel {
 
-	class VkShaderModule;
-
 	class ShaderCode
 	{
 	public:

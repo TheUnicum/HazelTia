@@ -150,6 +150,7 @@ namespace Hazel
 		std::vector<Element>::iterator end() { return m_elements.end(); }
 		std::vector<Element>::const_iterator begin() const { return m_elements.begin(); }
 		std::vector<Element>::const_iterator end() const { return m_elements.end(); }
+		const std::vector<Element> GetElemets() const { return m_elements; }
 	private:
 		void CalculateOffsetAndStride()
 		{

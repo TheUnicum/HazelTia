@@ -1,5 +1,7 @@
 #include "hzpch.h"
 #include "Hazel/Renderer/Shader.h"
+#include "Hazel/Renderer/ShaderCode.h"
+
 
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Platform/D3D11/D3D11Shader.h"
@@ -55,6 +57,21 @@ namespace Hazel {
 		//return nullptr;
 	}
 
+	Ref<Shader> Shader::Create(const Ref<ShaderCode> shaderCode) { return Create((GraphicsContext&)GraphicsContext::Get_Active(), shaderCode); }
+	Ref<Shader> Shader::Create(GraphicsContext& ctx, const Ref<ShaderCode> shaderCode)
+	{
+		switch (ctx.GetAPI())
+		{
+			case API::None:    HZ_CORE_ASSERT(false, "Rendererctx::None is currently not supported!"); return nullptr;
+			//case API::OpenGL:  return CreateRef<OpenGLShader>(name, vertexSrc, fragmentSrc);
+			//case API::D3D11:   return CreateRef<D3D11Shader>(name, vertexSrc, fragmentSrc);
+			case API::Vulkan:  return CreateRef<VulkanShader>(shaderCode);
+
+		}
+		HZ_CORE_ASSERT(false, "Unknow Rendererctx!");
+		return nullptr;
+	}
+
 
 	// --------------------
 	// ---Shader Library---
@@ -94,6 +111,12 @@ namespace Hazel {
 	bool ShaderLibrary::Exists(const std::string& name)
 	{
 		return m_Shaders.find(name) != m_Shaders.end();
+	}
+
+	std::vector<ShaderCode::Attribute> Shader::GetVertexLayoutEleList()
+	{
+		HZ_CORE_ASSERT(m_shaderCode, "GetVertexLayoutEleList NOT IMPLEMENTED for ShaderObj without ShaderCode!");
+		return m_shaderCode->GetVertexLayoutEleList();
 	}
 
 }
