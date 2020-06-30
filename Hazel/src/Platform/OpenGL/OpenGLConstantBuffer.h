@@ -15,7 +15,8 @@ namespace Hazel {
 		{
 			glGenBuffers(1, &m_RendererID);
 			glBindBuffer(GL_UNIFORM_BUFFER, m_RendererID);
-			glBufferData(GL_UNIFORM_BUFFER, sizeof(C), &consts, GL_STATIC_DRAW); // allocate 152 bytes of memory//INFOMAN(gfx);
+			//glBufferData(GL_UNIFORM_BUFFER, sizeof(C), &consts, GL_STATIC_DRAW); // allocate 152 bytes of memory//INFOMAN(gfx);
+			glBufferData(GL_UNIFORM_BUFFER, sizeof(C), &consts, GL_DYNAMIC_DRAW); // allocate 152 bytes of memory//INFOMAN(gfx);
 
 			//glBufferSubData(GL_UNIFORM_BUFFER, 144, 4, &b);
 
@@ -26,6 +27,12 @@ namespace Hazel {
 		{
 			glBindBuffer(GL_UNIFORM_BUFFER, m_RendererID);
 			glBindBufferBase(GL_UNIFORM_BUFFER, m_target, m_RendererID);
+		}
+
+		void Update(const C& consts)
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(C), &consts);
 		}
 
 		virtual void SetSlot(uint32_t slot, uint32_t target) // target 0 VS & PS, 1 only VS, 2 only PS

@@ -6,6 +6,11 @@
 #include "Hazel/Renderer/RenderCommand.h"
 #include "Hazel/Renderer/PipelineSpecification.h"
 
+#include "Hazel/Renderer/ConstantBuffer.h"
+
+#include "Platform/OpenGL/OpenGLConstantBuffer.h"	// to remove, only form test
+
+#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace Hazel {
@@ -18,7 +23,10 @@ namespace Hazel {
 		float TexIndex;
 		float TilingFactor;
 	};
-
+	struct cbstruct
+	{
+		glm::mat4 model_view_project;
+	};
 	struct Renderer2DData
 	{
 		static const uint32_t MaxQuads = 20000;
@@ -31,6 +39,7 @@ namespace Hazel {
 		Ref<Shader> TextureShader;
 		Ref<Texture2D> WhiteTexture;
 		Ref<PipelineSpecification> PipeSpec;
+		Ref<ConstanBuffer> cBuff;
 
 		uint32_t QuadIndexCount = 0;
 		QuadVertex* QuadVertexBufferBase = nullptr;
@@ -50,10 +59,20 @@ namespace Hazel {
 	{
 		HZ_PROFILE_FUNCTION();
 
+		//----------------------
+		// create constant buffer for transformation matrix
+		const cbstruct cb ={glm::mat4(1.0)};
+
+		s_Data.cBuff = ConstanBuffer::Create(cb);
+		s_Data.cBuff->SetSlot(0, 0);
+		s_Data.cBuff->Bind();
+		//-----------------------
+
 		s_Data.QuadVertexArray = VertexArray::Create(); // TODO: to remove !
 		s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(QuadVertex));
 
 		s_Data.TextureShader = Hazel::Shader::Create("assets/shaders/Texture.glsl");
+		//s_Data.TextureShader = Hazel::Shader::Create("assets/shaders/Texture.glsl");
 
 		Ref<VertexLayout> vl = Hazel::VertexLayout::Create();
 		vl->Append(VertexLayout::AP_FLOAT3, "a_Position")
@@ -188,8 +207,11 @@ namespace Hazel {
 		HZ_PROFILE_FUNCTION();
 
 		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+		//s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 		//s_Data.TextureShader->SetMat4("ubo.u_ViewProjection", camera.GetViewProjectionMatrix());
+		const auto & cam= camera.GetViewProjectionMatrix();
+		std::dynamic_pointer_cast<OpenGLConstantBuffer<cbstruct>>(s_Data.cBuff)->Update(cbstruct{ cam });
+
 
 		s_Data.QuadIndexCount = 0;
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
