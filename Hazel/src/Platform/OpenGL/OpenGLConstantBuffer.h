@@ -1,52 +1,24 @@
 #pragma once
-
 #include "Hazel/Renderer/ConstantBuffer.h"
-
-#include <glad/glad.h>
 
 namespace Hazel {
 
-	template<typename C>
-	class OpenGLConstantBuffer : public ConstanBuffer
+	class OpenGLConstantBuffer : public ConstantBuffer
 	{
 	public:
-		OpenGLConstantBuffer(const C& consts)
-			: ConstanBuffer(GraphicsContext::Get_Active())
-		{
-			glGenBuffers(1, &m_RendererID);
-			glBindBuffer(GL_UNIFORM_BUFFER, m_RendererID);
-			//glBufferData(GL_UNIFORM_BUFFER, sizeof(C), &consts, GL_STATIC_DRAW); // allocate 152 bytes of memory//INFOMAN(gfx);
-			glBufferData(GL_UNIFORM_BUFFER, sizeof(C), &consts, GL_DYNAMIC_DRAW); // allocate 152 bytes of memory//INFOMAN(gfx);
-
-			//glBufferSubData(GL_UNIFORM_BUFFER, 144, 4, &b);
-
-		}
+		OpenGLConstantBuffer(uint32_t size, const void* data);
 		virtual ~OpenGLConstantBuffer() = default;
 
-		virtual void Bind() const override
-		{
-			glBindBuffer(GL_UNIFORM_BUFFER, m_RendererID);
-			glBindBufferBase(GL_UNIFORM_BUFFER, m_target, m_RendererID);
-		}
-
-		void Update(const C& consts)
-		{
-			glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
-			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(C), &consts);
-		}
-
-		virtual void SetSlot(uint32_t slot, uint32_t target) // target 0 VS & PS, 1 only VS, 2 only PS
-		{
-			m_slot = slot;
-			m_target = target;
-		}
-
+		virtual void Bind() const override;
 		virtual void Unbind() const override {}
+
+		virtual void Update(const void* data, uint32_t size = 0) override;
+		virtual void SetSlot(uint32_t slot, uint32_t target) override; // target 0 VS & PS, 1 only VS, 2 only PS
 	private:
 		uint32_t m_RendererID;
+		uint32_t m_size = 0;
 		uint32_t m_slot = 0;
 		uint32_t m_target = 0;
-
 	};
 
 }

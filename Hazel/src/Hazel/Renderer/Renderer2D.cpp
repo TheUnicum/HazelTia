@@ -13,6 +13,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <glad/glad.h>
+
 namespace Hazel {
 
 	struct QuadVertex
@@ -25,7 +27,7 @@ namespace Hazel {
 	};
 	struct cbstruct
 	{
-		glm::mat4 model_view_project;
+		glm::mat4 model_view_project = glm::mat4(1.0f);
 	};
 	struct Renderer2DData
 	{
@@ -41,7 +43,7 @@ namespace Hazel {
 		Ref<Shader> TextureShader;
 		Ref<Texture2D> WhiteTexture;
 		Ref<PipelineSpecification> PipeSpec;
-		Ref<ConstanBuffer> cBuff;
+		Ref<ConstantBuffer> cBuff;
 
 		uint32_t QuadIndexCount = 0;
 		QuadVertex* QuadVertexBufferBase = nullptr;
@@ -62,7 +64,7 @@ namespace Hazel {
 		HZ_PROFILE_FUNCTION();
 
 		const cbstruct cb;
-		s_Data.cBuff = ConstanBuffer::Create(cb);
+		s_Data.cBuff = ConstantBuffer::Create(sizeof(cb));
 		s_Data.cBuff->SetSlot(0, 0);
 		s_Data.cBuff->Bind();
 
@@ -199,8 +201,8 @@ namespace Hazel {
 		HZ_PROFILE_FUNCTION();
 
 		s_Data.TextureShader->Bind();
-		std::dynamic_pointer_cast<OpenGLConstantBuffer<cbstruct>>(s_Data.cBuff)->Update(
-			cbstruct{ camera.GetViewProjectionMatrix() });
+		const auto cam = cbstruct{ camera.GetViewProjectionMatrix() };
+		std::dynamic_pointer_cast<OpenGLConstantBuffer>(s_Data.cBuff)->Update((void*)&cam);
 
 		s_Data.QuadIndexCount = 0;
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;

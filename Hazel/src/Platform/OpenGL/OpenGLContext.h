@@ -3,10 +3,6 @@
 
 struct GLFWwindow;
 
-
-
-
-
 namespace Hazel {
 
 	class OpenGLContext : public GraphicsContext

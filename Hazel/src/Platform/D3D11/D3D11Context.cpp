@@ -1,5 +1,6 @@
 #include "hzpch.h"
 #include "Platform/D3D11/D3D11Context.h"
+#include "Hazel/Renderer/ConstantBuffer.h"
 
 #include "Hazel/Core/Window.h"
 
@@ -252,12 +253,12 @@ namespace Hazel {
 		ibuff->Bind();
 
 		// create constant buffer for transformation matrix
-		struct ConstantBuffer
+		struct ConstantBuffer1
 		{
 			dx::XMMATRIX transformation;
 
 		};
-		const ConstantBuffer cb = // This is a CCW rotation not a transposd!!!!!
+		const ConstantBuffer1 cb = // This is a CCW rotation not a transposd!!!!!
 		{
 				dx::XMMatrixTranspose(
 				dx::XMMatrixRotationZ(angle) *
@@ -267,7 +268,7 @@ namespace Hazel {
 				)
 		};
 
-		Ref<ConstanBuffer> cBuff = ConstanBuffer::Create(cb);
+		Ref<ConstantBuffer> cBuff = ConstantBuffer::Create(sizeof(cb));
 		cBuff->SetSlot(0, 1);
 		cBuff->Bind();
 
@@ -294,7 +295,7 @@ namespace Hazel {
 				{0.0f,1.0f,1.0f},
 			}
 		};
-		Ref<ConstanBuffer> cBuff2 = ConstanBuffer::Create(cb2);
+		Ref<ConstantBuffer> cBuff2 = ConstantBuffer::Create(sizeof(cb2));
 		cBuff2->SetSlot(0, 2);
 		cBuff2->Bind();
 

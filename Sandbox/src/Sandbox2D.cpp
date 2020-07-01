@@ -117,7 +117,7 @@ void Sandbox2D::OnAttach()
 		const std::vector<uint32_t> indices =
 		{
 		//0, 1, 2, 2, 3, 0
-		0, 2, 3, 2, 3, 0
+		0, 1, 2, 2, 3, 0
 		};
 
 
@@ -206,7 +206,15 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 				//std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->DrawTriangle_impl2(0);
 				///----2
 				
-
+				struct UniformBufferObject
+				{
+					glm::mat4 model;
+					glm::mat4 view;
+					glm::mat4 proj;
+				};
+				UniformBufferObject data;
+				//Hazel::Ref<Hazel::ConstanBuffer> cb = Hazel::ConstanBuffer::Create(data);
+				
 				///-----
 
 
