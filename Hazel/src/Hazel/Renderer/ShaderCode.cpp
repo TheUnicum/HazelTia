@@ -186,6 +186,53 @@ namespace Hazel {
 		return attribute_elements;
 	}
 
+	std::vector<ShaderCode::Attribute> ShaderCode::GetVertexLayoutEleListHLSL()
+	{
+		std::vector<Attribute> attribute_elements;
+
+		if (shaderCodePIRV.find(ShaderCode::ShaderType::VERTEX) != shaderCodePIRV.end())
+		{
+			spirv_cross::CompilerHLSL glsl_Vertex_code(shaderCodePIRV[ShaderCode::ShaderType::VERTEX]);
+
+			// The SPIR-V is now parsed, and we can perform reflection on it.
+			spirv_cross::ShaderResources resources = glsl_Vertex_code.get_shader_resources();
+
+			for (auto& resource : resources.stage_inputs)
+			{
+				const size_t iLoc = glsl_Vertex_code.get_decoration(resource.id, spv::DecorationLocation);
+				const auto& base_type = glsl_Vertex_code.get_type(resource.base_type_id);
+				
+
+				VertexLayout::ElementType start_type;
+				switch (base_type.basetype)
+				{
+				case spirv_cross::SPIRType::BaseType::Float: start_type = VertexLayout::ElementType::AP_FLOAT;
+					break;
+				case spirv_cross::SPIRType::BaseType::Int: start_type = VertexLayout::ElementType::AP_INT;
+					break;
+				default:
+					HZ_CORE_ASSERT(false, "VertexAttribute types SUPPORTED are only FLOATx and INTx!");
+					break;
+				}
+
+				HZ_CORE_TRACE("InputAttribute <{}> location= {}, type= {}, nr= {}",
+					resource.name,
+					iLoc,
+					base_type.basetype == spirv_cross::SPIRType::BaseType::Float ? "FLOAT" : "INT",
+					base_type.vecsize);
+				VertexLayout::ElementType attrType = VertexLayout::ElementType((int)VertexLayout::ElementType::AP_FLOAT + base_type.vecsize - 1);
+				attribute_elements.push_back({ iLoc, attrType, resource.name });
+			}
+		}
+		else
+		{
+			HZ_CORE_ASSERT(false, "ShaderCode has NOT a VERTEX CODE!");
+		}
+		std::sort(attribute_elements.begin(),
+			attribute_elements.end(), [](ShaderCode::Attribute& rhs, ShaderCode::Attribute& lhs) {return rhs.location < lhs.location; });
+		return attribute_elements;
+	}
+
 	std::unordered_map<ShaderCode::ShaderType, std::string> ShaderCode::GetCodeGLSL()
 	{
 		std::unordered_map<ShaderType, std::string> shaderCodeGLSL;
@@ -221,10 +268,11 @@ namespace Hazel {
 
 			// Set some options
 			spirv_cross::CompilerHLSL::Options options;
-			////options.version = 450;
+			options.shader_model = 31;
+			///options.version = 450;
 			////options.es = true;
-			//hlsl.set_common_options(options);
-
+			hlsl.set_hlsl_options(options);
+			
 			shaderCodeHLSL[type] = hlsl.compile();
 
 			HZ_CORE_DEBUG(shaderCodeHLSL[type]);

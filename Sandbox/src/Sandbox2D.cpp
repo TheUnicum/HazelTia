@@ -78,14 +78,17 @@ void Sandbox2D::OnAttach()
 		cc->MakeCurrent();
 
 		using namespace Hazel;	
-		Hazel::Ref<VertexLayout> vl2 = Hazel::VertexLayout::Create();
-		vl2->Append(VertexLayout::AP_FLOAT2, "inPosition2")
-			.Append(VertexLayout::AP_FLOAT3, "inColor3");
+		//Hazel::Ref<VertexLayout> vl2 = Hazel::VertexLayout::Create();
+		//vl2->Append(VertexLayout::AP_FLOAT2, "inPosition2")
+		//	.Append(VertexLayout::AP_FLOAT3, "inColor3");
 
-		//Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
-		//auto ssREd = Hazel::Shader::Create(sc);
+		Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
+		auto gl = sc->GetVertexLayoutEleList();
+		auto hl = sc->GetVertexLayoutEleListHLSL();
+		auto s = sc->GetCodeHLSL();
+		auto ssREd = Hazel::Shader::Create(sc);
 
-		auto ssREd = Hazel::Shader::Create("assets/shaders/D3D/Mattia2.hlsl");
+		//auto ssREd = Hazel::Shader::Create("assets/shaders/D3D/Mattia2.hlsl");
 
 		//auto c = sc->GetCodeGLSL();
 		//auto hs = sc->GetCodeHLSL(); 
@@ -94,7 +97,7 @@ void Sandbox2D::OnAttach()
 		Hazel::PipelineCreateInfo createInfo;// { Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl"), nullptr};
 		createInfo.shader = ssREd;
 		//createInfo.vertexLayout = vl2; // testato con vulkan
-		createInfo.vertexLayout = vl2;
+		createInfo.vertexLayout = nullptr;// vl2;
 		PipeSpec2 = Hazel::PipelineSpecification::Create(createInfo);
 		PipeSpec2->Bind();;
 
@@ -188,11 +191,13 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 				//
 				//				
 				Hazel::RenderCommandX::MakeContextCurrent(Hazel::Application::Get().GetWindowTest(0));
-				m_vbk->BindTemp(sizeof(float) * 5);
+				m_vbk->BindTemp(sizeof(float) * 5); //[Da sistemare x D3D]
+				//m_vbk->Bind();
 				m_ibk->Bind();
 				PipeSpec2->Bind();
 
-				std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->CmdDrawIndexted_impl(6);
+				Hazel::RenderCommandX::CmdDrawIndexted(6);
+				//std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->CmdDrawIndexted_impl(6);
 				//std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->DrawTriangle_impl2(0);
 				///----2
 				

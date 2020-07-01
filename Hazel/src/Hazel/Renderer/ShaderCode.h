@@ -43,6 +43,7 @@ namespace Hazel {
 
 	public:
 		std::vector<Attribute> GetVertexLayoutEleList();
+		std::vector<Attribute> GetVertexLayoutEleListHLSL();
 		std::unordered_map<ShaderType, std::string> GetCodeGLSL();
 		std::unordered_map<ShaderType, std::string> GetCodeHLSL();
 	private:
