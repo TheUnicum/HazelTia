@@ -12,17 +12,17 @@ namespace Hazel {
 	/////////////////////////////////////////////////////////////////////////////
 
 	D3D11VertexBuffer::D3D11VertexBuffer(uint32_t size)
-		: VertexBuffer(GraphicsContext::Get_Active()), _c((D3D11Context&)this->_ctx)
+		: VertexBuffer(GraphicsContext::Get_Active()), _c((D3D11Context&)this->_ctx), m_size(size)
 	{
 	}
 
 	D3D11VertexBuffer::D3D11VertexBuffer(std::string& tag, uint32_t size)
-		: VertexBuffer(GraphicsContext::Get_Active()), _c((D3D11Context&)this->_ctx), m_tag(tag)
+		: VertexBuffer(GraphicsContext::Get_Active()), _c((D3D11Context&)this->_ctx), m_tag(tag), m_size(size)
 	{
 	}
 
 	D3D11VertexBuffer::D3D11VertexBuffer(float* vertices, uint32_t size)
-		: VertexBuffer(GraphicsContext::Get_Active()), _c((D3D11Context&)this->_ctx)
+		: VertexBuffer(GraphicsContext::Get_Active()), _c((D3D11Context&)this->_ctx), m_size(size)
 	{
 		//stride((UINT)vbuf.GetLayout().Size()),
 		//	tag(tag)
@@ -42,7 +42,7 @@ namespace Hazel {
 	}
 
 	D3D11VertexBuffer::D3D11VertexBuffer(std::string& tag, float* vertices, uint32_t size)
-		: VertexBuffer(GraphicsContext::Get_Active()), _c((D3D11Context&)this->_ctx), m_tag(tag)
+		: VertexBuffer(GraphicsContext::Get_Active()), _c((D3D11Context&)this->_ctx), m_tag(tag), m_size(size)
 	{		
 		//stride((UINT)vbuf.GetLayout().Size()),
 		//	tag(tag)

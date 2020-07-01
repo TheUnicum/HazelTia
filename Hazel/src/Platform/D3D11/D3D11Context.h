@@ -38,7 +38,16 @@ namespace Hazel {
 
 		// API functions
 	public:
+		void CmdClear_impl() override;
+		void CmdDrawArrays_impl(uint32_t vertexCount, uint32_t offset = 0) override;
+		void CmdDrawArraysInstanced_impl(uint32_t vertexCount, uint32_t instanceCount) override;
+		void CmdDrawIndexted_impl(uint32_t indexCount, uint32_t offset = 0) override;
+		void CmdDrawIndextedInstanced_impl(uint32_t indexCount, uint32_t instanceCount) override;
+
+
+
 		virtual void DrawTriangle_impl(float angle) override;
+		virtual void DrawTriangle_impl2(float angle);
 
 		virtual void ClearBuffer_impl(float red, float green, float blue) override;
 	};

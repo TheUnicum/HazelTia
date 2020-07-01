@@ -64,7 +64,7 @@ namespace Hazel {
 		{
 			case API::None:    HZ_CORE_ASSERT(false, "Rendererctx::None is currently not supported!"); return nullptr;
 			case API::OpenGL:  return CreateRef<OpenGLShader>(shaderCode);
-			//case API::D3D11:   return CreateRef<D3D11Shader>(name, vertexSrc, fragmentSrc);
+			case API::D3D11:   return CreateRef<D3D11Shader>(shaderCode);
 			case API::Vulkan:  return CreateRef<VulkanShader>(shaderCode);
 
 		}

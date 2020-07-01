@@ -2,7 +2,7 @@
 #include "Hazel/Renderer/PipelineSpecification.h"
 
 #include "Platform/OpenGL/OpenGLPipelineSpec.h"
-//#include "Platform/D3D11/D3D11PipelineSpec"
+#include "Platform/D3D11/D3D11PipelineSpec.h"
 #include "Platform/Vulkan/VulkanPipelineSpec.h"
 
 namespace Hazel {
@@ -14,7 +14,7 @@ namespace Hazel {
 		{
 			case API::None:    HZ_CORE_ASSERT(false, "Rendererctx::None is currently not supported!"); return nullptr;
 			case API::OpenGL:  return CreateRef<OpenGLPipelineSpec>(createInfo);
-			//case API::D3D11:   return CreateRef<D3D11Shader>(filepath);
+			case API::D3D11:   return CreateRef<D3D11PipelineSpec>(createInfo);
 			case API::Vulkan:  return CreateRef<VulkanPipelineSpec>(createInfo);
 		}
 		HZ_CORE_ASSERT(false, "Unknow PipelineSpecification!");

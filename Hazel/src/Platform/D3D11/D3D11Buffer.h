@@ -31,6 +31,8 @@ namespace Hazel {
 		Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
 		BufferLayout m_Layout;
 		std::string m_tag;
+		uint32_t m_size;
+		uint32_t m_stride;
 	public:
 		D3D11Context& _c;
 	};

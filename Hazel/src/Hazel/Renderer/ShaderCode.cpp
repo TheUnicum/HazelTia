@@ -111,7 +111,6 @@ namespace Hazel {
 
 			shaderc::Compiler compiler;
 			shaderc::CompileOptions options;
-
 			//// Like -DMY_DEFINE=1
 			//options.AddMacroDefinition("MY_DEFINE", "1");
 
@@ -221,11 +220,16 @@ namespace Hazel {
 			spirv_cross::CompilerHLSL hlsl(spirvCode);
 
 			// Set some options
-			// ...
+			spirv_cross::CompilerHLSL::Options options;
+			////options.version = 450;
+			////options.es = true;
+			//hlsl.set_common_options(options);
 
-			shaderCodeGLSL[type] = hlsl.compile();
+			shaderCodeHLSL[type] = hlsl.compile();
+
+			HZ_CORE_DEBUG(shaderCodeHLSL[type]);
 		}
-		return shaderCodeGLSL;
+		return shaderCodeHLSL;
 	}
 
 }

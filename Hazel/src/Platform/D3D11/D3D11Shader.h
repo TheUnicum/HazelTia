@@ -20,6 +20,8 @@ namespace Hazel {
 	public:
 		D3D11Shader(const std::string& filepath);
 		D3D11Shader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
+		D3D11Shader(const Ref<ShaderCode> shaderCode);
+
 		virtual ~D3D11Shader();
 
 		virtual void Bind() const override;

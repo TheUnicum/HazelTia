@@ -6,6 +6,14 @@
 
 #include <memory>
 
+#include "Platform/D3D11/D3D11Context.h"
+
+#include <d3dcompiler.h>
+#include <DirectXMath.h>
+#include "Hazel/VetexGeometryFactory/Plane.h"
+namespace wrl = Microsoft::WRL;
+namespace dx = DirectX;
+
 
 Sandbox2D::Sandbox2D()
 	: Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f), m_SquareColor({ 0.2f, 0.3f, 0.8f, 1.0f })
@@ -70,38 +78,61 @@ void Sandbox2D::OnAttach()
 		cc->MakeCurrent();
 
 		using namespace Hazel;	
-		//vl2->Append(VertexLayout::AP_FLOAT2, "inPosition2")
-		//	.Append(VertexLayout::AP_FLOAT3, "inColor3");
+		Hazel::Ref<VertexLayout> vl2 = Hazel::VertexLayout::Create();
+		vl2->Append(VertexLayout::AP_FLOAT2, "inPosition2");
+			//.Append(VertexLayout::AP_FLOAT3, "inColor3");
 
-		Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
-		auto ssREd = Hazel::Shader::Create(sc);
+		//Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
+		//auto ssREd = Hazel::Shader::Create(sc);
 
-		auto c = sc->GetCodeGLSL();
-		auto hs = sc->GetCodeHLSL(); 
-		auto v = sc->GetVertexLayoutEleList();
+		auto ssREd = Hazel::Shader::Create("assets/shaders/D3D/Mattia.hlsl");
+
+
+		//auto c = sc->GetCodeGLSL();
+		//auto hs = sc->GetCodeHLSL(); 
+		//auto v = sc->GetVertexLayoutEleList();
 
 		Hazel::PipelineCreateInfo createInfo;// { Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl"), nullptr};
 		createInfo.shader = ssREd;
-		//createInfo.vertexLayout = vl2;
+		//createInfo.vertexLayout = vl2; // testato con vulkan
+		createInfo.vertexLayout = vl2;
 		PipeSpec2 = Hazel::PipelineSpecification::Create(createInfo);
 		PipeSpec2->Bind();;
 
-		struct Vertex {
+		//struct Vertex {
+		//	glm::vec2 pos;
+		//	glm::vec3 color;
+		//};
+		//const std::vector<Vertex> vertices = {
+		//	{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+		//	{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+		//	{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+		//	{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+		//};
+		//const std::vector<uint32_t> indices =
+		//{
+		//0, 1, 2, 2, 3, 0
+		//};
+
+
+		// generator
+		struct VertexPos
+		{
 			glm::vec2 pos;
-			glm::vec3 color;
+			//glm::vec2 tex;
 		};
-		const std::vector<Vertex> vertices = {
-			{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-			{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-			{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-			{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+		const std::vector<VertexPos> vertices = {
+			{{ 0.0f,   0.5f}},//, {0.0, 0.0} },
+			{{ 0.5f,  -0.5f}},//, {0.0, 0.0} },
+			{{-0.5f,  -0.5f}}//, { 0.0, 0.0 }}
 		};
 		const std::vector<uint32_t> indices =
 		{
-		0, 1, 2, 2, 3, 0
+				0, 1, 2
 		};
+
 		//Hazel::Ref<Hazel::VertexBuffer> vbk = Hazel::VertexBuffer::Create((float*)vertices.data(), (uint32_t)(sizeof(Vertex) * vertices.size()));
-		m_vbk = Hazel::VertexBuffer::Create((float*)vertices.data(), (uint32_t)(sizeof(Vertex) * vertices.size()));
+		m_vbk = Hazel::VertexBuffer::Create((float*)vertices.data(), (uint32_t)(sizeof(VertexPos) * vertices.size()));
 		m_ibk = Hazel::IndexBuffer::Create((uint32_t*)indices.data(), indices.size());
 
 	}
@@ -166,12 +197,33 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 			//}
 			//else
 			{
+
+				std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest(0));
+				cc->MakeCurrent();
+
+				std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->ClearBuffer_impl(.2f, 0.1f, 0.1f);
+				//
+				//				
 				Hazel::RenderCommandX::MakeContextCurrent(Hazel::Application::Get().GetWindowTest(0));
-				PipeSpec2->Bind();
-				m_vbk->Bind();
+				m_vbk->BindTemp(sizeof(float) * 2);
 				m_ibk->Bind();
-				Hazel::RenderCommandX::CmdDrawIndexted(6);
-				//Hazel::RenderCommandX::DrawArray(6);
+				PipeSpec2->Bind();
+
+				std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->CmdDrawIndexted_impl(3);
+				//std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->DrawTriangle_impl2(0);
+				///----2
+				
+
+				///-----
+
+
+
+
+				//std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->GetPP().m_pContext->DrawIndexed((UINT)(m_ibk->GetCount()), 0, 0);
+
+				//Hazel::RenderCommandX::CmdDrawIndexted(6);
+				//std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->GetPP().m_pContext->DrawIndexed((UINT)(6), 0, 0);
+				//std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->GetPP().m_pContext->Draw(3, 0);
 
 			}
 			//std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest(0));

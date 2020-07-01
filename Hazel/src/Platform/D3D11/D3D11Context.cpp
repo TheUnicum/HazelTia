@@ -177,10 +177,38 @@ namespace Hazel {
 
 	}
 
+
+	void D3D11Context::CmdClear_impl()
+	{
+		HZ_CORE_ASSERT(false, "Function Still NOT implemented!");
+	}
+
+	void D3D11Context::CmdDrawArrays_impl(uint32_t vertexCount, uint32_t offset)
+	{
+		HZ_CORE_ASSERT(false, "Function Still NOT implemented!");
+	}
+
+	void D3D11Context::CmdDrawArraysInstanced_impl(uint32_t vertexCount, uint32_t instanceCount)
+	{
+		HZ_CORE_ASSERT(false, "Function Still NOT implemented!");
+	}
+
+	void D3D11Context::CmdDrawIndexted_impl(uint32_t indexCount, uint32_t offset)
+	{
+		ppD3D.m_pContext->DrawIndexed((UINT)(indexCount), offset, 0);
+	}
+
+	void D3D11Context::CmdDrawIndextedInstanced_impl(uint32_t indexCount, uint32_t instanceCount)
+	{
+		HZ_CORE_ASSERT(false, "Function Still NOT implemented!");
+	}
+
+
 	void D3D11Context::DrawTriangle_impl(float angle)
 	{
 		#define GFX_THROW_INFO(x) x
 		#define GFX_THROW_INFO_ONLY(x) x
+		ClearBuffer_impl(.1f, 0.1f, 0.1f);
 
 		// generator
 		struct VertexPos
@@ -196,7 +224,7 @@ namespace Hazel {
 		c.Transform(glm::scale(glm::mat4(1.0f), glm::vec3(3.0f, 3.0f, 3.0f)));
 
 		//c.Transform(glm::rotate(glm::mat4(1.0f), PI / 2, glm::vec3(1.0f, 0.0f, .0f)));
-		Ref<VertexBuffer> vb = VertexBuffer::Create((float*)&c.vertices[0], uint32_t(sizeof(VertexPos)* c.vertices.size()));
+		Ref<VertexBuffer> vb = VertexBuffer::Create((float*)&c.vertices[0], uint32_t(sizeof(VertexPos) * c.vertices.size()));
 		vb->BindTemp(sizeof(VertexPos));
 
 
@@ -301,6 +329,78 @@ namespace Hazel {
 		//GFX_THROW_INFO_ONLY(ppD3D.m_pContext->Draw((UINT)std::size(vertices), 0u));
 		//ppD3D.m_pContext->DrawIndexed((UINT)std::size(indices), 0, 0);
 		ppD3D.m_pContext->DrawIndexed((UINT)(c.indices.size()), 0, 0);
+	}
+
+	void D3D11Context::DrawTriangle_impl2(float angle)
+	{
+		#define GFX_THROW_INFO(x) x
+		#define GFX_THROW_INFO_ONLY(x) x
+		ClearBuffer_impl(.1f, 0.1f, 0.1f);
+
+		// generator
+		struct VertexPos
+		{
+			glm::vec2 pos;
+			//glm::vec2 tex;
+		};
+		const std::vector<VertexPos> vertices = {
+			{{ 0.0f,   0.5f}},//, {0.0, 0.0} },
+			{{ 0.5f,  -0.5f}},//, {0.0, 0.0} },
+			{{-0.5f,  -0.5f}}//, { 0.0, 0.0 }}
+		};
+		const std::vector<uint32_t> indices =
+		{
+				0, 1, 2
+		};
+
+		//c.Transform(glm::rotate(glm::mat4(1.0f), PI / 2, glm::vec3(1.0f, 0.0f, .0f)));
+		Ref<VertexBuffer> vb = VertexBuffer::Create((float*)&vertices[0], uint32_t(sizeof(VertexPos) * vertices.size()));
+		vb->BindTemp(sizeof(VertexPos));
+
+		Ref<IndexBuffer> ibuff = IndexBuffer::Create((uint32_t*)&indices[0], (uint32_t)indices.size());
+		ibuff->Bind();
+
+
+		Ref<Shader> shader = (Shader::Resolve("assets/shaders/D3D/Mattia.hlsl"));
+		auto pBlob = shader->GetpShaderBytecode();
+		shader->Bind();
+
+
+		// input (vertex) layout (2d position only)
+		wrl::ComPtr<ID3D11InputLayout> pInputLayout;
+		const D3D11_INPUT_ELEMENT_DESC ied[] =
+		{
+		{ "Position",0,DXGI_FORMAT_R32G32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 },
+		//{ "TexCoord",0,DXGI_FORMAT_R32G32_FLOAT,0,12,D3D11_INPUT_PER_VERTEX_DATA,0 },
+
+		};
+		GFX_THROW_INFO(ppD3D.m_pDevice->CreateInputLayout(
+			ied, (UINT)std::size(ied),
+			pBlob->GetBufferPointer(),
+			pBlob->GetBufferSize(),
+			&pInputLayout
+		));
+
+		// bind vertex layout
+		ppD3D.m_pContext->IASetInputLayout(pInputLayout.Get());
+
+		// bind render target
+		//ppD3D.m_pContext->OMSetRenderTargets(1u, ppD3D.m_pTarget.GetAddressOf(), nullptr);
+
+		// Set primitive topology to triangle list (group of 3 vertices)
+		ppD3D.m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		// configure viewport
+		D3D11_VIEWPORT vp;
+		vp.Width = 800;
+		vp.Height = 600;
+		vp.MinDepth = 0;
+		vp.MaxDepth = 1;
+		vp.TopLeftX = 0;
+		vp.TopLeftY = 0;
+		ppD3D.m_pContext->RSSetViewports(1u, &vp);
+
+		ppD3D.m_pContext->DrawIndexed((UINT)(indices.size()), 0, 0);
 	}
 
 

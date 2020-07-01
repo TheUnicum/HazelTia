@@ -5,6 +5,7 @@
 #include <glad/glad.h> // only for GL_ENUM (GL_VERTEX_SHADER)
 
 #include <d3dcompiler.h>
+#include "D3D11Shader.h"
 namespace wrl = Microsoft::WRL;
 
 
@@ -48,6 +49,20 @@ namespace Hazel {
 		std::unordered_map<GLenum, std::string> sources;
 		sources[GL_VERTEX_SHADER] = vertexSrc;
 		sources[GL_FRAGMENT_SHADER] = fragmentSrc;
+		Compile(sources);
+	}
+
+	D3D11Shader::D3D11Shader(const Ref<ShaderCode> shaderCode)
+		: Shader(GraphicsContext::Get_Active()), _c((D3D11Context&)this->_ctx)
+	{
+		m_shaderCode = shaderCode;
+		auto code_hlsl = m_shaderCode->GetCodeHLSL();
+
+		// TODO! Remove GLenum Type and use only ShaderCode::ShaderType!
+		std::unordered_map<GLenum, std::string> sources;
+		sources[GL_VERTEX_SHADER] = code_hlsl[ShaderCode::ShaderType::VERTEX];
+		sources[GL_FRAGMENT_SHADER] = code_hlsl[ShaderCode::ShaderType::FRAGMENT];
+
 		Compile(sources);
 	}
 
@@ -136,6 +151,8 @@ namespace Hazel {
 			{
 			case GL_VERTEX_SHADER:	string_pTarget = "vs_4_0"; break;
 			case GL_FRAGMENT_SHADER:string_pTarget = "ps_4_0"; break;
+			//case GL_VERTEX_SHADER:	string_pTarget = "vs_3_0"; break;
+			//case GL_FRAGMENT_SHADER:string_pTarget = "ps_3_0"; break;
 			default:
 				break;
 			}
