@@ -34,8 +34,10 @@ namespace Hazel {
 		static const uint32_t MaxIndices = MaxQuads * 6;
 		static const uint32_t MaxTextureSlots = 32; // TODO: RenderCaps
 
-		Ref<VertexArray> QuadVertexArray;
+		//Ref<VertexArray> QuadVertexArray;
 		Ref<VertexBuffer> QuadVertexBuffer;
+		Ref<IndexBuffer> quadIB;
+
 		Ref<Shader> TextureShader;
 		Ref<Texture2D> WhiteTexture;
 		Ref<PipelineSpecification> PipeSpec;
@@ -64,7 +66,7 @@ namespace Hazel {
 		s_Data.cBuff->SetSlot(0, 0);
 		s_Data.cBuff->Bind();
 
-		s_Data.QuadVertexArray = VertexArray::Create(); // TODO: to remove !
+		//--s_Data.QuadVertexArray = VertexArray::Create(); // TODO: to remove !
 		s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(QuadVertex));
 
 		Ref<ShaderCode> shaderCode = Hazel::ShaderCode::Create("assets/shaders/Texture450.glsl");
@@ -94,8 +96,9 @@ namespace Hazel {
 			offset += 4;
 		}
 
-		Ref<IndexBuffer> quadIB = IndexBuffer::Create(quadIndices, s_Data.MaxIndices);
-		s_Data.QuadVertexArray->SetIndexBuffer(quadIB);
+		s_Data.quadIB = IndexBuffer::Create(quadIndices, s_Data.MaxIndices);
+		//Ref<IndexBuffer> quadIB = IndexBuffer::Create(quadIndices, s_Data.MaxIndices);
+		//--s_Data.QuadVertexArray->SetIndexBuffer(quadIB);
 		delete[] quadIndices;
 
 		s_Data.WhiteTexture = Texture2D::Create(1, 1);
@@ -227,7 +230,13 @@ namespace Hazel {
 		//s_Data.QuadVertexArray->Bind();	// SHOUD BE MENAGED INSIDE PIPELINE!!
 		//s_Data.QuadVertexArray->GetIndexBuffer()->Bind();
 		s_Data.PipeSpec->Bind();
-		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+		//RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+
+		s_Data.QuadVertexBuffer->Bind();
+		s_Data.quadIB->Bind();
+		glDrawElements(GL_TRIANGLES, s_Data.QuadIndexCount, GL_UNSIGNED_INT, nullptr);
+
+
 		s_Data.Stats.DrawCalls++;
 	}
 

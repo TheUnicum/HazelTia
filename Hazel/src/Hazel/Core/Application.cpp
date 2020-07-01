@@ -31,8 +31,8 @@ namespace Hazel {
 		//static_cast<GraphicsContext*>(m_Window->GetCfx())->MakeCurrent();
 		//m_Window->OnUpdate();
 
-		m_WindowsTest.emplace_back(Window::Create({ "2 D3D Test", 800, 600, API::D3D11 }));
-		//m_WindowsTest.emplace_back(Window::Create({ "3 OpenGL Test", 800, 600, API::OpenGL }));
+		//m_WindowsTest.emplace_back(Window::Create({ "2 D3D Test", 800, 600, API::D3D11 }));
+		m_WindowsTest.emplace_back(Window::Create({ "3 OpenGL Test", 800, 600, API::OpenGL }));
 		//m_WindowsTest.emplace_back(Window::Create({ "3 Vulkan ", 800, 600, API::Vulkan }));
 
 

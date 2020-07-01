@@ -197,9 +197,9 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 				//				
 				Hazel::RenderCommandX::MakeContextCurrent(Hazel::Application::Get().GetWindowTest(0));
 				//m_vbk->BindTemp(PipeSpec2->m_spec.vertexLayout->GetStride()); //[Da sistemare x D3D]
+				PipeSpec2->Bind();
 				m_vbk->Bind();
 				m_ibk->Bind();
-				PipeSpec2->Bind();
 
 				Hazel::RenderCommandX::CmdDrawIndexted(6);
 				//std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->CmdDrawIndexted_impl(6);

@@ -85,6 +85,36 @@ namespace Hazel {
 		glClearColor(red, green, blue, 1.0f);
 	}
 
+	void OpenGLContext::CmdClear_impl()
+	{
+		ClearBuffer_impl(0.1f, 0.1f, 0.1f);
+		//HZ_CORE_ASSERT(false, "Function Still NOT implemented!");
+
+	}
+
+	void OpenGLContext::CmdDrawArrays_impl(uint32_t vertexCount, uint32_t offset)
+	{
+		HZ_CORE_ASSERT(false, "Function Still NOT implemented!");
+
+	}
+
+	void OpenGLContext::CmdDrawArraysInstanced_impl(uint32_t vertexCount, uint32_t instanceCount)
+	{
+		HZ_CORE_ASSERT(false, "Function Still NOT implemented!");
+
+	}
+
+	void OpenGLContext::CmdDrawIndexted_impl(uint32_t indexCount, uint32_t offset)
+	{
+		glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
+	}
+
+	void OpenGLContext::CmdDrawIndextedInstanced_impl(uint32_t indexCount, uint32_t instanceCount)
+	{
+		HZ_CORE_ASSERT(false, "Function Still NOT implemented!");
+
+	}
+
 	void OpenGLContext::DrawTriangle_impl(float angle)
 	{
 		glEnable(GL_CULL_FACE);

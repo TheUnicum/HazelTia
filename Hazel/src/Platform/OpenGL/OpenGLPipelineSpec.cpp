@@ -11,6 +11,7 @@ namespace Hazel {
 	{
 		m_spec = createInfo;
 		//m_Pipeline = CreateRef<Pipeline>(_c);
+		m_VA = CreateRef<OpenGLVertexArray>();
 		//ReCreate();
 	}
 
@@ -20,6 +21,8 @@ namespace Hazel {
 
 	void OpenGLPipelineSpec::Bind() const
 	{
+		//m_VA->Bind();
+
 		//ReCreate();
 
 		//OpenGLVertexArray va;
