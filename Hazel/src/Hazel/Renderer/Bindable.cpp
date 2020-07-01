@@ -1,5 +1,5 @@
 #include "hzpch.h"
-#include "Bindable.h"
+#include "Hazel/Renderer/Bindable.h"
 
 namespace Hazel {
 

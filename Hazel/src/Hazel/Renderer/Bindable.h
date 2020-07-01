@@ -1,8 +1,7 @@
 #pragma once
+#include "Hazel/Renderer/GraphicsContext.h"
 
 #include <unordered_map>
-
-#include "Hazel/Renderer/GraphicsContext.h"
 
 namespace Hazel {
 
@@ -18,9 +17,7 @@ namespace Hazel {
 		virtual std::string GetUID() const { HZ_CORE_ASSERT(false, "GetUID NOT IMPLEMENTED!"); return ""; }
 		static std::string GenerateUID() { HZ_CORE_ASSERT(false, "GenerateUID NOT IMPLEMENTED!"); return ""; }
 	public:
-		GraphicsContext& _ctx;	// to initialize on creation!!
-
-		// STATIC FUNCTION AND ENTITY BINDABLE MANAGEMENT!!!
+		GraphicsContext& _ctx;	// Important: always initialize on creation!!
 
 		// Bindable Functions to enable intellisense and automatic COLLECT THE ACTIVE CONTEXT (if not manually inserted)	
 		template<class T, typename...Params>
@@ -129,6 +126,7 @@ namespace Hazel {
 	}\
 	HZ_CORE_ASSERT(false, "Unknow Rendererctx!");\
 	return nullptr;\
+
 
 
 
