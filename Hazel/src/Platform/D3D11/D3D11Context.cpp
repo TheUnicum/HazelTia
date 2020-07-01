@@ -152,6 +152,17 @@ namespace Hazel {
 
 		// bind depth stensil view to OM
 		ppD3D.m_pContext->OMSetRenderTargets(1u, ppD3D.m_pTarget.GetAddressOf(), ppD3D.m_pDSV.Get());
+
+
+		// Change culling Mode
+		D3D11_RASTERIZER_DESC descRast = {};
+		descRast.FillMode = D3D11_FILL_SOLID;
+		//descRast.CullMode = D3D11_CULL_FRONT;
+		descRast.CullMode = D3D11_CULL_BACK;
+		descRast.FrontCounterClockwise = true;
+
+		ppD3D.m_pDevice->CreateRasterizerState(&descRast, &ppD3D.m_pRS);
+		ppD3D.m_pContext->RSSetState(ppD3D.m_pRS.Get());
 	}
 
 	void D3D11Context::SwapBuffers()

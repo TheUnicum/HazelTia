@@ -31,7 +31,7 @@ namespace Hazel {
 		const D3D11_INPUT_ELEMENT_DESC ied[] =
 		{
 		{ "Position",0,DXGI_FORMAT_R32G32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 },
-		//{ "inColor3",0,DXGI_FORMAT_R32G32B32_FLOAT,0,8,D3D11_INPUT_PER_VERTEX_DATA,0 },
+		{ "Color",0,DXGI_FORMAT_R32G32B32_FLOAT,0,8,D3D11_INPUT_PER_VERTEX_DATA,0 }
 
 		};
 		_c.GetPP().m_pDevice->CreateInputLayout(
@@ -55,6 +55,8 @@ namespace Hazel {
 		vp.TopLeftX = 0;
 		vp.TopLeftY = 0;
 		_c.GetPP().m_pContext->RSSetViewports(1u, &vp);
+
+
 	}
 
 	void D3D11PipelineSpec::ReCreate() const

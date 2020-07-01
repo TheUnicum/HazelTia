@@ -31,6 +31,7 @@ namespace Hazel {
 			Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_pContext = nullptr;
 			Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_pTarget = nullptr;
 			Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_pDSV = nullptr;
+			Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_pRS = nullptr;
 		};
 		Struct_ppD3D ppD3D;
 	public:

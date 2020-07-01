@@ -79,14 +79,13 @@ void Sandbox2D::OnAttach()
 
 		using namespace Hazel;	
 		Hazel::Ref<VertexLayout> vl2 = Hazel::VertexLayout::Create();
-		vl2->Append(VertexLayout::AP_FLOAT2, "inPosition2");
-			//.Append(VertexLayout::AP_FLOAT3, "inColor3");
+		vl2->Append(VertexLayout::AP_FLOAT2, "inPosition2")
+			.Append(VertexLayout::AP_FLOAT3, "inColor3");
 
 		//Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
 		//auto ssREd = Hazel::Shader::Create(sc);
 
-		auto ssREd = Hazel::Shader::Create("assets/shaders/D3D/Mattia.hlsl");
-
+		auto ssREd = Hazel::Shader::Create("assets/shaders/D3D/Mattia2.hlsl");
 
 		//auto c = sc->GetCodeGLSL();
 		//auto hs = sc->GetCodeHLSL(); 
@@ -99,37 +98,21 @@ void Sandbox2D::OnAttach()
 		PipeSpec2 = Hazel::PipelineSpecification::Create(createInfo);
 		PipeSpec2->Bind();;
 
-		//struct Vertex {
-		//	glm::vec2 pos;
-		//	glm::vec3 color;
-		//};
-		//const std::vector<Vertex> vertices = {
-		//	{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-		//	{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-		//	{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-		//	{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
-		//};
-		//const std::vector<uint32_t> indices =
-		//{
-		//0, 1, 2, 2, 3, 0
-		//};
-
-
-		// generator
-		struct VertexPos
-		{
+		struct VertexPos {
 			glm::vec2 pos;
-			//glm::vec2 tex;
+			glm::vec3 color;
 		};
 		const std::vector<VertexPos> vertices = {
-			{{ 0.0f,   0.5f}},//, {0.0, 0.0} },
-			{{ 0.5f,  -0.5f}},//, {0.0, 0.0} },
-			{{-0.5f,  -0.5f}}//, { 0.0, 0.0 }}
+			{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+			{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+			{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+			{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
 		};
 		const std::vector<uint32_t> indices =
 		{
-				0, 1, 2
+		0, 1, 2, 2, 3, 0
 		};
+
 
 		//Hazel::Ref<Hazel::VertexBuffer> vbk = Hazel::VertexBuffer::Create((float*)vertices.data(), (uint32_t)(sizeof(Vertex) * vertices.size()));
 		m_vbk = Hazel::VertexBuffer::Create((float*)vertices.data(), (uint32_t)(sizeof(VertexPos) * vertices.size()));
@@ -205,11 +188,11 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 				//
 				//				
 				Hazel::RenderCommandX::MakeContextCurrent(Hazel::Application::Get().GetWindowTest(0));
-				m_vbk->BindTemp(sizeof(float) * 2);
+				m_vbk->BindTemp(sizeof(float) * 5);
 				m_ibk->Bind();
 				PipeSpec2->Bind();
 
-				std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->CmdDrawIndexted_impl(3);
+				std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->CmdDrawIndexted_impl(6);
 				//std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->DrawTriangle_impl2(0);
 				///----2
 				
