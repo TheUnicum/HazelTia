@@ -46,6 +46,8 @@ namespace Hazel {
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
+		virtual VertexLayout& GetVertexLayout() { return *(m_spec.vertexLayout); }
+
 	public:
 		PipelineCreateInfo m_spec;
 

@@ -191,7 +191,9 @@ namespace Hazel {
 
 	void D3D11Context::CmdClear_impl()
 	{
-		HZ_CORE_ASSERT(false, "Function Still NOT implemented!");
+		ClearBuffer_impl(.2f, 0.1f, 0.1f);
+
+		//HZ_CORE_ASSERT(false, "Function Still NOT implemented!");
 	}
 
 	void D3D11Context::CmdDrawArrays_impl(uint32_t vertexCount, uint32_t offset)

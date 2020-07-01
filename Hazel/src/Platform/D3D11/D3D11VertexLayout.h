@@ -36,6 +36,34 @@ namespace Hazel
 
 			}
 		}
+
+		const std::vector<D3D11_INPUT_ELEMENT_DESC> GetElementsDesc()
+		{
+			// I could create on beginning, Store and pass a reference!
+			std::vector<D3D11_INPUT_ELEMENT_DESC> eleDesc;
+
+			auto c = GetD3DLayout();
+
+			//eleDesc.push_back({ "Position",0,DXGI_FORMAT_R32G32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 });
+			//eleDesc.push_back({ "Color",0,DXGI_FORMAT_R32G32B32_FLOAT,0,8,D3D11_INPUT_PER_VERTEX_DATA,0 });
+			return c;
+		}
+
+		const std::vector<D3D11_INPUT_ELEMENT_DESC> GetElementsDescAuto()
+		{
+			// I could create on beginning, Store and pass a reference!
+			auto c = GetD3DLayout();
+			size_t i = 0;
+			for (auto& ele : c)
+			{
+				ele.SemanticName = "TEXCOORD";
+				ele.SemanticIndex = i;
+				i++;
+			}
+
+			return c;
+		}
+
 	private:
 
 	};

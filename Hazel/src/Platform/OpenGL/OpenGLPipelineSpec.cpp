@@ -2,6 +2,7 @@
 #include "OpenGLPipelineSpec.h"
 
 #include "Platform/OpenGL/OpenGLVertexLayout.h"
+#include "Platform/OpenGL/OpenGLVertexArray.h"
 
 namespace Hazel {
 
@@ -20,6 +21,10 @@ namespace Hazel {
 	void OpenGLPipelineSpec::Bind() const
 	{
 		//ReCreate();
+
+		//OpenGLVertexArray va;
+		//va.Bind();
+
 		m_spec.shader->Bind(); // Nothing in vulkan
 		std::dynamic_pointer_cast<OpenGLVertexLayout>(m_spec.vertexLayout)->Bind();
 		//m_Pipeline->Bind();

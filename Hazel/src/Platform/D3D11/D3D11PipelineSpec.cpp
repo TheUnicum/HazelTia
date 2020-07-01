@@ -1,5 +1,6 @@
 #include "hzpch.h"
 #include "D3D11PipelineSpec.h"
+#include "D3D11VertexLayout.h"
 
 namespace wrl = Microsoft::WRL;
 
@@ -8,6 +9,8 @@ namespace Hazel {
 	D3D11PipelineSpec::D3D11PipelineSpec(const PipelineCreateInfo& createInfo)
 		: PipelineSpecification(GraphicsContext::Get_Active()), _c((D3D11Context&)this->_ctx)
 	{
+		m_Reflection_on_Shader = (createInfo.vertexLayout == nullptr);
+
 		m_spec = createInfo;
 		//m_Pipeline = CreateRef<Pipeline>(_c);
 		//ReCreate();
@@ -22,27 +25,32 @@ namespace Hazel {
 		m_spec.shader->Bind(); // Nothing in vulkan
 		//std::dynamic_pointer_cast<OpenGLVertexLayout>(m_spec.vertexLayout)->Bind();
 		//m_Pipeline->Bind();
-		
-		//auto x = m_spec.vertexLayout->GetD3DLayout();
 
 		auto pBlob = m_spec.shader->GetpShaderBytecode();
 		// input (vertex) layout (2d position only)
 		wrl::ComPtr<ID3D11InputLayout> pInputLayout;
-		const D3D11_INPUT_ELEMENT_DESC ied[] =
+
+		if (m_Reflection_on_Shader)
 		{
-		//{ "Position",0,DXGI_FORMAT_R32G32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 },
-		//{ "Color",0,DXGI_FORMAT_R32G32B32_FLOAT,0,8,D3D11_INPUT_PER_VERTEX_DATA,0 }
-
-		{ "TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 },
-		{ "TEXCOORD",1,DXGI_FORMAT_R32G32B32_FLOAT,0,8,D3D11_INPUT_PER_VERTEX_DATA,0 }
-
-		};
 		_c.GetPP().m_pDevice->CreateInputLayout(
-			ied, (UINT)std::size(ied),
+			std::dynamic_pointer_cast<D3D11VertexLayout>(m_spec.vertexLayout)->GetElementsDescAuto().data(),
+			m_spec.vertexLayout->GetElementCount(),
 			pBlob->GetBufferPointer(),
 			pBlob->GetBufferSize(),
 			&pInputLayout
 		);
+		}
+		else
+		{
+			_c.GetPP().m_pDevice->CreateInputLayout(
+				std::dynamic_pointer_cast<D3D11VertexLayout>(m_spec.vertexLayout)->GetElementsDesc().data(),
+				m_spec.vertexLayout->GetElementCount(),
+				pBlob->GetBufferPointer(),
+				pBlob->GetBufferSize(),
+				&pInputLayout
+			);
+		}
+
 
 		// bind vertex layout
 		_c.GetPP().m_pContext->IASetInputLayout(pInputLayout.Get());

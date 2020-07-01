@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "Platform/D3D11/D3D11Context.h"
+#include "Platform/OpenGL/OpenGLVertexArray.h"
 
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
@@ -81,11 +82,13 @@ void Sandbox2D::OnAttach()
 		//Hazel::Ref<VertexLayout> vl2 = Hazel::VertexLayout::Create();
 		//vl2->Append(VertexLayout::AP_FLOAT2, "inPosition2")
 		//	.Append(VertexLayout::AP_FLOAT3, "inColor3");
+		//vl2->Append(VertexLayout::AP_FLOAT2, "Position")
+		//	.Append(VertexLayout::AP_FLOAT3, "Color");
 
 		Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
-		auto gl = sc->GetVertexLayoutEleList();
-		auto hl = sc->GetVertexLayoutEleListHLSL();
-		auto s = sc->GetCodeHLSL();
+		//auto gl = sc->GetVertexLayoutEleList();
+		//auto hl = sc->GetVertexLayoutEleListHLSL();
+		//auto s = sc->GetCodeHLSL();
 		auto ssREd = Hazel::Shader::Create(sc);
 
 		//auto ssREd = Hazel::Shader::Create("assets/shaders/D3D/Mattia2.hlsl");
@@ -99,7 +102,7 @@ void Sandbox2D::OnAttach()
 		//createInfo.vertexLayout = vl2; // testato con vulkan
 		createInfo.vertexLayout = nullptr;// vl2;
 		PipeSpec2 = Hazel::PipelineSpecification::Create(createInfo);
-		PipeSpec2->Bind();;
+		PipeSpec2->Bind();
 
 		struct VertexPos {
 			glm::vec2 pos;
@@ -113,14 +116,15 @@ void Sandbox2D::OnAttach()
 		};
 		const std::vector<uint32_t> indices =
 		{
-		0, 1, 2, 2, 3, 0
+		//0, 1, 2, 2, 3, 0
+		0, 2, 3, 2, 3, 0
 		};
 
 
 		//Hazel::Ref<Hazel::VertexBuffer> vbk = Hazel::VertexBuffer::Create((float*)vertices.data(), (uint32_t)(sizeof(Vertex) * vertices.size()));
 		m_vbk = Hazel::VertexBuffer::Create((float*)vertices.data(), (uint32_t)(sizeof(VertexPos) * vertices.size()));
 		m_ibk = Hazel::IndexBuffer::Create((uint32_t*)indices.data(), indices.size());
-
+		m_vbk->SetVertexLayout(PipeSpec2->GetVertexLayout());
 	}
 }
 
@@ -187,12 +191,13 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 				std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest(0));
 				cc->MakeCurrent();
 
-				std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->ClearBuffer_impl(.2f, 0.1f, 0.1f);
+				//std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->ClearBuffer_impl(.2f, 0.1f, 0.1f);
+				Hazel::RenderCommandX::Clear();
 				//
 				//				
 				Hazel::RenderCommandX::MakeContextCurrent(Hazel::Application::Get().GetWindowTest(0));
-				m_vbk->BindTemp(sizeof(float) * 5); //[Da sistemare x D3D]
-				//m_vbk->Bind();
+				//m_vbk->BindTemp(PipeSpec2->m_spec.vertexLayout->GetStride()); //[Da sistemare x D3D]
+				m_vbk->Bind();
 				m_ibk->Bind();
 				PipeSpec2->Bind();
 

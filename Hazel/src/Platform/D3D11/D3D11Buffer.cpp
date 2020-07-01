@@ -67,9 +67,15 @@ namespace Hazel {
 
 	void D3D11VertexBuffer::Bind() const
 	{
-		const UINT stride = 0u;
+		//const UINT stride = 0u;
+		if (!m_stride)
+		{
+			m_stride = m_VertexLayout.GetStride();
+			//HZ_CORE_ASSERT(false, "m_stride must be SET to CALL BIND");
+		}
+
 		const UINT offset = 0u;
-		_c.GetPP().m_pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
+		_c.GetPP().m_pContext->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &m_stride, &offset);
 	}
 
 	void D3D11VertexBuffer::Unbind() const

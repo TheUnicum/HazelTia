@@ -3,6 +3,7 @@
 #include "Hazel/Renderer/GraphicsContext.h"
 
 #include "Hazel/Renderer/Bindable.h"
+#include "Hazel/Renderer/VertexLayout.h"
 
 namespace Hazel {
 
@@ -116,8 +117,9 @@ namespace Hazel {
 
 		virtual const BufferLayout& GetLayout() const = 0;
 		virtual void SetLayout(const BufferLayout& layout) = 0;
-
+		virtual void SetVertexLayout(const VertexLayout& layout) { m_VertexLayout = layout;	} // for now is a copy!!
 	protected:
+		VertexLayout m_VertexLayout;
 		static std::string GenerateUID_(std::string tag);
 	public:
 		static std::string Get_ID_NR() { return std::to_string(std::time(0)); }

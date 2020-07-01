@@ -19,6 +19,7 @@ namespace Hazel {
 
 	private:
 		std::string m_Name;
+		bool m_Reflection_on_Shader;
 	public:
 		D3D11Context& _c;
 	};
