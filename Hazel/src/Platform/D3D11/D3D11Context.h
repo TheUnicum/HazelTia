@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Hazel/Renderer/GraphicsContext.h"
 
 #define NOMINMAX
@@ -7,15 +6,24 @@
 #include <d3d11.h>
 #include <wrl.h>
 
+
 namespace Hazel {
 
 	class D3D11Context : public GraphicsContext
 	{
 	public:
 		D3D11Context(Window& windowHandle);
+		~D3D11Context();
 
 		virtual void Init() override;
 		virtual void SwapBuffers() override;
+		// API functions
+		void CmdClear_impl() override;
+		void CmdClearColor_impl(float red, float green, float blue) override;
+		void CmdDrawArrays_impl(uint32_t vertexCount, uint32_t offset = 0) override;
+		void CmdDrawArraysInstanced_impl(uint32_t vertexCount, uint32_t instanceCount) override;
+		void CmdDrawIndexted_impl(uint32_t indexCount, uint32_t offset = 0) override;
+		void CmdDrawIndextedInstanced_impl(uint32_t indexCount, uint32_t instanceCount) override;
 
 		virtual API GetAPI() const override { return API::D3D11; };
 		virtual std::string GetAPI_TEXT() const override { return "D3D11"; };
@@ -37,21 +45,12 @@ namespace Hazel {
 	public:
 		Struct_ppD3D& GetPP() { return ppD3D; }
 
-		// API functions
 	public:
-		void CmdClear_impl() override;
-		void CmdDrawArrays_impl(uint32_t vertexCount, uint32_t offset = 0) override;
-		void CmdDrawArraysInstanced_impl(uint32_t vertexCount, uint32_t instanceCount) override;
-		void CmdDrawIndexted_impl(uint32_t indexCount, uint32_t offset = 0) override;
-		void CmdDrawIndextedInstanced_impl(uint32_t indexCount, uint32_t instanceCount) override;
-
-
-
+		// Example API Functions
 		virtual void DrawTriangle_impl(float angle) override;
 		virtual void DrawTriangle_impl2(float angle);
 
 		virtual void ClearBuffer_impl(float red, float green, float blue) override;
 	};
-
 
 }

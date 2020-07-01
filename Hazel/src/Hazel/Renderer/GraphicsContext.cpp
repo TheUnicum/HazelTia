@@ -18,6 +18,12 @@ namespace Hazel {
 		return "#Api" + std::to_string((int)api) + "@:" + std::to_string(reinterpret_cast<uintptr_t>(&window));
 	}
 
+	GraphicsContext& GraphicsContext::Get_Active()
+	{
+		HZ_CORE_ASSERT(_s_active, "Graphiccs Context not initialized!");
+		return *_s_active;
+	}
+
 	API GraphicsContext::Get_API_Active()
 	{
 		if (_s_active)
@@ -74,7 +80,5 @@ namespace Hazel {
 		//	HZ_CORE_ASSERT("Release GraphicsContext not possible <{}>", key);
 		//}
 	}
-
-
 
 }

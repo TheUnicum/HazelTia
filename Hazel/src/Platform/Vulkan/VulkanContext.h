@@ -1,15 +1,10 @@
 #pragma once
-
 #include "Hazel/Renderer/GraphicsContext.h"
 
 #include "Platform/Vulkan/VulkanUtiliy.h"
-
-#include "vulkan/vulkan.h"
-
 #include "Platform/Vulkan/RenderPasses.h"
 #include "Platform/Vulkan/Pipeline.h"
 #include "Platform/Vulkan/CommandBuffer.h"
-
 struct GLFWwindow;
 
 namespace Hazel {
@@ -21,13 +16,16 @@ namespace Hazel {
 	public:
 		VulkanContext(Window& window);
 		~VulkanContext();
-
-		void CleanUpSwapChain();
-
+		
 		virtual void Init() override;
-		virtual void Bind() override;
-
 		virtual void SwapBuffers() override;
+		// API functions
+		void CmdClear_impl() override;
+		void CmdClearColor_impl(float red, float green, float blue) override;
+		void CmdDrawArrays_impl(uint32_t vertexCount, uint32_t offset = 0) override;
+		void CmdDrawArraysInstanced_impl(uint32_t vertexCount, uint32_t instanceCount) override;
+		void CmdDrawIndexted_impl(uint32_t indexCount, uint32_t offset = 0) override;
+		void CmdDrawIndextedInstanced_impl(uint32_t indexCount, uint32_t instanceCount) override;
 
 		virtual API GetAPI() const override { return API::Vulkan; };
 		virtual std::string GetAPI_TEXT() const override { return "Vulkan"; };
@@ -35,6 +33,8 @@ namespace Hazel {
 	private:
 		Window& m_window;
 		GLFWwindow* m_windowHandle;
+	private:
+		void CleanUpSwapChain();
 	private:
 		VulkanUtiliy m_VU;
 
@@ -61,7 +61,7 @@ namespace Hazel {
 
 		VkCommandPool m_CommandPool;
 
-	private:
+		// External Components
 		Ref<RenderPasses> m_RenderPasses;
 		Ref<Pipeline> m_Pipeline;
 		Ref<CommandBuffer> m_CmdBuffer;
@@ -71,8 +71,7 @@ namespace Hazel {
 		void CreateSurface();
 		void PickPhysicalDevice();
 		void CreateLogicalDevice();
-
-		void CreateSyncObjects();
+		void CreateSyncObjects(); // SyncObj
 
 		void CreateCommandPool();
 		void CreateCommandBuffers(); // need CommandPool
@@ -83,41 +82,29 @@ namespace Hazel {
 		void BindRenderPass(); // need SwapChain
 
 		void CreateFramebuffers();
-
-
+		void LinkRenderPass();
 
 		bool DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT msgSvrty, VkDebugUtilsMessageTypeFlagsEXT msgTyp, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
 
 	public:
 		VkDevice& GetDevice() { return m_Device; }
 		VkPhysicalDevice& GetPhysicalDevice() { return m_PhysicalDevice; }
-
 		VkExtent2D& GeSwapchainExtent() { return m_SwapChainExtent; }
 		VkRenderPass& GetRenderPass() { return m_RenderPasses->Get(); }
-		
 		VkCommandPool& GetCommandPool() { return m_CommandPool; }
-
 		const VkFormat& GetswapChainImageFormat() const { return m_SwapChainImageFormat; }
 		const VkFormat& GetDepthFormat() const { return VK_FORMAT_UNDEFINED; }// m_DepthResources->GetDepthFormat(); }
-
 		VkPipeline& GetPipeline() { return m_Pipeline->Get(); }
 		VkPipelineLayout& GetPipelineLayout() { return m_Pipeline->GetLayout(); }
 
 		VkQueue GetGraphicsQueue() { return m_GraphicsQueue; }
 		VkQueue GetPresentQueue() { return m_PresentQueue; }
-		//Api Render
 	public:
-		void BindVertexBuffer(const VkBuffer& vb);
+		//Api Exclusive Vulkan Render
+		void BindVertexBuffer(const VkBuffer& vb); // TODO make direcly on the queue!
 		void BindIndexBuffer(const VkBuffer& ib);
 		void BindPipeline(Ref<Pipeline>& pipeline); // Bind Shader !
 		void UnbindPipeline(); // Bind Shader !
-
-		void CmdClear_impl() override;
-		void CmdDrawArrays_impl(uint32_t vertexCount, uint32_t offset = 0) override;
-		void CmdDrawArraysInstanced_impl(uint32_t vertexCount, uint32_t instanceCount) override;
-		void CmdDrawIndexted_impl(uint32_t indexCount, uint32_t offset = 0) override;
-		void CmdDrawIndextedInstanced_impl(uint32_t indexCount, uint32_t instanceCount) override;
-
 	};
 
 }

@@ -12,11 +12,8 @@ namespace Hazel {
 		: m_window(window), m_windowHandle((GLFWwindow*)window.GetNativeWindow())
 	{
 		HZ_CORE_ASSERT(m_windowHandle, "Window handle is null!");
-
-		m_RenderPasses = std::make_shared<RenderPasses>(*this);
-		
+		m_RenderPasses = std::make_shared<RenderPasses>(*this);	
 	}
-
 	VulkanContext::~VulkanContext()
 	{
 		CleanUpSwapChain();
@@ -35,27 +32,6 @@ namespace Hazel {
 		vkDestroyInstance(m_Instance, nullptr);
 	}
 
-	void VulkanContext::CleanUpSwapChain()
-	{
-		vkDestroyCommandPool(m_Device, m_CommandPool, nullptr);
-
-		for (auto framebuffer : m_SwapChainFramebuffers)
-		{
-			vkDestroyFramebuffer(m_Device, framebuffer, nullptr);
-		}
-
-		// m_Pipeline->Cleanup(); will be manage externally
-
-		m_RenderPasses->Cleanup();
-
-		for (auto imageView : m_SwapChainImageViews)
-		{
-			vkDestroyImageView(m_Device, imageView, nullptr);
-		}
-
-		vkDestroySwapchainKHR(m_Device, m_SwapChain, nullptr);
-	}
-
 	void VulkanContext::Init()
 	{
 		CreateInstance();
@@ -71,15 +47,8 @@ namespace Hazel {
 
 		CreateSwapChain();
 		CreateImageViews();
-		Bind();
+		LinkRenderPass();
 	}
-
-	void VulkanContext::Bind()
-	{
-		BindRenderPass();
-		CreateFramebuffers();
-	}
-
 	void VulkanContext::SwapBuffers()
 	{
 		if (!m_Pipeline) return;
@@ -164,6 +133,56 @@ namespace Hazel {
 
 		vkDeviceWaitIdle(m_Device); //		ctx_vkDeviceWaitIdle(); // one frame at a time!!! for the moment
 	}
+	// API functions
+	void VulkanContext::CmdClear_impl()
+	{
+		m_CmdBuffer->GetQueue().push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
+		{
+			VkClearAttachment clearAttachments = {};
+			clearAttachments.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			clearAttachments.clearValue.color = { 164.0f / 256.0f, 30.0f / 256.0f, 34.0f / 256.0f, 0.0f };
+			clearAttachments.colorAttachment = 0;
+		
+			VkClearRect clearRect = {};
+			clearRect.layerCount = 1;
+			clearRect.rect.offset = { 0, 0 };
+			clearRect.rect.extent = { m_SwapChainExtent.width, m_SwapChainExtent.height };
+		
+			vkCmdClearAttachments(drawCommandBuffer, 1, &clearAttachments, 1, &clearRect);
+		});
+	}
+	void VulkanContext::CmdClearColor_impl(float red, float green, float blue)
+	{
+		HZ_CORE_ASSERT(false, "Function Still NOT implemented!");
+	}
+	void VulkanContext::CmdDrawArrays_impl(uint32_t vertexCount, uint32_t offset)
+	{
+		m_CmdBuffer->GetQueue().push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
+		{
+			vkCmdDraw(drawCommandBuffer, vertexCount, 1, offset, 0);
+		});
+	}
+	void VulkanContext::CmdDrawArraysInstanced_impl(uint32_t vertexCount, uint32_t indexCount)
+	{
+		m_CmdBuffer->GetQueue().push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
+		{
+			vkCmdDraw(drawCommandBuffer, vertexCount, indexCount, 0, 0);
+		});
+	}
+	void VulkanContext::CmdDrawIndexted_impl(uint32_t indexCount, uint32_t offset)
+	{
+		m_CmdBuffer->GetQueue().push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
+		{
+			vkCmdDrawIndexed(drawCommandBuffer, indexCount, 1, offset, 0, 0);
+		});
+	}
+	void VulkanContext::CmdDrawIndextedInstanced_impl(uint32_t indexCount, uint32_t instanceCount)
+	{
+		m_CmdBuffer->GetQueue().push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
+		{
+			vkCmdDrawIndexed(drawCommandBuffer, indexCount, instanceCount, 0, 0, 0);
+		});
+	}
 
 	API VulkanContext::MakeCurrent()
 	{
@@ -172,6 +191,27 @@ namespace Hazel {
 			_s_active = Resolve(m_window);
 		}
 		return GetAPI();
+	}
+
+	void VulkanContext::CleanUpSwapChain()
+	{
+		vkDestroyCommandPool(m_Device, m_CommandPool, nullptr);
+
+		for (auto framebuffer : m_SwapChainFramebuffers)
+		{
+			vkDestroyFramebuffer(m_Device, framebuffer, nullptr);
+		}
+
+		// m_Pipeline->Cleanup(); will be manage externally
+
+		m_RenderPasses->Cleanup();
+
+		for (auto imageView : m_SwapChainImageViews)
+		{
+			vkDestroyImageView(m_Device, imageView, nullptr);
+		}
+
+		vkDestroySwapchainKHR(m_Device, m_SwapChain, nullptr);
 	}
 
 	void VulkanContext::CreateInstance()
@@ -230,7 +270,6 @@ namespace Hazel {
 			HZ_CORE_ASSERT(false, "Failed to create instance!");
 		}
 	}
-
 	void VulkanContext::SetupDebugMessenger()
 	{
 		if (!m_VU.ValidationLayersEnabled()) return;
@@ -243,7 +282,6 @@ namespace Hazel {
 			HZ_CORE_ASSERT(false, "Failed to set up debug messenger!");
 		}
 	}
-
 	void VulkanContext::CreateSurface()
 	{
 		if (glfwCreateWindowSurface(m_Instance, m_windowHandle, nullptr, &m_Surface) != VK_SUCCESS)
@@ -251,7 +289,6 @@ namespace Hazel {
 			HZ_CORE_ASSERT(false, "failed to create window surface!");
 		}
 	}
-
 	void VulkanContext::PickPhysicalDevice()
 	{
 		uint32_t deviceCount = 0;
@@ -277,7 +314,6 @@ namespace Hazel {
 			HZ_CORE_ASSERT(false, "Failed to find a suitable GPU!");
 		}
 	}
-
 	void VulkanContext::CreateLogicalDevice()
 	{
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -330,10 +366,8 @@ namespace Hazel {
 		vkGetDeviceQueue(m_Device, m_qfIndices.graphicsFamily.value(), 0, &m_GraphicsQueue);
 		vkGetDeviceQueue(m_Device, m_qfIndices.presentFamily.value(), 0, &m_PresentQueue);
 	}
-
 	void VulkanContext::CreateSyncObjects()
 	{
-
 		VkSemaphoreCreateInfo semaphoreInfo{};
 		semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
@@ -346,9 +380,25 @@ namespace Hazel {
 		{
 			HZ_CORE_ASSERT(false, "Failed to create synchronization objects for a frame!");
 		}
-
 	}
+	void VulkanContext::CreateCommandPool()
+	{
+		QueueFamilyIndices m_qfIndices = m_VU.FindQueueFamilies(m_PhysicalDevice, m_Surface); // I may store the results on member variables(?)
 
+		VkCommandPoolCreateInfo poolInfo{};
+		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		poolInfo.queueFamilyIndex = m_qfIndices.graphicsFamily.value();
+		poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;// 0; // Optional
+
+		if (vkCreateCommandPool(m_Device, &poolInfo, nullptr, &m_CommandPool) != VK_SUCCESS)
+		{
+			HZ_CORE_ASSERT(false, "Failed to create command pool!");
+		}
+	}
+	void VulkanContext::CreateCommandBuffers()
+	{
+		m_CmdBuffer = std::make_shared<CommandBuffer>(*this);
+	}
 	void VulkanContext::CreateSwapChain()
 	{
 		// This change during window resize.
@@ -412,7 +462,6 @@ namespace Hazel {
 		m_SwapChainImageFormat = surfaceFormat.format;
 		m_SwapChainExtent = extent;
 	}
-
 	void VulkanContext::CreateImageViews()
 	{
 		m_SwapChainImageViews.resize(m_SwapChainImages.size());
@@ -443,9 +492,7 @@ namespace Hazel {
 	void VulkanContext::BindRenderPass()
 	{
 		m_RenderPasses->Bind();
-
 	}
-
 	void VulkanContext::CreateFramebuffers()
 	{
 		m_SwapChainFramebuffers.resize(m_SwapChainImageViews.size());
@@ -474,30 +521,11 @@ namespace Hazel {
 			}
 		}
 	}
-
-	void VulkanContext::CreateCommandPool()
+	void VulkanContext::LinkRenderPass()
 	{
-		QueueFamilyIndices m_qfIndices = m_VU.FindQueueFamilies(m_PhysicalDevice, m_Surface); // I may store the results on member variables(?)
-
-		VkCommandPoolCreateInfo poolInfo{};
-		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		poolInfo.queueFamilyIndex = m_qfIndices.graphicsFamily.value();
-		poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;// 0; // Optional
-
-		if (vkCreateCommandPool(m_Device, &poolInfo, nullptr, &m_CommandPool) != VK_SUCCESS)
-		{
-			HZ_CORE_ASSERT(false, "Failed to create command pool!");
-		}
+		BindRenderPass();
+		CreateFramebuffers();
 	}
-
-	void VulkanContext::CreateCommandBuffers()
-	{
-		m_CmdBuffer = std::make_shared<CommandBuffer>(*this);
-
-
-		//m_CmdBuffer->Rec();  To move on swapchain
-	}
-
 	// Callback function
 	bool VulkanContext::DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT msgSvrty, VkDebugUtilsMessageTypeFlagsEXT msgTyp, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 	{
@@ -524,17 +552,15 @@ namespace Hazel {
 		return VK_FALSE;
 	}
 
-
+	//Api Exclusive Vulkan Render
 	void VulkanContext::BindVertexBuffer(const VkBuffer& vb)
 	{
 		m_CmdBuffer->BindVertexBuffer(vb);
 	}
-
 	void VulkanContext::BindIndexBuffer(const VkBuffer& ib)
 	{
 		m_CmdBuffer->BindIndexBuffer(ib);
 	}
-
 	void VulkanContext::BindPipeline(Ref<Pipeline>& pipeline)
 	{
 		m_Pipeline = pipeline;
@@ -543,62 +569,5 @@ namespace Hazel {
 	{
 		m_Pipeline = nullptr;
 	}
-
-
-	//--------------------------
-//	void VulkanContextvkCmdClearAttachments
-
-
-
-	void VulkanContext::CmdClear_impl()
-	{
-		m_CmdBuffer->GetQueue().push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
-		{
-			VkClearAttachment clearAttachments = {};
-			clearAttachments.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-			clearAttachments.clearValue.color = { 164.0f / 256.0f, 30.0f / 256.0f, 34.0f / 256.0f, 0.0f };
-			clearAttachments.colorAttachment = 0;
-		
-			VkClearRect clearRect = {};
-			clearRect.layerCount = 1;
-			clearRect.rect.offset = { 0, 0 };
-			clearRect.rect.extent = { m_SwapChainExtent.width, m_SwapChainExtent.height };
-		
-			vkCmdClearAttachments(drawCommandBuffer, 1, &clearAttachments, 1, &clearRect);
-		});
-	}
-
-	void VulkanContext::CmdDrawArrays_impl(uint32_t vertexCount, uint32_t offset)
-	{
-		m_CmdBuffer->GetQueue().push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
-		{
-			vkCmdDraw(drawCommandBuffer, vertexCount, 1, offset, 0);
-		});
-	}
-
-	void VulkanContext::CmdDrawArraysInstanced_impl(uint32_t vertexCount, uint32_t indexCount)
-	{
-		m_CmdBuffer->GetQueue().push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
-		{
-			vkCmdDraw(drawCommandBuffer, vertexCount, indexCount, 0, 0);
-		});
-	}
-
-	void VulkanContext::CmdDrawIndexted_impl(uint32_t indexCount, uint32_t offset)
-	{
-		m_CmdBuffer->GetQueue().push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
-		{
-			vkCmdDrawIndexed(drawCommandBuffer, indexCount, 1, offset, 0, 0);
-		});
-	}
-
-	void VulkanContext::CmdDrawIndextedInstanced_impl(uint32_t indexCount, uint32_t instanceCount)
-	{
-		m_CmdBuffer->GetQueue().push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
-		{
-			vkCmdDrawIndexed(drawCommandBuffer, indexCount, instanceCount, 0, 0, 0);
-		});
-	}
-
 
 }

@@ -40,6 +40,10 @@ namespace Hazel {
 		HZ_CORE_ASSERT(m_windowHandle, "Window handle is null!");
 	}
 
+	D3D11Context::~D3D11Context()
+	{
+	}
+
 	void D3D11Context::Init()
 	{
 
@@ -192,8 +196,11 @@ namespace Hazel {
 	void D3D11Context::CmdClear_impl()
 	{
 		ClearBuffer_impl(.2f, 0.1f, 0.1f);
+	}
 
-		//HZ_CORE_ASSERT(false, "Function Still NOT implemented!");
+	void D3D11Context::CmdClearColor_impl(float red, float green, float blue)
+	{
+		HZ_CORE_ASSERT(false, "Function Still NOT implemented!");
 	}
 
 	void D3D11Context::CmdDrawArrays_impl(uint32_t vertexCount, uint32_t offset)
