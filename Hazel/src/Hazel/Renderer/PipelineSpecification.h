@@ -2,10 +2,10 @@
 
 #include "Hazel/Renderer/Bindable.h"
 
-#include "Buffer.h"
-#include "Shader.h"
-#include "VertexLayout.h"
-
+#include "Hazel/Renderer/Buffer.h"
+#include "Hazel/Renderer/Shader.h"
+#include "Hazel/Renderer/VertexLayout.h"
+#include "Hazel/Renderer/ConstantBuffer.h"
 
 namespace Hazel {
 
@@ -13,8 +13,8 @@ namespace Hazel {
 	{
 		Ref<Shader> shader;
 		Ref<BufferLayout> bufferLayout;
-		//std::shared_ptr<UniformBuffer> uniformBuffer;
 		Ref<VertexLayout> vertexLayout;
+		Ref<ConstantBuffer> constantBuffer;
 
 		PipelineCreateInfo& operator=(const PipelineCreateInfo& other)
 		{
@@ -32,6 +32,7 @@ namespace Hazel {
 					vertexLayout->Append(ele.type, ele.name.c_str());
 				}
 			}
+			constantBuffer = other.constantBuffer;
 			return *this;
 		}
 	};

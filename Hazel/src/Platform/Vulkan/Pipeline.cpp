@@ -4,7 +4,7 @@
 #include "Platform/Vulkan/VulkanContext.h"
 #include "Platform/Vulkan/VulkanShader.h"
 #include "Platform/Vulkan/VulkanVertexLayout.h"
-
+#include "Platform/Vulkan/VulkanConstantBuffer.h"
 
 
 
@@ -220,20 +220,22 @@ namespace Hazel {
 		colorBlending.blendConstants[3] = 0.0f; // Optional
 
 		// Pipeline layout
+		// Set Binding Point for BUFFER!
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		//if (m_spec.uniformBuffer)
-		//{
-		//	pipelineLayoutInfo.setLayoutCount = 1; // Optional
-		//	pipelineLayoutInfo.pSetLayouts = &m_spec.uniformBuffer->GetDescriptorSetLayout(); // nullptr; // Optional
-		//}
-		//else
-		//{
+		if (m_spec.constantBuffer)
+		{
+			pipelineLayoutInfo.setLayoutCount = 1; // Optional
+			VkDescriptorSetLayout& descLayout = std::dynamic_pointer_cast<VulkanConstantBuffer>(m_spec.constantBuffer)->GetDescriptorSetLayout();
+			pipelineLayoutInfo.pSetLayouts = &descLayout; 
+		}
+		else
+		{
 			pipelineLayoutInfo.setLayoutCount = 0; // Optional
 			pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
-		//}
-		//pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
-		//pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
+		}
+		pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
+		pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
 
 		//if (vkCreatePipelineLayout(m_device, &pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
 		if (vkCreatePipelineLayout(m_ctx.GetDevice(), &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS)
