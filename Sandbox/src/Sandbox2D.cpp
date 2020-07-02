@@ -119,6 +119,8 @@ void Sandbox2D::OnAttach()
 		m_cb = Hazel::ConstantBuffer::Create(sizeof(UniformBufferObject), &ubo);
 		m_cb->SetSlot(0, 1);
 
+		m_tex = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
+
 
 		Hazel::PipelineCreateInfo createInfo;// { Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl"), nullptr};
 		createInfo.shader = ssREd;

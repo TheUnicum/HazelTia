@@ -28,6 +28,7 @@ private:
 	Hazel::Ref<Hazel::VertexBuffer> m_vbk;
 	Hazel::Ref<Hazel::IndexBuffer> m_ibk;
 	Hazel::Ref<Hazel::ConstantBuffer> m_cb;
+	Hazel::Ref<Hazel::Texture2D> m_tex;
 
 	glm::vec4 m_SquareColor = { 0.2f, 0.3f, 0.8f, 1.0f };
 	

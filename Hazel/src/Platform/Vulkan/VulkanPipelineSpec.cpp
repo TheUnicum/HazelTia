@@ -20,17 +20,12 @@ namespace Hazel {
 		ReCreate();
 		m_spec.shader->Bind(); // Nothing in vulkan
 		m_Pipeline->Bind();
-
-		//if (m_spec.constantBuffer)
-		//	m_spec.constantBuffer->Bind();
-
-
 	}
 
 	void VulkanPipelineSpec::ReCreate() const
 	{
 		// clean up???
-		m_Pipeline->Create(m_spec);
+		m_Pipeline->Create(m_spec); // layout inside constant buffer if exist!
 		if (m_spec.constantBuffer)
 			m_Pipeline->CreateDescriptorPoolandSets(m_spec);
 	}

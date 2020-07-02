@@ -3,6 +3,7 @@
 
 #include "Platform/OpenGL/OpenGLTexture.h"
 #include "Platform/D3D11/D3D11Texture.h"
+#include "Platform/Vulkan/VulkanTexture.h"
 
 namespace Hazel {
 
@@ -28,6 +29,7 @@ namespace Hazel {
 			case API::None:    HZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
 			case API::OpenGL:  return CreateRef<OpenGLTexture2D>(path);
 			case API::D3D11:   return CreateRef<D3D11Texture2D>(path);
+			case API::Vulkan:   return CreateRef<VulkanTexture2D>(path);
 		}
 		HZ_CORE_ASSERT(false, "Unknown RendererAPI!");
 		return nullptr;
