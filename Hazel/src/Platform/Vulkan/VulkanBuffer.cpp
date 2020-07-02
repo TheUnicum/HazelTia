@@ -221,7 +221,7 @@ namespace Hazel {
 		}
 		else
 		{
-			throw std::invalid_argument("unsupported layout transition!");
+			HZ_CORE_ASSERT(false, "unsupported layout transition!");
 		}
 
 		vkCmdPipelineBarrier(
@@ -236,23 +236,48 @@ namespace Hazel {
 
 		endSingleTimeCommands(m_ctx, commandBuffer);
 	}
-	VkImageView createImageView(VulkanContext& m_ctx, VkImage image, VkFormat format)
+
+	void createBaseSampler(VulkanContext& m_ctx, VkSampler& out_sampler)
+	{
+		VkSamplerCreateInfo samplerInfo{};
+		samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+		samplerInfo.magFilter = VK_FILTER_LINEAR; // or VK_FILTER_NEAREST 
+		samplerInfo.minFilter = VK_FILTER_LINEAR;
+		samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		samplerInfo.anisotropyEnable = VK_TRUE;
+		samplerInfo.maxAnisotropy = 16.0f;
+		samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+		samplerInfo.unnormalizedCoordinates = VK_FALSE;
+		samplerInfo.compareEnable = VK_FALSE; // op for shadow maps
+		samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS; // op for shadow maps
+		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+		samplerInfo.mipLodBias = 0.0f;
+		samplerInfo.minLod = 0.0f;
+		samplerInfo.maxLod = 0.0f;
+
+		if (vkCreateSampler(m_ctx.GetDevice(), &samplerInfo, nullptr, &out_sampler) != VK_SUCCESS)
+		{
+			HZ_CORE_ASSERT(false, "failed to create texture sampler!");
+		}
+	}
+	void createImageViewFromImage(VulkanContext& m_ctx, VkImage& in_image, VkFormat in_format, VkImageView& out_imageView)
 	{
 		VkImageViewCreateInfo viewInfo{};
 		viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-		viewInfo.image = image;
+		viewInfo.image = in_image;
 		viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		viewInfo.format = format;
+		viewInfo.format = in_format;
 		viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		viewInfo.subresourceRange.baseMipLevel = 0;
 		viewInfo.subresourceRange.levelCount = 1;
 		viewInfo.subresourceRange.baseArrayLayer = 0;
 		viewInfo.subresourceRange.layerCount = 1;
 
-		VkImageView imageView;
-		if (vkCreateImageView(m_ctx.GetDevice(), &viewInfo, nullptr, &imageView) != VK_SUCCESS)
+		if (vkCreateImageView(m_ctx.GetDevice(), &viewInfo, nullptr, &out_imageView) != VK_SUCCESS)
 		{
-			throw std::runtime_error("failed to create texture image view!");
+			HZ_CORE_ASSERT(false, "failed to create texture image view!");
 		}
 	}
 	//----------- utiliy buffer Functions---------------------------------

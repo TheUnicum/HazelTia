@@ -33,7 +33,10 @@ namespace Hazel {
 	//void copyBuffer(VulkanContext& m_ctx, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 	void copyBufferToImage(VulkanContext& m_ctx, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 	void transitionImageLayout(VulkanContext& m_ctx, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
-	VkImageView createImageView(VulkanContext& m_ctx, VkImage image, VkFormat format);
+	
+	void createBaseSampler(VulkanContext& m_ctx, VkSampler& out_sampler);
+	void createImageViewFromImage(VulkanContext& m_ctx, VkImage& in_image, VkFormat in_format, VkImageView& out_imageView);
+
 
 	class VulkanVertexBuffer : public VertexBuffer
 	{

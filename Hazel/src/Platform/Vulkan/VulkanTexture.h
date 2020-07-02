@@ -29,8 +29,6 @@ namespace Hazel {
 		VkSampler& GetSampler() { return m_textureSampler; }
 		VkImageView& GetView() { return m_textureImageView; }
 	private:
-		void CreateSampler();
-	private:
 		VkImage m_textureImage;
 		VkDeviceMemory m_textureImageMemory;
 	public: // temportary
