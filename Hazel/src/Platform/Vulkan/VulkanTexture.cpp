@@ -45,7 +45,7 @@ namespace Hazel {
 			dataFormat = 3;
 		}
 
-		VkDeviceSize imageSize = m_Widht * dataFormat * 4;
+		VkDeviceSize imageSize = m_Widht * m_Height * 4;
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingBufferMemory;
 		createBuffer(_c, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);

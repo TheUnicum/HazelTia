@@ -87,12 +87,14 @@ void Sandbox2D::OnAttach()
 		using namespace Hazel;	
 		Hazel::Ref<VertexLayout> vl2 = Hazel::VertexLayout::Create();
 		vl2->Append(VertexLayout::AP_FLOAT2, "inPosition2")
-			.Append(VertexLayout::AP_FLOAT3, "inColor3");
+			.Append(VertexLayout::AP_FLOAT3, "inColor3")
+			.Append(VertexLayout::AP_FLOAT2, "inTexCoord");
 		//vl2->Append(VertexLayout::AP_FLOAT2, "Position")
 		//	.Append(VertexLayout::AP_FLOAT3, "Color");
 
 		//Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
-		Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_CBuff.glsl");
+		//Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_CBuff.glsl");
+		Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_CBuff_Text.glsl");
 		//auto gl = sc->GetVertexLayoutEleList();
 		//auto hl = sc->GetVertexLayoutEleListHLSL();
 		//auto s = sc->GetCodeHLSL();
@@ -125,7 +127,7 @@ void Sandbox2D::OnAttach()
 		Hazel::PipelineCreateInfo createInfo;// { Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl"), nullptr};
 		createInfo.shader = ssREd;
 		//createInfo.vertexLayout = vl2; // testato con vulkan
-		createInfo.vertexLayout = vl2;
+		createInfo.vertexLayout = nullptr;//  vl2;
 		createInfo.constantBuffer = m_cb;
 		PipeSpec2 = Hazel::PipelineSpecification::Create(createInfo);
 		PipeSpec2->Bind();
@@ -133,12 +135,13 @@ void Sandbox2D::OnAttach()
 		struct VertexPos {
 			glm::vec2 pos;
 			glm::vec3 color;
+			glm::vec2 texCoord;
 		};
 		const std::vector<VertexPos> vertices = {
-			{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-			{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-			{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-			{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+	{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+	{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+	{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+	{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
 		};
 		const std::vector<uint32_t> indices =
 		{
