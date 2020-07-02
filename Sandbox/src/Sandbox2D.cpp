@@ -16,6 +16,12 @@ namespace wrl = Microsoft::WRL;
 namespace dx = DirectX;
 
 
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include <chrono>
+
 Sandbox2D::Sandbox2D()
 	: Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f), m_SquareColor({ 0.2f, 0.3f, 0.8f, 1.0f })
 {
@@ -79,13 +85,14 @@ void Sandbox2D::OnAttach()
 		cc->MakeCurrent();
 
 		using namespace Hazel;	
-		//Hazel::Ref<VertexLayout> vl2 = Hazel::VertexLayout::Create();
-		//vl2->Append(VertexLayout::AP_FLOAT2, "inPosition2")
-		//	.Append(VertexLayout::AP_FLOAT3, "inColor3");
+		Hazel::Ref<VertexLayout> vl2 = Hazel::VertexLayout::Create();
+		vl2->Append(VertexLayout::AP_FLOAT2, "inPosition2")
+			.Append(VertexLayout::AP_FLOAT3, "inColor3");
 		//vl2->Append(VertexLayout::AP_FLOAT2, "Position")
 		//	.Append(VertexLayout::AP_FLOAT3, "Color");
 
-		Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
+		//Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
+		Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_CBuff.glsl");
 		//auto gl = sc->GetVertexLayoutEleList();
 		//auto hl = sc->GetVertexLayoutEleListHLSL();
 		//auto s = sc->GetCodeHLSL();
@@ -97,10 +104,27 @@ void Sandbox2D::OnAttach()
 		//auto hs = sc->GetCodeHLSL(); 
 		//auto v = sc->GetVertexLayoutEleList();
 
+
+		struct UniformBufferObject {
+			glm::mat4 model;
+			glm::mat4 view;
+			glm::mat4 proj;
+		};
+		UniformBufferObject ubo{};
+		ubo.model = glm::rotate(glm::mat4(1.0f),  glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		ubo.proj = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 10.0f);
+		ubo.proj[1][1] *= -1;
+		auto d = sizeof(UniformBufferObject);
+		m_cb = Hazel::ConstantBuffer::Create(sizeof(UniformBufferObject), &ubo);
+		m_cb->SetSlot(0, 1);
+
+
 		Hazel::PipelineCreateInfo createInfo;// { Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl"), nullptr};
 		createInfo.shader = ssREd;
 		//createInfo.vertexLayout = vl2; // testato con vulkan
-		createInfo.vertexLayout = nullptr;// vl2;
+		createInfo.vertexLayout = vl2;
+		createInfo.constantBuffer = m_cb;
 		PipeSpec2 = Hazel::PipelineSpecification::Create(createInfo);
 		PipeSpec2->Bind();
 
@@ -186,17 +210,37 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 			//	Hazel::RenderCommandX::DrawArray();
 			//}
 			//else
+			static auto startTime = std::chrono::high_resolution_clock::now();
+
+			auto currentTime = std::chrono::high_resolution_clock::now();
+			float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+			
+			struct UniformBufferObject {
+				glm::mat4 model;
+				glm::mat4 view;
+				glm::mat4 proj;
+			};
+			UniformBufferObject ubo{};
+			ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			ubo.proj = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 10.0f);
+			ubo.proj[1][1] *= -1;
+
+
+
 			{
 
 				std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest(0));
 				cc->MakeCurrent();
 
 				//std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->ClearBuffer_impl(.2f, 0.1f, 0.1f);
-				Hazel::RenderCommandX::Clear();
+				//Hazel::RenderCommandX::Clear();
 				//
 				//				
 				Hazel::RenderCommandX::MakeContextCurrent(Hazel::Application::Get().GetWindowTest(0));
 				//m_vbk->BindTemp(PipeSpec2->m_spec.vertexLayout->GetStride()); //[Da sistemare x D3D]
+				m_cb->Update(&ubo, sizeof(UniformBufferObject));
+				m_cb->SetSlot(0, 1);
 				PipeSpec2->Bind();
 				m_vbk->Bind();
 				m_ibk->Bind();
@@ -206,13 +250,6 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 				//std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->DrawTriangle_impl2(0);
 				///----2
 				
-				struct UniformBufferObject {
-					glm::mat4 model;
-					glm::mat4 view;
-					glm::mat4 proj;
-				};
-				UniformBufferObject data;
-				Hazel::Ref<Hazel::ConstantBuffer> cb = Hazel::ConstantBuffer::Create(sizeof(UniformBufferObject), &data);
 				
 				///-----
 

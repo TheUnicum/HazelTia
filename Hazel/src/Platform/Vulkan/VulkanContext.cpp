@@ -569,5 +569,9 @@ namespace Hazel {
 	{
 		m_Pipeline = nullptr;
 	}
+	void VulkanContext::BindConstantBuffer(const ConstantBuffer& cb)
+	{
+		m_CmdBuffer->BindConstantBuffer(cb, *m_Pipeline);
+	}
 
 }

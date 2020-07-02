@@ -25,6 +25,7 @@ namespace Hazel {
 		void BindVertexBuffer(const VkBuffer& vb);
 		void BindIndexBuffer(const VkBuffer& ib);
 		void BindPipeline(const Ref<Pipeline>& pipeline);
+		void BindConstantBuffer(const ConstantBuffer&cb, const Pipeline& pipeline);
 		void Draw(uint32_t vertexCount, uint32_t instanceCount = 1);
 
 

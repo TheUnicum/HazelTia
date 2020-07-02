@@ -166,7 +166,7 @@ namespace Hazel {
 		rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 		rasterizer.lineWidth = 1.0f;
 		rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-		rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+		rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE; // VK_FRONT_FACE_CLOCKWISE;
 		rasterizer.depthBiasEnable = VK_FALSE;
 		rasterizer.depthBiasConstantFactor = 0.0f; // Optional
 		rasterizer.depthBiasClamp = 0.0f; // Optional
@@ -223,10 +223,10 @@ namespace Hazel {
 		// Set Binding Point for BUFFER!
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		if (m_spec.constantBuffer)
+		if (spec.constantBuffer)
 		{
 			pipelineLayoutInfo.setLayoutCount = 1; // Optional
-			VkDescriptorSetLayout& descLayout = std::dynamic_pointer_cast<VulkanConstantBuffer>(m_spec.constantBuffer)->GetDescriptorSetLayout();
+			VkDescriptorSetLayout& descLayout = std::dynamic_pointer_cast<VulkanConstantBuffer>(spec.constantBuffer)->GetDescriptorSetLayout();
 			pipelineLayoutInfo.pSetLayouts = &descLayout; 
 		}
 		else

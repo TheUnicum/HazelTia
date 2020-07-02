@@ -3,6 +3,8 @@
 
 #include "Platform/Vulkan/VulkanContext.h"
 #include "Platform/Vulkan/VulkanBuffer.h"
+#include "Platform/Vulkan/Pipeline.h"
+#include "Platform/Vulkan/VulkanConstantBuffer.h"
 
 namespace Hazel {
 
@@ -139,6 +141,16 @@ namespace Hazel {
 		{
 			vkCmdBindPipeline(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->Get());
 
+		});
+	}
+
+	void CommandBuffer::BindConstantBuffer(const ConstantBuffer& cb, const Pipeline& pipeline)
+	{
+		VulkanConstantBuffer& vcb = *(VulkanConstantBuffer*)(&cb);
+		auto& descriptorSet = vcb.m_descriptorSets;
+		m_Queue.push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
+		{
+			vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_ctx.GetPipelineLayout(), 0, 1, &descriptorSet, 0, nullptr);
 		});
 	}
 

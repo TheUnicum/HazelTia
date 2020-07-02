@@ -105,6 +105,7 @@ namespace Hazel {
 		void BindIndexBuffer(const VkBuffer& ib);
 		void BindPipeline(Ref<Pipeline>& pipeline); // Bind Shader !
 		void UnbindPipeline(); // Bind Shader !
+		void BindConstantBuffer(const ConstantBuffer& cb);
 	};
 
 }

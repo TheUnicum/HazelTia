@@ -20,6 +20,11 @@ namespace Hazel {
 		ReCreate();
 		m_spec.shader->Bind(); // Nothing in vulkan
 		m_Pipeline->Bind();
+
+		if (m_spec.constantBuffer)
+			m_spec.constantBuffer->Bind();
+
+
 	}
 
 	void VulkanPipelineSpec::ReCreate() const
