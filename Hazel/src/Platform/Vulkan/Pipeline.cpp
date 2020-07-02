@@ -8,48 +8,6 @@
 #include "Platform/Vulkan/VulkanTexture.h"
 
 
-struct Vertex
-{
-	glm::vec3 pos;
-	glm::vec3 color;
-};
-
-VkVertexInputBindingDescription GetBindingDescription()
-{
-	VkVertexInputBindingDescription bindingDescription{};
-	bindingDescription.binding = 0;
-	bindingDescription.stride = sizeof(Vertex);
-	bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-	return bindingDescription;
-}
-
-std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions()
-{
-	std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
-	attributeDescriptions.resize(3);
-
-	attributeDescriptions[0].binding = 0;
-	attributeDescriptions[0].location = 0;
-	attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
-	attributeDescriptions[0].offset = offsetof(Vertex, pos);
-
-	attributeDescriptions[1].binding = 0;
-	attributeDescriptions[1].location = 1;
-	attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-	attributeDescriptions[1].offset = offsetof(Vertex, color);
-
-
-	return attributeDescriptions;
-}
-
-
-
-
-
-
-
-
 namespace Hazel {
 
 	Pipeline::Pipeline(VulkanContext& ctx)
@@ -330,106 +288,48 @@ namespace Hazel {
 		}
 
 
-		std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
+		std::vector<VkWriteDescriptorSet> descriptorWrites{};
+		VkWriteDescriptorSet descWrite{};
 
-
-		VkDescriptorBufferInfo bufferInfo{};
-		bufferInfo.buffer = cub.m_uniformBuffer; // m_uniformBuffer;
-		bufferInfo.offset = 0;
-		bufferInfo.range = cub.m_size; // m_size; // sizeof(UniformBufferObject);
-
-		auto& texture = std::dynamic_pointer_cast<VulkanTexture2D>(spec.texture);
 		VkDescriptorImageInfo imageInfo{};
-		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = texture->GetView(); //m_Texture->GetView(); //m_textureImageView;
-		imageInfo.sampler = texture->GetSampler(); //m_Sampler->Get(); //textureSampler;
-		
+		VkDescriptorBufferInfo bufferInfo{};
+		if (spec.constantBuffer)
+		{
+			bufferInfo.buffer = cub.m_uniformBuffer;
+			bufferInfo.offset = 0;
+			bufferInfo.range = cub.m_size;
 
-		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[0].dstSet = m_descriptorSets;
-		descriptorWrites[0].dstBinding = 0;
-		descriptorWrites[0].dstArrayElement = 0;
-		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		descriptorWrites[0].descriptorCount = 1;
-		descriptorWrites[0].pBufferInfo = &bufferInfo;
-		descriptorWrites[0].pImageInfo = nullptr;
+			descWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descWrite.dstSet = m_descriptorSets;
+			descWrite.dstBinding = 0;
+			descWrite.dstArrayElement = 0;
+			descWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			descWrite.descriptorCount = 1;
+			descWrite.pBufferInfo = &bufferInfo;
+			descWrite.pImageInfo = nullptr;
 
-		descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[1].dstSet = m_descriptorSets;
-		descriptorWrites[1].dstBinding = 1;
-		descriptorWrites[1].dstArrayElement = 0;
-		descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorWrites[1].descriptorCount = 1;
-		descriptorWrites[1].pBufferInfo = nullptr;
-		descriptorWrites[1].pImageInfo = &imageInfo;
+			descriptorWrites.push_back(descWrite);
+		}
+		if (spec.texture)
+		{
+			auto& texture = std::dynamic_pointer_cast<VulkanTexture2D>(spec.texture);
+			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			imageInfo.imageView = texture->GetView(); //m_Texture->GetView(); //m_textureImageView;
+			imageInfo.sampler = texture->GetSampler(); //m_Sampler->Get(); //textureSampler;
 
-		//vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+			descWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descWrite.dstSet = m_descriptorSets;
+			descWrite.dstBinding = 1;
+			descWrite.dstArrayElement = 0;
+			descWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			descWrite.descriptorCount = 1;
+			descWrite.pBufferInfo = nullptr;
+			descWrite.pImageInfo = &imageInfo;
+
+			descriptorWrites.push_back(descWrite);
+		}
+
 		vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-
-
-
-		//--std::vector<VkWriteDescriptorSet> descriptorWrites{};
-		//--if (spec.constantBuffer)
-		//--{
-		//--	VkDescriptorBufferInfo bufferInfo{};
-		//--	bufferInfo.buffer = cub.m_uniformBuffer; // m_uniformBuffer;
-		//--	bufferInfo.offset = 0;
-		//--	bufferInfo.range = cub.m_size; // m_size; // sizeof(UniformBufferObject);
-		//--
-		//--	descriptorWrites.push_back({
-		//--		VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,		// sType
-		//--		nullptr,									// pNext
-		//--		m_descriptorSets,							// dstSet
-		//--		cub.m_slot,									// dstBinding
-		//--		0,											// dstArrayElement
-		//--		1,											// descriptorCount
-		//--		VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,			//descriptorType
-		//--		nullptr,									// pImageInfo
-		//--		&bufferInfo,								// pBufferInfo
-		//--		nullptr										// pTexelBufferView
-		//--		});
-		//--}
-		//--if (spec.texture)
-		//--{
-		//--	VkDescriptorImageInfo imageInfo{};
-		//--	imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		//--	imageInfo.imageView = std::dynamic_pointer_cast<VulkanTexture2D>(spec.texture)->m_textureImageView; //m_Texture->GetView(); //m_textureImageView;
-		//--	imageInfo.sampler = std::dynamic_pointer_cast<VulkanTexture2D>(spec.texture)->m_textureSampler; //m_Sampler->Get(); //textureSampler;
-		//--
-		//--	descriptorWrites.push_back({
-		//--		VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,		// sType
-		//--		nullptr,									// pNext
-		//--		m_descriptorSets,							// dstSet
-		//--		1,											// dstBinding
-		//--		0,											// dstArrayElement
-		//--		1,											// descriptorCount
-		//--		VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,	//descriptorType
-		//--		&imageInfo,									// pImageInfo
-		//--		nullptr,									// pBufferInfo
-		//--		nullptr										// pTexelBufferView
-		//--		});
-		//--}
-		//--
-		//--vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-		//vkUpdateDescriptorSets(device, 1, &desWrite, 0, nullptr);
-		
-		//VkDescriptorBufferInfo bufferInfo{};
-		//bufferInfo.buffer = cub.m_uniformBuffer; // m_uniformBuffer;
-		//bufferInfo.offset = 0;
-		//bufferInfo.range = cub.m_size; // m_size; // sizeof(UniformBufferObject);
-		//
-		//VkWriteDescriptorSet descriptorWrite{};
-		//descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		//descriptorWrite.dstSet = m_descriptorSets;
-		//descriptorWrite.dstBinding = cub.m_slot; //m_slot;  //<----------------
-		//descriptorWrite.dstArrayElement = 0;
-		//descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		//descriptorWrite.descriptorCount = 1;
-		//descriptorWrite.pBufferInfo = &bufferInfo;
-		//descriptorWrite.pImageInfo = nullptr; // Optional
-		//descriptorWrite.pTexelBufferView = nullptr; // Optional
-		//
-		//vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, nullptr);
 	}
 
 }
