@@ -84,7 +84,7 @@ namespace Hazel {
 		m_ctx.BindPipeline(CreateRef<Pipeline>(*this));
 	}
 
-	void Pipeline::Create(const PipelineCreateInfo& spec)
+	void Pipeline::Create(const PipelineCreateInfo& spec, const VkDescriptorSetLayout& composed_descSetLayout)
 	{
 		Cleanup();
 
@@ -226,7 +226,8 @@ namespace Hazel {
 		if (spec.constantBuffer)
 		{
 			pipelineLayoutInfo.setLayoutCount = 1; // Optional
-			VkDescriptorSetLayout& descLayout = std::dynamic_pointer_cast<VulkanConstantBuffer>(spec.constantBuffer)->GetDescriptorSetLayout();
+			//VkDescriptorSetLayout& descLayout = std::dynamic_pointer_cast<VulkanConstantBuffer>(spec.constantBuffer)->GetDescriptorSetLayout();
+			const VkDescriptorSetLayout& descLayout = composed_descSetLayout;
 			pipelineLayoutInfo.pSetLayouts = &descLayout; 
 		}
 		else
@@ -276,7 +277,7 @@ namespace Hazel {
 
 	}
 
-	void Pipeline::CreateDescriptorPoolandSets(const PipelineCreateInfo& spec)
+	void Pipeline::CreateDescriptorPoolandSets(const PipelineCreateInfo& spec, const VkDescriptorSetLayout& composed_descSetLayout)
 	{
 		VkDevice& device = m_ctx.GetDevice();
 		VulkanConstantBuffer& cub = *std::dynamic_pointer_cast<VulkanConstantBuffer>(spec.constantBuffer);
@@ -341,7 +342,7 @@ namespace Hazel {
 
 
 
-		VkDescriptorSetLayout layouts = cub.GetDescriptorSetLayout(); // m_descriptorSetLayout);
+		//VkDescriptorSetLayout layouts = cub.GetDescriptorSetLayout(); // m_descriptorSetLayout);
 
 
 		// ------CreateDescriptorSets
@@ -349,7 +350,7 @@ namespace Hazel {
 		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 		allocInfo.descriptorPool = m_descriptorPool;
 		allocInfo.descriptorSetCount = 1;
-		allocInfo.pSetLayouts = &layouts;
+		allocInfo.pSetLayouts = &composed_descSetLayout;
 
 		//m_descriptorSets.resize(m_swapChainImages.size());
 		if (vkAllocateDescriptorSets(device, &allocInfo, &m_descriptorSets) != VK_SUCCESS)

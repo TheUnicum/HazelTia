@@ -19,11 +19,15 @@ namespace Hazel {
 
 		void ReCreate() const;
 
+		VkDescriptorSetLayout& GetDescriptorSetLayout() { return m_descriptorSetLayout; }
+	private:
+		void SetDescriptorSetLayout();
 	private:
 		std::string m_Name;
 		mutable std::shared_ptr<Pipeline> m_Pipeline;
 	public:
 		VulkanContext& _c;
+		VkDescriptorSetLayout m_descriptorSetLayout = nullptr;
 	};
 
 }

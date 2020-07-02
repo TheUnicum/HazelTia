@@ -18,8 +18,8 @@ namespace Hazel {
 
 		void Cleanup();
 
-		void Create(const PipelineCreateInfo& spec);
-		void CreateDescriptorPoolandSets(const PipelineCreateInfo& spec);
+		void Create(const PipelineCreateInfo& spec, const VkDescriptorSetLayout& composed_descSetLayout);
+		void CreateDescriptorPoolandSets(const PipelineCreateInfo& spec, const VkDescriptorSetLayout& composed_descSetLayout);
 
 		void Bind();
 
