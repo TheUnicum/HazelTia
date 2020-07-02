@@ -286,53 +286,27 @@ namespace Hazel {
 			vkDestroyDescriptorPool(device, m_descriptorPool, nullptr);
 
 
-
-		//// ------CreateDescriptorPool
-		//VkDescriptorPoolSize poolSize{};
-		//poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		//poolSize.descriptorCount = 1;
-		//
-		//VkDescriptorPoolCreateInfo poolInfo{};
-		//poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-		//poolInfo.poolSizeCount = 1;
-		//poolInfo.pPoolSizes = &poolSize;
-		//poolInfo.maxSets = 1;// static_cast<uint32_t>(m_swapChainImages.size());
-		//
-		//if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &m_descriptorPool) != VK_SUCCESS)
-		//{
-		//	HZ_CORE_ASSERT(false, "failed to create descriptor pool!")
-		//}
-		//// ------CreateDescriptorPool
-		//std::vector<VkDescriptorPoolSize> poolSizes{};
-		//VkDescriptorPoolSize pool;
-		//if (spec.constantBuffer)
-		//{
-		//	pool.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		//	pool.descriptorCount = 1;
-		//	poolSizes.push_back(pool);
-		//}
-		//if (spec.texture)
-		//{
-		//	pool.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		//	pool.descriptorCount = 1;
-		//	poolSizes.push_back(pool);
-		//}
-		//VkDescriptorPoolCreateInfo poolInfo{};
-		//poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-		//poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-		//poolInfo.pPoolSizes = poolSizes.data();
-		//poolInfo.maxSets = 1;// static_cast<uint32_t>(m_swapChainImages.size());
-		std::array<VkDescriptorPoolSize, 2> poolSizes{};
-		poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		poolSizes[0].descriptorCount = 1;// static_cast<uint32_t>(m_swapChainImages.size());
-		poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		poolSizes[1].descriptorCount = 1;// static_cast<uint32_t>(m_swapChainImages.size());
-
+		// ------CreateDescriptorPool
+		std::vector<VkDescriptorPoolSize> poolSizes{};
+		VkDescriptorPoolSize pool;
+		if (spec.constantBuffer)
+		{
+			pool.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			pool.descriptorCount = 1;
+			poolSizes.push_back(pool);
+		}
+		if (spec.texture)
+		{
+			pool.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			pool.descriptorCount = 1;
+			poolSizes.push_back(pool);
+		}
 		VkDescriptorPoolCreateInfo poolInfo{};
 		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 		poolInfo.pPoolSizes = poolSizes.data();
 		poolInfo.maxSets = 1;// static_cast<uint32_t>(m_swapChainImages.size());
+
 
 		if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &m_descriptorPool) != VK_SUCCESS)
 		{
@@ -340,9 +314,6 @@ namespace Hazel {
 		}
 
 
-
-
-		//VkDescriptorSetLayout layouts = cub.GetDescriptorSetLayout(); // m_descriptorSetLayout);
 
 
 		// ------CreateDescriptorSets
@@ -358,19 +329,21 @@ namespace Hazel {
 			HZ_CORE_ASSERT(false, "failed to allocate descriptor sets!")
 		}
 
+
+		std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
+
+
 		VkDescriptorBufferInfo bufferInfo{};
 		bufferInfo.buffer = cub.m_uniformBuffer; // m_uniformBuffer;
 		bufferInfo.offset = 0;
 		bufferInfo.range = cub.m_size; // m_size; // sizeof(UniformBufferObject);
 
 		auto& texture = std::dynamic_pointer_cast<VulkanTexture2D>(spec.texture);
-
 		VkDescriptorImageInfo imageInfo{};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		imageInfo.imageView = texture->GetView(); //m_Texture->GetView(); //m_textureImageView;
 		imageInfo.sampler = texture->GetSampler(); //m_Sampler->Get(); //textureSampler;
 		
-		std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
 		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		descriptorWrites[0].dstSet = m_descriptorSets;
