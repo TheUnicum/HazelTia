@@ -26,6 +26,8 @@ namespace Hazel {
 		//{
 		//	return m_RendererID == ((VulkanTexture2D&)other).m_RendererID;
 		//};
+		VkSampler& GetSampler() { return m_textureSampler; }
+		VkImageView& GetView() { return m_textureImageView; }
 	private:
 		void CreateSampler();
 	private:

@@ -302,20 +302,31 @@ namespace Hazel {
 		//	HZ_CORE_ASSERT(false, "failed to create descriptor pool!")
 		//}
 		//// ------CreateDescriptorPool
-		std::vector<VkDescriptorPoolSize> poolSizes{};
-		VkDescriptorPoolSize pool;
-		if (spec.constantBuffer)
-		{
-			pool.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			pool.descriptorCount = 1;
-			poolSizes.push_back(pool);
-		}
-		if (spec.texture)
-		{
-			pool.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			pool.descriptorCount = 1;
-			poolSizes.push_back(pool);
-		}
+		//std::vector<VkDescriptorPoolSize> poolSizes{};
+		//VkDescriptorPoolSize pool;
+		//if (spec.constantBuffer)
+		//{
+		//	pool.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		//	pool.descriptorCount = 1;
+		//	poolSizes.push_back(pool);
+		//}
+		//if (spec.texture)
+		//{
+		//	pool.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		//	pool.descriptorCount = 1;
+		//	poolSizes.push_back(pool);
+		//}
+		//VkDescriptorPoolCreateInfo poolInfo{};
+		//poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		//poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+		//poolInfo.pPoolSizes = poolSizes.data();
+		//poolInfo.maxSets = 1;// static_cast<uint32_t>(m_swapChainImages.size());
+		std::array<VkDescriptorPoolSize, 2> poolSizes{};
+		poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		poolSizes[0].descriptorCount = 1;// static_cast<uint32_t>(m_swapChainImages.size());
+		poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		poolSizes[1].descriptorCount = 1;// static_cast<uint32_t>(m_swapChainImages.size());
+
 		VkDescriptorPoolCreateInfo poolInfo{};
 		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
@@ -328,12 +339,17 @@ namespace Hazel {
 		}
 
 
+
+
+		VkDescriptorSetLayout layouts = cub.GetDescriptorSetLayout(); // m_descriptorSetLayout);
+
+
 		// ------CreateDescriptorSets
 		VkDescriptorSetAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 		allocInfo.descriptorPool = m_descriptorPool;
 		allocInfo.descriptorSetCount = 1;
-		allocInfo.pSetLayouts = &cub.GetDescriptorSetLayout();
+		allocInfo.pSetLayouts = &layouts;
 
 		//m_descriptorSets.resize(m_swapChainImages.size());
 		if (vkAllocateDescriptorSets(device, &allocInfo, &m_descriptorSets) != VK_SUCCESS)
@@ -341,50 +357,86 @@ namespace Hazel {
 			HZ_CORE_ASSERT(false, "failed to allocate descriptor sets!")
 		}
 
+		VkDescriptorBufferInfo bufferInfo{};
+		bufferInfo.buffer = cub.m_uniformBuffer; // m_uniformBuffer;
+		bufferInfo.offset = 0;
+		bufferInfo.range = cub.m_size; // m_size; // sizeof(UniformBufferObject);
 
-		std::vector<VkWriteDescriptorSet> descriptorWrites{};
-		if (spec.constantBuffer)
-		{
-			VkDescriptorBufferInfo bufferInfo{};
-			bufferInfo.buffer = cub.m_uniformBuffer; // m_uniformBuffer;
-			bufferInfo.offset = 0;
-			bufferInfo.range = cub.m_size; // m_size; // sizeof(UniformBufferObject);
+		auto& texture = std::dynamic_pointer_cast<VulkanTexture2D>(spec.texture);
 
-			descriptorWrites.push_back({
-				VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,		// sType
-				nullptr,									// pNext
-				m_descriptorSets,							// dstSet
-				cub.m_slot,									// dstBinding
-				0,											// dstArrayElement
-				1,											// descriptorCount
-				VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,			//descriptorType
-				nullptr,									// pImageInfo
-				&bufferInfo,								// pBufferInfo
-				nullptr										// pTexelBufferView
-				});
-		}
-		if (spec.texture)
-		{
-			VkDescriptorImageInfo imageInfo{};
-			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			imageInfo.imageView = std::dynamic_pointer_cast<VulkanTexture2D>(spec.texture)->m_textureImageView; //m_Texture->GetView(); //m_textureImageView;
-			imageInfo.sampler = std::dynamic_pointer_cast<VulkanTexture2D>(spec.texture)->m_textureSampler; //m_Sampler->Get(); //textureSampler;
+		VkDescriptorImageInfo imageInfo{};
+		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		imageInfo.imageView = texture->GetView(); //m_Texture->GetView(); //m_textureImageView;
+		imageInfo.sampler = texture->GetSampler(); //m_Sampler->Get(); //textureSampler;
 		
-			descriptorWrites.push_back({
-				VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,		// sType
-				nullptr,									// pNext
-				m_descriptorSets,							// dstSet
-				1,											// dstBinding
-				0,											// dstArrayElement
-				1,											// descriptorCount
-				VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,	//descriptorType
-				&imageInfo,									// pImageInfo
-				nullptr,								// pBufferInfo
-				nullptr										// pTexelBufferView
-				});
-		}
-		
+		std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
+
+		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[0].dstSet = m_descriptorSets;
+		descriptorWrites[0].dstBinding = 0;
+		descriptorWrites[0].dstArrayElement = 0;
+		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		descriptorWrites[0].descriptorCount = 1;
+		descriptorWrites[0].pBufferInfo = &bufferInfo;
+		descriptorWrites[0].pImageInfo = nullptr;
+
+		descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrites[1].dstSet = m_descriptorSets;
+		descriptorWrites[1].dstBinding = 1;
+		descriptorWrites[1].dstArrayElement = 0;
+		descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		descriptorWrites[1].descriptorCount = 1;
+		descriptorWrites[1].pBufferInfo = nullptr;
+		descriptorWrites[1].pImageInfo = &imageInfo;
+
+		//vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 		vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+
+
+
+		//--std::vector<VkWriteDescriptorSet> descriptorWrites{};
+		//--if (spec.constantBuffer)
+		//--{
+		//--	VkDescriptorBufferInfo bufferInfo{};
+		//--	bufferInfo.buffer = cub.m_uniformBuffer; // m_uniformBuffer;
+		//--	bufferInfo.offset = 0;
+		//--	bufferInfo.range = cub.m_size; // m_size; // sizeof(UniformBufferObject);
+		//--
+		//--	descriptorWrites.push_back({
+		//--		VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,		// sType
+		//--		nullptr,									// pNext
+		//--		m_descriptorSets,							// dstSet
+		//--		cub.m_slot,									// dstBinding
+		//--		0,											// dstArrayElement
+		//--		1,											// descriptorCount
+		//--		VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,			//descriptorType
+		//--		nullptr,									// pImageInfo
+		//--		&bufferInfo,								// pBufferInfo
+		//--		nullptr										// pTexelBufferView
+		//--		});
+		//--}
+		//--if (spec.texture)
+		//--{
+		//--	VkDescriptorImageInfo imageInfo{};
+		//--	imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		//--	imageInfo.imageView = std::dynamic_pointer_cast<VulkanTexture2D>(spec.texture)->m_textureImageView; //m_Texture->GetView(); //m_textureImageView;
+		//--	imageInfo.sampler = std::dynamic_pointer_cast<VulkanTexture2D>(spec.texture)->m_textureSampler; //m_Sampler->Get(); //textureSampler;
+		//--
+		//--	descriptorWrites.push_back({
+		//--		VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,		// sType
+		//--		nullptr,									// pNext
+		//--		m_descriptorSets,							// dstSet
+		//--		1,											// dstBinding
+		//--		0,											// dstArrayElement
+		//--		1,											// descriptorCount
+		//--		VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,	//descriptorType
+		//--		&imageInfo,									// pImageInfo
+		//--		nullptr,									// pBufferInfo
+		//--		nullptr										// pTexelBufferView
+		//--		});
+		//--}
+		//--
+		//--vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 		//vkUpdateDescriptorSets(device, 1, &desWrite, 0, nullptr);
 		
 		//VkDescriptorBufferInfo bufferInfo{};

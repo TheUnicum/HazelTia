@@ -69,7 +69,7 @@ namespace Hazel {
 		CreateSampler();
 
 		// Create Image View
-		m_textureImageView = createImageView(_c, m_textureImage, VK_FORMAT_R8G8B8A8_SRGB);
+		//m_textureImageView = createImageView(_c, m_textureImage, VK_FORMAT_R8G8B8A8_SRGB);
 
 	}
 
@@ -119,6 +119,24 @@ namespace Hazel {
 		{
 			HZ_CORE_ASSERT(false, "failed to create texture sampler!");
 		}
+
+		VkImageViewCreateInfo viewInfo{};
+		viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		viewInfo.image = m_textureImage;
+		viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		viewInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
+		viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		viewInfo.subresourceRange.baseMipLevel = 0;
+		viewInfo.subresourceRange.levelCount = 1;
+		viewInfo.subresourceRange.baseArrayLayer = 0;
+		viewInfo.subresourceRange.layerCount = 1;
+
+		VkImageView imageView;
+		if (vkCreateImageView(_c.GetDevice(), &viewInfo, nullptr, &m_textureImageView) != VK_SUCCESS)
+		{
+			throw std::runtime_error("failed to create texture image view!");
+		}
+
 	}
 
 }

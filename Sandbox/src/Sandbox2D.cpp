@@ -107,6 +107,7 @@ void Sandbox2D::OnAttach()
 		//auto v = sc->GetVertexLayoutEleList();
 
 
+		m_tex = Hazel::Texture2D::Create("assets/textures/texture.jpg");
 		struct UniformBufferObject {
 			glm::mat4 model;
 			glm::mat4 view;
@@ -121,7 +122,6 @@ void Sandbox2D::OnAttach()
 		m_cb = Hazel::ConstantBuffer::Create(sizeof(UniformBufferObject), &ubo);
 		m_cb->SetSlot(0, 1);
 
-		m_tex = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
 
 
 		Hazel::PipelineCreateInfo createInfo;// { Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl"), nullptr};
@@ -129,8 +129,9 @@ void Sandbox2D::OnAttach()
 		//createInfo.vertexLayout = vl2; // testato con vulkan
 		createInfo.vertexLayout = nullptr;//  vl2;
 		createInfo.constantBuffer = m_cb;
+		createInfo.texture = m_tex;
 		PipeSpec2 = Hazel::PipelineSpecification::Create(createInfo);
-		PipeSpec2->Bind();
+		//PipeSpec2->Bind();
 
 		struct VertexPos {
 			glm::vec2 pos;
