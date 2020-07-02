@@ -17,11 +17,10 @@ namespace Hazel {
 		virtual void SetSlot(uint32_t slot, uint32_t target); // target 0 VS & PS, 1 only VS, 2 only PS
 
 		VkDescriptorSetLayout& GetDescriptorSetLayout() { return m_descriptorSetLayout; }
-		VkDescriptorSet& GetDescriptorSet() { return m_descriptorSets; }
 	private:
 		void SetDescriptorSetLayout();
-		void CreateDescriptorPoolandSets();
 	private:
+	public:
 		uint32_t m_size = 0;
 		uint32_t m_slot = 0;
 		uint32_t m_target = 0;
@@ -33,7 +32,6 @@ namespace Hazel {
 		VkDeviceMemory m_uniformBufferMemory;
 		VkDescriptorSetLayout m_descriptorSetLayout = nullptr;
 		VkDescriptorPool m_descriptorPool = nullptr;
-		VkDescriptorSet m_descriptorSets = nullptr;
 	};
 
 }

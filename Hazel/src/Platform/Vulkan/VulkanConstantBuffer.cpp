@@ -45,7 +45,6 @@ namespace Hazel {
 		m_slot = slot;
 		m_target = target;
 		SetDescriptorSetLayout();		// For Pipeline Information
-		CreateDescriptorPoolandSets();	// For Bind Operation
 	}
 
 	void VulkanConstantBuffer::SetDescriptorSetLayout()
@@ -85,62 +84,6 @@ namespace Hazel {
 		{
 			HZ_CORE_ASSERT(false, "failed to create descriptor set layout!")
 		}
-	}
-
-	void VulkanConstantBuffer::CreateDescriptorPoolandSets()
-	{
-		VkDevice& device = _c.GetDevice();
-
-		if (m_descriptorPool)
-			vkDestroyDescriptorPool(_c.GetDevice(), m_descriptorPool, nullptr);
-
-		// ------CreateDescriptorPool
-		VkDescriptorPoolSize poolSize{};
-		poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		poolSize.descriptorCount = 1;
-
-		VkDescriptorPoolCreateInfo poolInfo{};
-		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-		poolInfo.poolSizeCount = 1;
-		poolInfo.pPoolSizes = &poolSize;
-		poolInfo.maxSets = 1;// static_cast<uint32_t>(m_swapChainImages.size());
-
-		if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &m_descriptorPool) != VK_SUCCESS)
-		{
-			HZ_CORE_ASSERT(false, "failed to create descriptor pool!")
-		}
-
-		// ------CreateDescriptorSets
-		VkDescriptorSetAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		allocInfo.descriptorPool = m_descriptorPool;
-		allocInfo.descriptorSetCount = 1;
-		allocInfo.pSetLayouts = &m_descriptorSetLayout;
-
-		//m_descriptorSets.resize(m_swapChainImages.size());
-		if (vkAllocateDescriptorSets(device, &allocInfo, &m_descriptorSets) != VK_SUCCESS)
-		{
-			HZ_CORE_ASSERT(false, "failed to allocate descriptor sets!")
-		}
-
-		//for (size_t i = 0; i < m_swapChainImages.size(); i++) {
-		VkDescriptorBufferInfo bufferInfo{};
-		bufferInfo.buffer = m_uniformBuffer;
-		bufferInfo.offset = 0;
-		bufferInfo.range = m_size; // sizeof(UniformBufferObject);
-
-		VkWriteDescriptorSet descriptorWrite{};
-		descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrite.dstSet = m_descriptorSets;
-		descriptorWrite.dstBinding = m_slot;  //<----------------
-		descriptorWrite.dstArrayElement = 0;
-		descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		descriptorWrite.descriptorCount = 1;
-		descriptorWrite.pBufferInfo = &bufferInfo;
-		descriptorWrite.pImageInfo = nullptr; // Optional
-		descriptorWrite.pTexelBufferView = nullptr; // Optional
-
-		vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, nullptr);
 	}
 
 }

@@ -19,16 +19,22 @@ namespace Hazel {
 		void Cleanup();
 
 		void Create(const PipelineCreateInfo& spec);
+		void CreateDescriptorPoolandSets(const PipelineCreateInfo& spec);
+
 		void Bind();
 
 		VkPipeline& Get() { return m_Pipeline; }
 		VkPipelineLayout& GetLayout() { return m_PipelineLayout; }
+		VkDescriptorSet& GetDescriptorSet() { return m_descriptorSets; }
 	private:
 		VulkanContext& m_ctx;
 		//PipelineCreateInfo m_spec;
 
 		VkPipelineLayout m_PipelineLayout = nullptr;
 		VkPipeline m_Pipeline = nullptr;
+
+		VkDescriptorPool m_descriptorPool = nullptr;
+		VkDescriptorSet m_descriptorSets = nullptr;
 	};
 
 }

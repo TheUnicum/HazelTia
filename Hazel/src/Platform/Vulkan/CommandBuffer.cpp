@@ -74,7 +74,8 @@ namespace Hazel {
 
 		vkCmdBindPipeline(m_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_ctx.GetPipeline());
 
-		
+		vkCmdBindDescriptorSets(m_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_ctx.GetPipelineLayout(), 0, 1, &m_ctx.GetPipelineDescSet(), 0, nullptr);
+
 		
 
 		//if (false)
@@ -146,12 +147,12 @@ namespace Hazel {
 
 	void CommandBuffer::BindConstantBuffer(const ConstantBuffer& cb)
 	{
-		VulkanConstantBuffer& vcb = *(VulkanConstantBuffer*)(&cb);
-		auto& descriptorSet = vcb.m_descriptorSets;
-		m_Queue.push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
-		{	
-			vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_ctx.GetPipelineLayout(), 0, 1, &descriptorSet, 0, nullptr);
-		});
+		//VulkanConstantBuffer& vcb = *(VulkanConstantBuffer*)(&cb);
+		//auto& descriptorSet = vcb.m_descriptorSets;
+		//m_Queue.push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
+		//{	
+		//	vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_ctx.GetPipelineLayout(), 0, 1, &descriptorSet, 0, nullptr);
+		//});
 	}
 
 	void CommandBuffer::Draw(uint32_t vertexCount, uint32_t instanceCount)

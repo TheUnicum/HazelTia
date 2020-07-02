@@ -240,7 +240,7 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 				Hazel::RenderCommandX::MakeContextCurrent(Hazel::Application::Get().GetWindowTest(0));
 				//m_vbk->BindTemp(PipeSpec2->m_spec.vertexLayout->GetStride()); //[Da sistemare x D3D]
 				m_cb->Update(&ubo, sizeof(UniformBufferObject));
-				//m_cb->SetSlot(0, 1);
+				m_cb->SetSlot(0, 1);
 				PipeSpec2->Bind();
 				m_vbk->Bind();
 				m_ibk->Bind();

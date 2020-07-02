@@ -21,8 +21,8 @@ namespace Hazel {
 		m_spec.shader->Bind(); // Nothing in vulkan
 		m_Pipeline->Bind();
 
-		if (m_spec.constantBuffer)
-			m_spec.constantBuffer->Bind();
+		//if (m_spec.constantBuffer)
+		//	m_spec.constantBuffer->Bind();
 
 
 	}
@@ -31,6 +31,8 @@ namespace Hazel {
 	{
 		// clean up???
 		m_Pipeline->Create(m_spec);
+		if (m_spec.constantBuffer)
+			m_Pipeline->CreateDescriptorPoolandSets(m_spec);
 	}
 
 }
