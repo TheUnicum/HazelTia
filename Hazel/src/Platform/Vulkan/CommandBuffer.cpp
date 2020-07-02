@@ -144,12 +144,12 @@ namespace Hazel {
 		});
 	}
 
-	void CommandBuffer::BindConstantBuffer(const ConstantBuffer& cb, const Pipeline& pipeline)
+	void CommandBuffer::BindConstantBuffer(const ConstantBuffer& cb)
 	{
 		VulkanConstantBuffer& vcb = *(VulkanConstantBuffer*)(&cb);
 		auto& descriptorSet = vcb.m_descriptorSets;
 		m_Queue.push_back([=](const VkCommandBuffer& drawCommandBuffer, const VkFramebuffer& framebuffer)
-		{
+		{	
 			vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_ctx.GetPipelineLayout(), 0, 1, &descriptorSet, 0, nullptr);
 		});
 	}

@@ -91,6 +91,9 @@ namespace Hazel {
 	{
 		VkDevice& device = _c.GetDevice();
 
+		if (m_descriptorPool)
+			vkDestroyDescriptorPool(_c.GetDevice(), m_descriptorPool, nullptr);
+
 		// ------CreateDescriptorPool
 		VkDescriptorPoolSize poolSize{};
 		poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
