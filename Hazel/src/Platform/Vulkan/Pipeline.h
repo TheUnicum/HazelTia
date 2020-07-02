@@ -26,6 +26,7 @@ namespace Hazel {
 		VkPipeline& Get() { return m_Pipeline; }
 		VkPipelineLayout& GetLayout() { return m_PipelineLayout; }
 		VkDescriptorSet& GetDescriptorSet() { return m_descriptorSets; }
+		bool HasDesctriptorSet() { return m_descriptorSets != nullptr; }
 	private:
 		VulkanContext& m_ctx;
 		//PipelineCreateInfo m_spec;

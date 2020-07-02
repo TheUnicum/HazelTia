@@ -25,11 +25,6 @@ namespace Hazel {
 		vkFreeMemory(device, m_uniformBufferMemory, nullptr);
 	}
 
-	void VulkanConstantBuffer::Bind() const
-	{
-		_c.BindConstantBuffer(*this);
-	}
-
 
 	void VulkanConstantBuffer::Update(const void* data, uint32_t size)
 	{

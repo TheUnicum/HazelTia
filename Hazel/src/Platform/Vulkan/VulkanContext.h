@@ -97,7 +97,7 @@ namespace Hazel {
 		VkPipeline& GetPipeline() { return m_Pipeline->Get(); }
 		VkDescriptorSet& GetPipelineDescSet() { return m_Pipeline->GetDescriptorSet(); }
 		VkPipelineLayout& GetPipelineLayout() { return m_Pipeline->GetLayout(); }
-
+		bool GetPipelineHasDesctriptorSet() { return m_Pipeline->HasDesctriptorSet(); }
 		VkQueue GetGraphicsQueue() { return m_GraphicsQueue; }
 		VkQueue GetPresentQueue() { return m_PresentQueue; }
 	public:
@@ -106,7 +106,6 @@ namespace Hazel {
 		void BindIndexBuffer(const VkBuffer& ib);
 		void BindPipeline(Ref<Pipeline>& pipeline); // Bind Shader !
 		void UnbindPipeline(); // Bind Shader !
-		void BindConstantBuffer(const ConstantBuffer& cb);
 	};
 
 }

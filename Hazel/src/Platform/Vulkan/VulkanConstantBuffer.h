@@ -10,7 +10,7 @@ namespace Hazel {
 		VulkanConstantBuffer(uint32_t size, const void* data);
 		virtual ~VulkanConstantBuffer();
 			
-		virtual void Bind() const override;
+		virtual void Bind() const override {};
 		virtual void Unbind() const override {}
 
 		virtual void Update(const void* data, uint32_t size = 0) override;
