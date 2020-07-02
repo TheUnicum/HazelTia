@@ -5,7 +5,7 @@
 #include "Platform/Vulkan/VulkanShader.h"
 #include "Platform/Vulkan/VulkanVertexLayout.h"
 #include "Platform/Vulkan/VulkanConstantBuffer.h"
-
+#include "Platform/Vulkan/VulkanTexture.h"
 
 
 struct Vertex
@@ -284,21 +284,49 @@ namespace Hazel {
 		if (m_descriptorPool)
 			vkDestroyDescriptorPool(device, m_descriptorPool, nullptr);
 
-		// ------CreateDescriptorPool
-		VkDescriptorPoolSize poolSize{};
-		poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		poolSize.descriptorCount = 1;
 
+
+		//// ------CreateDescriptorPool
+		//VkDescriptorPoolSize poolSize{};
+		//poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		//poolSize.descriptorCount = 1;
+		//
+		//VkDescriptorPoolCreateInfo poolInfo{};
+		//poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		//poolInfo.poolSizeCount = 1;
+		//poolInfo.pPoolSizes = &poolSize;
+		//poolInfo.maxSets = 1;// static_cast<uint32_t>(m_swapChainImages.size());
+		//
+		//if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &m_descriptorPool) != VK_SUCCESS)
+		//{
+		//	HZ_CORE_ASSERT(false, "failed to create descriptor pool!")
+		//}
+		//// ------CreateDescriptorPool
+		std::vector<VkDescriptorPoolSize> poolSizes{};
+		VkDescriptorPoolSize pool;
+		if (spec.constantBuffer)
+		{
+			pool.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			pool.descriptorCount = 1;
+			poolSizes.push_back(pool);
+		}
+		if (spec.texture)
+		{
+			pool.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			pool.descriptorCount = 1;
+			poolSizes.push_back(pool);
+		}
 		VkDescriptorPoolCreateInfo poolInfo{};
 		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-		poolInfo.poolSizeCount = 1;
-		poolInfo.pPoolSizes = &poolSize;
+		poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+		poolInfo.pPoolSizes = poolSizes.data();
 		poolInfo.maxSets = 1;// static_cast<uint32_t>(m_swapChainImages.size());
 
 		if (vkCreateDescriptorPool(device, &poolInfo, nullptr, &m_descriptorPool) != VK_SUCCESS)
 		{
 			HZ_CORE_ASSERT(false, "failed to create descriptor pool!")
 		}
+
 
 		// ------CreateDescriptorSets
 		VkDescriptorSetAllocateInfo allocInfo{};
@@ -313,25 +341,69 @@ namespace Hazel {
 			HZ_CORE_ASSERT(false, "failed to allocate descriptor sets!")
 		}
 
-		//for (size_t i = 0; i < m_swapChainImages.size(); i++) {
-		VkDescriptorBufferInfo bufferInfo{};
-		bufferInfo.buffer = cub.m_uniformBuffer; // m_uniformBuffer;
-		bufferInfo.offset = 0;
-		bufferInfo.range = cub.m_size; // m_size; // sizeof(UniformBufferObject);
 
-		VkWriteDescriptorSet descriptorWrite{};
-		descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrite.dstSet = m_descriptorSets;
-		descriptorWrite.dstBinding = cub.m_slot; //m_slot;  //<----------------
-		descriptorWrite.dstArrayElement = 0;
-		descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		descriptorWrite.descriptorCount = 1;
-		descriptorWrite.pBufferInfo = &bufferInfo;
-		descriptorWrite.pImageInfo = nullptr; // Optional
-		descriptorWrite.pTexelBufferView = nullptr; // Optional
+		std::vector<VkWriteDescriptorSet> descriptorWrites{};
+		if (spec.constantBuffer)
+		{
+			VkDescriptorBufferInfo bufferInfo{};
+			bufferInfo.buffer = cub.m_uniformBuffer; // m_uniformBuffer;
+			bufferInfo.offset = 0;
+			bufferInfo.range = cub.m_size; // m_size; // sizeof(UniformBufferObject);
 
-		vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, nullptr);
+			descriptorWrites.push_back({
+				VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,		// sType
+				nullptr,									// pNext
+				m_descriptorSets,							// dstSet
+				cub.m_slot,									// dstBinding
+				0,											// dstArrayElement
+				1,											// descriptorCount
+				VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,			//descriptorType
+				nullptr,									// pImageInfo
+				&bufferInfo,								// pBufferInfo
+				nullptr										// pTexelBufferView
+				});
+		}
+		if (spec.texture)
+		{
+			VkDescriptorImageInfo imageInfo{};
+			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			imageInfo.imageView = std::dynamic_pointer_cast<VulkanTexture2D>(spec.texture)->m_textureImageView; //m_Texture->GetView(); //m_textureImageView;
+			imageInfo.sampler = std::dynamic_pointer_cast<VulkanTexture2D>(spec.texture)->m_textureSampler; //m_Sampler->Get(); //textureSampler;
+		
+			descriptorWrites.push_back({
+				VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,		// sType
+				nullptr,									// pNext
+				m_descriptorSets,							// dstSet
+				1,											// dstBinding
+				0,											// dstArrayElement
+				1,											// descriptorCount
+				VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,	//descriptorType
+				&imageInfo,									// pImageInfo
+				nullptr,								// pBufferInfo
+				nullptr										// pTexelBufferView
+				});
+		}
+		
+		vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+		//vkUpdateDescriptorSets(device, 1, &desWrite, 0, nullptr);
+		
+		//VkDescriptorBufferInfo bufferInfo{};
+		//bufferInfo.buffer = cub.m_uniformBuffer; // m_uniformBuffer;
+		//bufferInfo.offset = 0;
+		//bufferInfo.range = cub.m_size; // m_size; // sizeof(UniformBufferObject);
+		//
+		//VkWriteDescriptorSet descriptorWrite{};
+		//descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		//descriptorWrite.dstSet = m_descriptorSets;
+		//descriptorWrite.dstBinding = cub.m_slot; //m_slot;  //<----------------
+		//descriptorWrite.dstArrayElement = 0;
+		//descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		//descriptorWrite.descriptorCount = 1;
+		//descriptorWrite.pBufferInfo = &bufferInfo;
+		//descriptorWrite.pImageInfo = nullptr; // Optional
+		//descriptorWrite.pTexelBufferView = nullptr; // Optional
+		//
+		//vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, nullptr);
 	}
-
 
 }

@@ -31,7 +31,7 @@ namespace Hazel {
 	private:
 		VkImage m_textureImage;
 		VkDeviceMemory m_textureImageMemory;
-
+	public: // temportary
 		VkSampler m_textureSampler;
 		VkImageView m_textureImageView;
 

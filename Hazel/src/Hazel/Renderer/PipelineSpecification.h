@@ -6,6 +6,7 @@
 #include "Hazel/Renderer/Shader.h"
 #include "Hazel/Renderer/VertexLayout.h"
 #include "Hazel/Renderer/ConstantBuffer.h"
+#include "Hazel/Renderer/Texture.h"
 
 namespace Hazel {
 
@@ -15,6 +16,7 @@ namespace Hazel {
 		Ref<BufferLayout> bufferLayout;
 		Ref<VertexLayout> vertexLayout;
 		Ref<ConstantBuffer> constantBuffer;
+		Ref<Texture2D> texture;
 
 		PipelineCreateInfo& operator=(const PipelineCreateInfo& other)
 		{
@@ -33,6 +35,7 @@ namespace Hazel {
 				}
 			}
 			constantBuffer = other.constantBuffer;
+			texture = other.texture;
 			return *this;
 		}
 	};
