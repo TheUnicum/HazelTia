@@ -92,4 +92,13 @@ namespace Hazel {
 	{
 	}
 
+	void VulkanTexture2D::SetDescriptorSetLayout()
+	{
+		m_LayoutBinding.binding = m_slot;
+		m_LayoutBinding.descriptorCount = 1;
+		m_LayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		m_LayoutBinding.pImmutableSamplers = nullptr;
+		m_LayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+	}
+
 }

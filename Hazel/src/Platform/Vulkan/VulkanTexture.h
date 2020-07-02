@@ -17,7 +17,7 @@ namespace Hazel {
 		virtual void SetData(void* data, uint32_t size) override;
 
 		virtual void Bind(uint32_t) const override;
-		virtual void SetSlot(uint32_t slot) override { m_slot = slot; }
+		virtual void SetSlot(uint32_t slot) override { m_slot = slot; SetDescriptorSetLayout(); }
 
 		virtual void Bind() const override { Bind(m_slot); }
 		virtual void Unbind() const override;
@@ -28,6 +28,10 @@ namespace Hazel {
 		//};
 		VkSampler& GetSampler() { return m_textureSampler; }
 		VkImageView& GetView() { return m_textureImageView; }
+
+		VkDescriptorSetLayoutBinding& GetLayoutBinding() { return m_LayoutBinding; }
+	private:
+		void SetDescriptorSetLayout();
 	private:
 		VkImage m_textureImage;
 		VkDeviceMemory m_textureImageMemory;
@@ -42,6 +46,8 @@ namespace Hazel {
 		std::string m_tag;
 	public:
 		VulkanContext& _c;
+
+		VkDescriptorSetLayoutBinding m_LayoutBinding{};
 	};
 
 }

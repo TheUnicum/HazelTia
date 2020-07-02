@@ -16,6 +16,8 @@ namespace Hazel {
 		virtual void Update(const void* data, uint32_t size = 0) override;
 		virtual void SetSlot(uint32_t slot, uint32_t target); // target 0 VS & PS, 1 only VS, 2 only PS
 
+		VkDescriptorSetLayoutBinding& GetLayoutBinding() { return m_LayoutBinding; }
+
 	private:
 		void SetDescriptorSetLayout();
 	private:
@@ -29,6 +31,8 @@ namespace Hazel {
 
 		VkBuffer m_uniformBuffer;
 		VkDeviceMemory m_uniformBufferMemory;
+
+		VkDescriptorSetLayoutBinding m_LayoutBinding{};
 	};
 
 }

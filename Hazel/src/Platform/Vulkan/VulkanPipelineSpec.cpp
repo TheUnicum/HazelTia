@@ -1,5 +1,7 @@
 #include "hzpch.h"
 #include "VulkanPipelineSpec.h"
+#include "VulkanConstantBuffer.h"
+#include "VulkanTexture.h"
 
 namespace Hazel {
 
@@ -7,6 +9,8 @@ namespace Hazel {
 		: PipelineSpecification(GraphicsContext::Get_Active()), _c((VulkanContext&)this->_ctx)
 	{
 		m_spec = createInfo;
+
+		m_spec.texture->SetSlot(1);
 
 		SetDescriptorSetLayout();
 
@@ -38,55 +42,17 @@ namespace Hazel {
 		if (m_descriptorSetLayout)
 			vkDestroyDescriptorSetLayout(_c.GetDevice(), m_descriptorSetLayout, nullptr);
 
-		//std::vector<VkDescriptorSetLayoutBinding> uboLayoutBindings_vector;
-		//
-		//VkDescriptorSetLayoutBinding uboLayoutBinding;
-		//if (m_target != 2)
-		//{
-		//	uboLayoutBinding.binding = m_slot;
-		//	uboLayoutBinding.descriptorCount = 1;
-		//	uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		//	uboLayoutBinding.pImmutableSamplers = nullptr;
-		//	uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-		//	uboLayoutBindings_vector.push_back(uboLayoutBinding);
-		//}
-		//if (m_target != 1)
-		//{
-		//	uboLayoutBinding.binding = m_slot;
-		//	uboLayoutBinding.descriptorCount = 1;
-		//	uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		//	uboLayoutBinding.pImmutableSamplers = nullptr;
-		//	uboLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-		//	uboLayoutBindings_vector.push_back(uboLayoutBinding);
-		//}
-
-
-		VkDescriptorSetLayoutBinding uboLayoutBinding{};
-		uboLayoutBinding.binding = 0;
-		uboLayoutBinding.descriptorCount = 1;
-		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		uboLayoutBinding.pImmutableSamplers = nullptr;
-		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
-		// This must be made in SAMPLER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! TODO!!!
-		// This is new for layout binding sampler!!!!
-		VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-		samplerLayoutBinding.binding = 1;
-		samplerLayoutBinding.descriptorCount = 1;
-		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		samplerLayoutBinding.pImmutableSamplers = nullptr;
-		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-		std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
+		std::vector<VkDescriptorSetLayoutBinding> bindings;
+		if (m_spec.constantBuffer)
+			bindings.push_back(std::dynamic_pointer_cast<VulkanConstantBuffer>(m_spec.constantBuffer)->GetLayoutBinding());
+		if (m_spec.texture)
+			bindings.push_back(std::dynamic_pointer_cast<VulkanTexture2D>(m_spec.texture)->GetLayoutBinding());
+		
+		
 		VkDescriptorSetLayoutCreateInfo layoutInfo{};
 		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 		layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
 		layoutInfo.pBindings = bindings.data();
-
-		//VkDescriptorSetLayoutCreateInfo layoutInfo{};
-		//layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		//layoutInfo.bindingCount = uboLayoutBindings_vector.size();
-		//layoutInfo.pBindings = uboLayoutBindings_vector.data();
 
 		if (vkCreateDescriptorSetLayout(_c.GetDevice(), &layoutInfo, nullptr, &m_descriptorSetLayout) != VK_SUCCESS)
 		{

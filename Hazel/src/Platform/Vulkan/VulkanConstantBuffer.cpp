@@ -40,7 +40,21 @@ namespace Hazel {
 
 	void VulkanConstantBuffer::SetDescriptorSetLayout()
 	{
-	
+		VkShaderStageFlags stageFlags;
+		switch (m_target)
+		{
+		case 1: stageFlags = VK_SHADER_STAGE_VERTEX_BIT || VK_SHADER_STAGE_VERTEX_BIT;
+			break;
+		case 2: stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+			break;
+		default: stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		}
+
+		m_LayoutBinding.binding = m_slot;
+		m_LayoutBinding.descriptorCount = 1;
+		m_LayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		m_LayoutBinding.pImmutableSamplers = nullptr;
+		m_LayoutBinding.stageFlags = m_target;
 	}
 
 }
