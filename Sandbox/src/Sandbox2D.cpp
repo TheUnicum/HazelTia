@@ -109,7 +109,7 @@ void Sandbox2D::OnAttach()
 
 		//m_tex = Hazel::Texture2D::Create("assets/textures/texture.jpg");
 		//m_tex = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
-		m_tex = Hazel::Texture2D::Create("assets/textures/ChernoLogo.png");
+		m_tex = Hazel::Texture2D::Create("assets/textures/viking_room.png");
 		struct UniformBufferObject {
 			glm::mat4 model;
 			glm::mat4 view;
@@ -134,35 +134,42 @@ void Sandbox2D::OnAttach()
 		PipeSpec2 = Hazel::PipelineSpecification::Create(createInfo);
 		//PipeSpec2->Bind();
 
-		struct VertexPos {
-			glm::vec3 pos;
-			glm::vec3 color;
-			glm::vec2 texCoord;
-		};
-		const std::vector<VertexPos> vertices = {
-			{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-			{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-			{{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-			{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+		//struct VertexPos {
+		//	glm::vec3 pos;
+		//	glm::vec3 color;
+		//	glm::vec2 texCoord;
+		//};
+		//const std::vector<VertexPos> vertices = {
+		//	{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+		//	{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+		//	{{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+		//	{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+		//
+		//	{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+		//	{{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+		//	{{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+		//	{{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
+		//};
+		//const std::vector<uint32_t> indices =
+		//{
+		////0, 1, 2, 2, 3, 0
+		////0, 1, 2, 2, 0, 3,
+		//0, 1, 2, 2, 3, 0,
+		//4, 5, 6, 6, 7, 4
+		//};
 
-			{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-			{{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-			{{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-			{{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
-		};
-		const std::vector<uint32_t> indices =
-		{
-		//0, 1, 2, 2, 3, 0
-		//0, 1, 2, 2, 0, 3,
-		0, 1, 2, 2, 3, 0,
-		4, 5, 6, 6, 7, 4
-		};
+		Hazel::TinyModel model = Hazel::TinyModel("assets/models/viking_room.obj");
+		m_vbk = Hazel::VertexBuffer::Create((float*)(model.GetV().data()), (uint32_t)model.GetsizeVertex());
+		m_ibk = Hazel::IndexBuffer::Create((uint32_t*)(model.GetI().data()), model.GetsizeICount());
+
 
 
 		//Hazel::Ref<Hazel::VertexBuffer> vbk = Hazel::VertexBuffer::Create((float*)vertices.data(), (uint32_t)(sizeof(Vertex) * vertices.size()));
-		m_vbk = Hazel::VertexBuffer::Create((float*)vertices.data(), (uint32_t)(sizeof(VertexPos) * vertices.size()));
-		m_ibk = Hazel::IndexBuffer::Create((uint32_t*)indices.data(), indices.size());
+		//m_vbk = Hazel::VertexBuffer::Create((float*)vertices.data(), (uint32_t)(sizeof(VertexPos) * vertices.size()));
+		//m_ibk = Hazel::IndexBuffer::Create((uint32_t*)indices.data(), indices.size());
 		m_vbk->SetVertexLayout(PipeSpec2->GetVertexLayout());
+
+
 	}
 }
 

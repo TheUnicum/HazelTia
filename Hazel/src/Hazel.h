@@ -35,3 +35,6 @@
 
 #include "Hazel/Renderer/OrthographicCamera.h"
 // -----------------------------------
+#include "Hazel/TinyModel.h"
+// -----------------------------------
+

@@ -25,6 +25,7 @@ IncludeDir["glm"] = "Hazel/vendor/glm"
 IncludeDir["stb_image"] = "Hazel/vendor/stb_image"
 IncludeDir["Vulkan"] = "Hazel/vendor/Vulkan/include"
 IncludeDir["SPIRVCross"] = "Hazel/vendor/SPIRV-Cross"
+IncludeDir["tiny_obj_loader"] = "Hazel/vendor/tiny_obj_loader"
 
 group "Dependencies"
     include "Hazel/vendor/GLFW"
@@ -54,7 +55,9 @@ project "Hazel"
         "%{prj.name}/vendor/stb_image/**.h",
         "%{prj.name}/vendor/stb_image/**.cpp",
         "%{prj.name}/vendor/glm/glm/**.hpp",
-        "%{prj.name}/vendor/glm/glm/**.inl"
+        "%{prj.name}/vendor/glm/glm/**.inl",
+        "%{prj.name}/vendor/tiny_obj_loader/**.h",
+        "%{prj.name}/vendor/tiny_obj_loader/**.cpp",
     }
 
     defines
@@ -74,6 +77,7 @@ project "Hazel"
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.Vulkan}",
         "%{IncludeDir.SPIRVCross}",
+        "%{IncludeDir.tiny_obj_loader}",
     }
 
     libdirs 
