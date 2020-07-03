@@ -109,6 +109,7 @@ void Sandbox2D::OnAttach()
 
 		//m_tex = Hazel::Texture2D::Create("assets/textures/texture.jpg");
 		m_tex = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
+		//m_tex = Hazel::Texture2D::Create("assets/textures/ChernoLogo.png");
 		struct UniformBufferObject {
 			glm::mat4 model;
 			glm::mat4 view;
@@ -127,7 +128,6 @@ void Sandbox2D::OnAttach()
 
 		Hazel::PipelineCreateInfo createInfo;// { Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl"), nullptr};
 		createInfo.shader = ssREd;
-		//createInfo.vertexLayout = vl2; // testato con vulkan
 		createInfo.vertexLayout = nullptr;//  vl2;
 		createInfo.constantBuffer = m_cb;
 		createInfo.texture = m_tex;

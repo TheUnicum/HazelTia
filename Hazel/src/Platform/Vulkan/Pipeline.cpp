@@ -141,17 +141,17 @@ namespace Hazel {
 		multisampling.alphaToOneEnable = VK_FALSE; // Optional
 
 		// Depth and stencil testing
-		//--VkPipelineDepthStencilStateCreateInfo depthStencil{};
-		//--depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-		//--depthStencil.depthTestEnable = VK_TRUE;
-		//--depthStencil.depthWriteEnable = VK_TRUE;
-		//--depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
-		//--depthStencil.depthBoundsTestEnable = VK_FALSE;
-		//--depthStencil.minDepthBounds = 0.0f; // Optional
-		//--depthStencil.maxDepthBounds = 1.0f; // Optional
-		//--depthStencil.stencilTestEnable = VK_FALSE;
-		//--// depthStencil.front{}; // Optional
-		//--// depthStencil.back{}; // Optional
+		VkPipelineDepthStencilStateCreateInfo depthStencil{};
+		depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+		depthStencil.depthTestEnable = VK_TRUE;
+		depthStencil.depthWriteEnable = VK_TRUE;
+		depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+		depthStencil.depthBoundsTestEnable = VK_FALSE;
+		depthStencil.minDepthBounds = 0.0f; // Optional
+		depthStencil.maxDepthBounds = 1.0f; // Optional
+		depthStencil.stencilTestEnable = VK_FALSE;
+		// depthStencil.front{}; // Optional
+		// depthStencil.back{}; // Optional
 
 		// Color blending
 		// 1st contains the configuration per attached framebuffer
@@ -217,7 +217,7 @@ namespace Hazel {
 		pipelineInfo.pViewportState = &viewportState;
 		pipelineInfo.pRasterizationState = &rasterizer;
 		pipelineInfo.pMultisampleState = &multisampling;
-		pipelineInfo.pDepthStencilState = nullptr;// &depthStencil; // nullptr; // Optional
+		pipelineInfo.pDepthStencilState = &depthStencil; // nullptr; // Optional
 		pipelineInfo.pColorBlendState = &colorBlending;
 		pipelineInfo.pDynamicState = nullptr; // Optional
 		// Pipeline layout

@@ -47,6 +47,8 @@ namespace Hazel {
 
 		CreateSwapChain();
 		CreateImageViews();
+
+		CreateDepthResources(); // Must be after Resorurce! Need ChainFormat.
 		LinkRenderPass();
 	}
 	void VulkanContext::SwapBuffers()
@@ -401,10 +403,6 @@ namespace Hazel {
 	{
 		m_CmdBuffer = std::make_shared<CommandBuffer>(*this);
 	}
-	void VulkanContext::CreateDepthResources()
-	{
-		m_DepthResources = std::make_shared<DepthResources>(*this);
-	}
 	void VulkanContext::CreateSwapChain()
 	{
 		// This change during window resize.
@@ -494,6 +492,10 @@ namespace Hazel {
 			}
 		}
 	}
+	void VulkanContext::CreateDepthResources()
+	{
+		m_DepthResources = std::make_shared<DepthResources>(*this);
+	}
 	// ----------------Bind-------------------------------
 	void VulkanContext::BindRenderPass()
 	{
@@ -505,10 +507,10 @@ namespace Hazel {
 
 		for (size_t i = 0; i < m_SwapChainImageViews.size(); i++)
 		{
-			std::array<VkImageView, 1> attachments =
+			std::array<VkImageView, 2> attachments = // DEPTH
 			{
 				m_SwapChainImageViews[i],
-				//--m_DepthResources->GetimageView(),
+				m_DepthResources->GetimageView()
 			};
 
 			VkFramebufferCreateInfo framebufferInfo{};

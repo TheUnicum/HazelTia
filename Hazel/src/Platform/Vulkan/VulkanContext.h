@@ -79,10 +79,10 @@ namespace Hazel {
 		void CreateCommandPool();
 		void CreateCommandBuffers(); // need CommandPool
 
-		void CreateDepthResources();
-
 		void CreateSwapChain();
 		void CreateImageViews();
+
+		void CreateDepthResources();
 
 		void BindRenderPass(); // need SwapChain
 
@@ -98,7 +98,7 @@ namespace Hazel {
 		VkRenderPass& GetRenderPass() { return m_RenderPasses->Get(); }
 		VkCommandPool& GetCommandPool() { return m_CommandPool; }
 		const VkFormat& GetswapChainImageFormat() const { return m_SwapChainImageFormat; }
-		const VkFormat& GetDepthFormat() const { return VK_FORMAT_UNDEFINED; }// m_DepthResources->GetDepthFormat(); }
+		const VkFormat& GetDepthFormat() const { return m_DepthResources->GetDepthFormat(); }
 		VkPipeline& GetPipeline() { return m_Pipeline->Get(); }
 		VkDescriptorSet& GetPipelineDescSet() { return m_Pipeline->GetDescriptorSet(); }
 		VkPipelineLayout& GetPipelineLayout() { return m_Pipeline->GetLayout(); }
