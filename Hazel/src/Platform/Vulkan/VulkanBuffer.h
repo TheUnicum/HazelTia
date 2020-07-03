@@ -18,6 +18,8 @@
 
 #include "VulkanContext.h"
 
+#include <vector>
+
 namespace Hazel {
 
 	class VulkanContext;
@@ -35,8 +37,10 @@ namespace Hazel {
 	void transitionImageLayout(VulkanContext& m_ctx, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 	
 	void createBaseSampler(VulkanContext& m_ctx, VkSampler& out_sampler);
-	void createImageViewFromImage(VulkanContext& m_ctx, VkImage& in_image, VkFormat in_format, VkImageView& out_imageView);
+	void createImageViewFromImage(VulkanContext& m_ctx, VkImageView& out_imageView, VkImage& in_image, VkFormat in_format, VkImageAspectFlags in_aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT);
 
+	VkFormat findSupportedFormat(VulkanContext& ctx, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+	bool hasStencilComponent(VkFormat format);
 
 	class VulkanVertexBuffer : public VertexBuffer
 	{

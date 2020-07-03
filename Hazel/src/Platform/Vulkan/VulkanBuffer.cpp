@@ -20,7 +20,7 @@ namespace Hazel {
 			}
 		}
 
-		throw std::runtime_error("failed to find suitable memory type!");
+		HZ_CORE_ASSERT(false, "failed to find suitable memory type!");
 	}
 
 	void createBuffer(VulkanContext& m_ctx, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
@@ -33,7 +33,7 @@ namespace Hazel {
 
 		if (vkCreateBuffer(m_ctx.GetDevice(), &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
 		{
-			throw std::runtime_error("failed to create buffer!");
+			HZ_CORE_ASSERT(false, "failed to create buffer!");
 		}
 
 		VkMemoryRequirements memRequirements;
@@ -46,7 +46,7 @@ namespace Hazel {
 
 		if (vkAllocateMemory(m_ctx.GetDevice(), &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
 		{
-			throw std::runtime_error("failed to allocate buffer memory!");
+			HZ_CORE_ASSERT(false, "failed to allocate buffer memory!");
 		}
 
 		vkBindBufferMemory(m_ctx.GetDevice(), buffer, bufferMemory, 0);
@@ -84,6 +84,7 @@ namespace Hazel {
 
 		vkFreeCommandBuffers(m_ctx.GetDevice(), m_ctx.GetCommandPool(), 1, &commandBuffer);
 	}
+
 	void CreateImage(VulkanContext& m_ctx, uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory)
 	{
 		VkDevice& device = m_ctx.GetDevice();
@@ -106,7 +107,7 @@ namespace Hazel {
 
 		if (vkCreateImage(device, &imageInfo, nullptr, &image) != VK_SUCCESS)
 		{
-			throw std::runtime_error("failed to create image!");
+			HZ_CORE_ASSERT(false, "failed to create image!");
 		}
 
 		VkMemoryRequirements memRequirements;
@@ -119,7 +120,7 @@ namespace Hazel {
 
 		if (vkAllocateMemory(device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
 		{
-			throw std::runtime_error("failed to allocate image memory!");
+			HZ_CORE_ASSERT(false, "failed to allocate image memory!");
 		}
 
 		vkBindImageMemory(device, image, imageMemory, 0);
@@ -262,14 +263,14 @@ namespace Hazel {
 			HZ_CORE_ASSERT(false, "failed to create texture sampler!");
 		}
 	}
-	void createImageViewFromImage(VulkanContext& m_ctx, VkImage& in_image, VkFormat in_format, VkImageView& out_imageView)
+	void createImageViewFromImage(VulkanContext& m_ctx, VkImageView& out_imageView, VkImage& in_image, VkFormat in_format, VkImageAspectFlags in_aspectFlags)
 	{
 		VkImageViewCreateInfo viewInfo{};
 		viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 		viewInfo.image = in_image;
 		viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 		viewInfo.format = in_format;
-		viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		viewInfo.subresourceRange.aspectMask = in_aspectFlags;
 		viewInfo.subresourceRange.baseMipLevel = 0;
 		viewInfo.subresourceRange.levelCount = 1;
 		viewInfo.subresourceRange.baseArrayLayer = 0;
@@ -279,6 +280,28 @@ namespace Hazel {
 		{
 			HZ_CORE_ASSERT(false, "failed to create texture image view!");
 		}
+	}
+	VkFormat findSupportedFormat(VulkanContext& ctx, const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
+	{
+		for (VkFormat format : candidates)
+		{
+			VkFormatProperties props;
+			vkGetPhysicalDeviceFormatProperties(ctx.GetPhysicalDevice(), format, &props);
+
+			if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
+			{
+				return format;
+			}
+			else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
+			{
+				return format;
+			}
+		}
+		HZ_CORE_ASSERT(false, "failed to find supported format!");
+	}
+	bool hasStencilComponent(VkFormat format)
+	{
+		{ return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT; }
 	}
 	//----------- utiliy buffer Functions---------------------------------
 

@@ -67,7 +67,7 @@ namespace Hazel {
 		vkFreeMemory(device, stagingBufferMemory, nullptr);
 
 		createBaseSampler(_c, m_textureSampler);
-		createImageViewFromImage(_c, m_textureImage, VK_FORMAT_R8G8B8A8_SRGB, m_textureImageView);
+		createImageViewFromImage(_c, m_textureImageView, m_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
 	}
 
 	VulkanTexture2D::~VulkanTexture2D()

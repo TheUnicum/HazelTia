@@ -86,9 +86,9 @@ void Sandbox2D::OnAttach()
 
 		using namespace Hazel;	
 		Hazel::Ref<VertexLayout> vl2 = Hazel::VertexLayout::Create();
-		vl2->Append(VertexLayout::AP_FLOAT2, "inPosition2")
-			.Append(VertexLayout::AP_FLOAT3, "inColor3")
-			.Append(VertexLayout::AP_FLOAT2, "inTexCoord");
+		//vl2->Append(VertexLayout::AP_FLOAT3, "inPosition2")
+		//	.Append(VertexLayout::AP_FLOAT3, "inColor3")
+		//	.Append(VertexLayout::AP_FLOAT2, "inTexCoord");
 		//vl2->Append(VertexLayout::AP_FLOAT2, "Position")
 		//	.Append(VertexLayout::AP_FLOAT3, "Color");
 
@@ -107,7 +107,8 @@ void Sandbox2D::OnAttach()
 		//auto v = sc->GetVertexLayoutEleList();
 
 
-		m_tex = Hazel::Texture2D::Create("assets/textures/texture.jpg");
+		//m_tex = Hazel::Texture2D::Create("assets/textures/texture.jpg");
+		m_tex = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
 		struct UniformBufferObject {
 			glm::mat4 model;
 			glm::mat4 view;
@@ -134,20 +135,27 @@ void Sandbox2D::OnAttach()
 		//PipeSpec2->Bind();
 
 		struct VertexPos {
-			glm::vec2 pos;
+			glm::vec3 pos;
 			glm::vec3 color;
 			glm::vec2 texCoord;
 		};
 		const std::vector<VertexPos> vertices = {
-	{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-	{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-	{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-	{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
+			{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+			{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+			{{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+			{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+
+			{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+			{{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+			{{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+			{{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
 		};
 		const std::vector<uint32_t> indices =
 		{
 		//0, 1, 2, 2, 3, 0
-		0, 1, 2, 2, 0, 3
+		//0, 1, 2, 2, 0, 3,
+		0, 1, 2, 2, 3, 0,
+		4, 5, 6, 6, 7, 4
 		};
 
 
@@ -251,7 +259,7 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 				m_vbk->Bind();
 				m_ibk->Bind();
 
-				Hazel::RenderCommandX::CmdDrawIndexted(6);
+				Hazel::RenderCommandX::CmdDrawIndexted(m_ibk->GetCount());
 				//std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->CmdDrawIndexted_impl(6);
 				//std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->DrawTriangle_impl2(0);
 				///----2
