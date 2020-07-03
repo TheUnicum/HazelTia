@@ -1,6 +1,8 @@
 #include "hzpch.h"
 #include "DepthResources.h"
 
+#include "Platform/Vulkan/VulkanContext.h"
+
 #include "Platform/Vulkan/VulkanBuffer.h"
 
 namespace Hazel
@@ -21,12 +23,12 @@ namespace Hazel
 
 	void DepthResources::Cleanup()
 	{
-		VkDevice& device = m_ctx.GetDevice();
-
-		vkDestroyImageView(device, m_DepthImageView, nullptr);
-
-		vkDestroyImage(device, m_DepthImage, nullptr);
-		vkFreeMemory(device, m_DepthImageMemory, nullptr);
+		//VkDevice& device = m_ctx.GetDevice();
+		//
+		//vkDestroyImageView(device, m_DepthImageView, nullptr);
+		//
+		//vkDestroyImage(device, m_DepthImage, nullptr);
+		//vkFreeMemory(device, m_DepthImageMemory, nullptr);
 	}
 
 	VkFormat DepthResources::findDepthFormat()

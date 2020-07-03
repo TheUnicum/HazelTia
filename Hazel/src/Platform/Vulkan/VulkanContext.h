@@ -5,6 +5,8 @@
 #include "Platform/Vulkan/RenderPasses.h"
 #include "Platform/Vulkan/Pipeline.h"
 #include "Platform/Vulkan/CommandBuffer.h"
+#include "Platform/Vulkan/DepthResources.h"
+
 struct GLFWwindow;
 
 namespace Hazel {
@@ -65,6 +67,7 @@ namespace Hazel {
 		Ref<RenderPasses> m_RenderPasses;
 		Ref<Pipeline> m_Pipeline;
 		Ref<CommandBuffer> m_CmdBuffer;
+		Ref<DepthResources> m_DepthResources;
 	private:
 		void CreateInstance();
 		void SetupDebugMessenger();
@@ -75,6 +78,8 @@ namespace Hazel {
 
 		void CreateCommandPool();
 		void CreateCommandBuffers(); // need CommandPool
+
+		void CreateDepthResources();
 
 		void CreateSwapChain();
 		void CreateImageViews();

@@ -195,6 +195,8 @@ namespace Hazel {
 
 	void VulkanContext::CleanUpSwapChain()
 	{
+		m_DepthResources->Cleanup();
+
 		vkDestroyCommandPool(m_Device, m_CommandPool, nullptr);
 
 		for (auto framebuffer : m_SwapChainFramebuffers)
@@ -398,6 +400,10 @@ namespace Hazel {
 	void VulkanContext::CreateCommandBuffers()
 	{
 		m_CmdBuffer = std::make_shared<CommandBuffer>(*this);
+	}
+	void VulkanContext::CreateDepthResources()
+	{
+		m_DepthResources = std::make_shared<DepthResources>(*this);
 	}
 	void VulkanContext::CreateSwapChain()
 	{

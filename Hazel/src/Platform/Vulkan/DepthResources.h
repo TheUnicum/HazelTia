@@ -1,8 +1,10 @@
 #pragma once
 
-#include "Platform/Vulkan/VulkanContext.h"
+#include "vulkan/vulkan.h"
 
 namespace Hazel {
+
+	class VulkanContext;
 
 	class DepthResources
 	{
