@@ -108,8 +108,8 @@ void Sandbox2D::OnAttach()
 
 
 		//m_tex = Hazel::Texture2D::Create("assets/textures/texture.jpg");
-		m_tex = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
-		//m_tex = Hazel::Texture2D::Create("assets/textures/ChernoLogo.png");
+		//m_tex = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
+		m_tex = Hazel::Texture2D::Create("assets/textures/ChernoLogo.png");
 		struct UniformBufferObject {
 			glm::mat4 model;
 			glm::mat4 view;
