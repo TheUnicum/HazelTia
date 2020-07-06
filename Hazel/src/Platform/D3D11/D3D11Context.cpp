@@ -196,7 +196,7 @@ namespace Hazel {
 
 	void D3D11Context::CmdClear_impl()
 	{
-		ClearBuffer_impl(.2f, 0.1f, 0.1f);
+		ClearBuffer_impl(.1f, 0.1f, 0.1f);
 	}
 
 	void D3D11Context::CmdClearColor_impl(float red, float green, float blue)

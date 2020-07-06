@@ -86,19 +86,20 @@ void Sandbox2D::OnAttach()
 
 		using namespace Hazel;	
 		Hazel::Ref<VertexLayout> vl2 = Hazel::VertexLayout::Create();
-		//vl2->Append(VertexLayout::AP_FLOAT3, "inPosition2")
-		//	.Append(VertexLayout::AP_FLOAT3, "inColor3")
-		//	.Append(VertexLayout::AP_FLOAT2, "inTexCoord");
+		vl2->Append(VertexLayout::AP_FLOAT3, "inPosition")
+			.Append(VertexLayout::AP_FLOAT3, "inColor")
+			.Append(VertexLayout::AP_FLOAT2, "inTexCoord");
 		//vl2->Append(VertexLayout::AP_FLOAT2, "Position")
 		//	.Append(VertexLayout::AP_FLOAT3, "Color");
 
 		//Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_VB.glsl");
 		//Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_CBuff.glsl");
-		Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_CBuff_Text.glsl");
+		//Ref<ShaderCode> sc = ShaderCode::Create("assets/shaders/Vulkan/FragColor_CBuff_Text.glsl");
 		//auto gl = sc->GetVertexLayoutEleList();
 		//auto hl = sc->GetVertexLayoutEleListHLSL();
 		//auto s = sc->GetCodeHLSL();
-		auto ssREd = Hazel::Shader::Create(sc);
+		//auto ssREd = Hazel::Shader::Create(sc);
+		auto ssREd = Hazel::Shader::Create("assets/shaders/D3D/FragColor_CBuff_Text.hlsl");
 
 		//auto ssREd = Hazel::Shader::Create("assets/shaders/D3D/Mattia2.hlsl");
 
@@ -110,57 +111,72 @@ void Sandbox2D::OnAttach()
 		//m_tex = Hazel::Texture2D::Create("assets/textures/texture.jpg");
 		//m_tex = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
 		m_tex = Hazel::Texture2D::Create("assets/textures/viking_room.png");
+		//**struct UniformBufferObject {
+		//**	glm::mat4 model;
+		//**	glm::mat4 view;
+		//**	glm::mat4 proj;
+		//**};
+		//**UniformBufferObject ubo{};
+		//**ubo.model = glm::rotate(glm::mat4(1.0f),  glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		//**ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		//**ubo.proj = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 10.0f);
+		//**ubo.proj[1][1] *= -1;
+		//**m_cb = Hazel::ConstantBuffer::Create(sizeof(UniformBufferObject), &ubo);
+		//**m_cb->SetSlot(0, 1);
+
+
+		//
 		struct UniformBufferObject {
-			glm::mat4 model;
-			glm::mat4 view;
-			glm::mat4 proj;
+			glm::mat4 transform;
 		};
 		UniformBufferObject ubo{};
-		ubo.model = glm::rotate(glm::mat4(1.0f),  glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		ubo.proj = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 10.0f);
-		ubo.proj[1][1] *= -1;
-		auto d = sizeof(UniformBufferObject);
+		glm::mat4 model = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::mat4 view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 10.0f);
+		ubo.transform = glm::transpose(proj * view * model);
+		ubo.transform = glm::transpose(glm::mat4(1.0f));
 		m_cb = Hazel::ConstantBuffer::Create(sizeof(UniformBufferObject), &ubo);
 		m_cb->SetSlot(0, 1);
+		m_cb->Bind();
+		//
 
 
 
 		Hazel::PipelineCreateInfo createInfo;// { Hazel::Shader::Create("assets/shaders/Vulkan/FragColor.glsl"), nullptr};
 		createInfo.shader = ssREd;
-		createInfo.vertexLayout = nullptr;//  vl2;
-		createInfo.constantBuffer = m_cb;
+		createInfo.vertexLayout = vl2;
+		//createInfo.constantBuffer = m_cb;
 		createInfo.texture = m_tex;
 		PipeSpec2 = Hazel::PipelineSpecification::Create(createInfo);
 		//PipeSpec2->Bind();
 
-		//struct VertexPos {
-		//	glm::vec3 pos;
-		//	glm::vec3 color;
-		//	glm::vec2 texCoord;
-		//};
-		//const std::vector<VertexPos> vertices = {
-		//	{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-		//	{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-		//	{{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-		//	{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
-		//
-		//	{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-		//	{{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-		//	{{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-		//	{{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
-		//};
-		//const std::vector<uint32_t> indices =
-		//{
-		////0, 1, 2, 2, 3, 0
-		////0, 1, 2, 2, 0, 3,
-		//0, 1, 2, 2, 3, 0,
-		//4, 5, 6, 6, 7, 4
-		//};
+		struct VertexPos {
+			glm::vec3 pos;
+			glm::vec3 color;
+			glm::vec2 texCoord;
+		};
+		const std::vector<VertexPos> vertices = {
+			{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+			{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+			{{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+			{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
+		
+			{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+			{{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+			{{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+			{{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
+		};
+		const std::vector<uint32_t> indices =
+		{
+		//0, 1, 2, 2, 3, 0
+		//0, 1, 2, 2, 0, 3,
+		0, 1, 2, 2, 0, 3,
+		4, 5, 6, 6, 4, 7
+		};
 
-		Hazel::TinyModel model = Hazel::TinyModel("assets/models/viking_room.obj");
-		m_vbk = Hazel::VertexBuffer::Create((float*)(model.GetV().data()), (uint32_t)model.GetsizeVertex());
-		m_ibk = Hazel::IndexBuffer::Create((uint32_t*)(model.GetI().data()), model.GetsizeICount());
+		Hazel::TinyModel tinymodel = Hazel::TinyModel("assets/models/viking_room.obj");
+		m_vbk = Hazel::VertexBuffer::Create((float*)(tinymodel.GetV().data()), (uint32_t)tinymodel.GetsizeVertex());
+		m_ibk = Hazel::IndexBuffer::Create((uint32_t*)(tinymodel.GetI().data()), tinymodel.GetsizeICount());
 
 
 
@@ -236,35 +252,49 @@ void Sandbox2D::OnUpdate(Hazel::Timestep ts)
 			auto currentTime = std::chrono::high_resolution_clock::now();
 			float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 			
+			//struct UniformBufferObject {
+			//	glm::mat4 model;
+			//	glm::mat4 view;
+			//	glm::mat4 proj;
+			//};
+			//UniformBufferObject ubo{};
+			//ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			//ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			//ubo.proj = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 10.0f);
+			//ubo.proj[1][1] *= -1;
 			struct UniformBufferObject {
-				glm::mat4 model;
-				glm::mat4 view;
-				glm::mat4 proj;
+				glm::mat4 transform;
 			};
 			UniformBufferObject ubo{};
-			ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-			ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-			ubo.proj = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 10.0f);
-			ubo.proj[1][1] *= -1;
-
-
-
+			glm::mat4 model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			glm::mat4 view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 10.0f);
+			ubo.transform = glm::transpose(proj * view * model);
 			{
 
 				std::shared_ptr<Hazel::GraphicsContext> cc = Hazel::GraphicsContext::Resolve(Hazel::Application::Get().GetWindowTest(0));
 				cc->MakeCurrent();
 
+
+				cc->CmdClear_impl();
 				//std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->ClearBuffer_impl(.2f, 0.1f, 0.1f);
 				//Hazel::RenderCommandX::Clear();
 				//
 				//				
 				Hazel::RenderCommandX::MakeContextCurrent(Hazel::Application::Get().GetWindowTest(0));
 				//m_vbk->BindTemp(PipeSpec2->m_spec.vertexLayout->GetStride()); //[Da sistemare x D3D]
-				m_cb->Update(&ubo, sizeof(UniformBufferObject));
+				m_cb->Update(&ubo, sizeof(UniformBufferObject));   //---://TODO
 				//m_cb->SetSlot(0, 1);
 				PipeSpec2->Bind();
 				m_vbk->Bind();
 				m_ibk->Bind();
+
+				//m_cb->SetSlot(0, 1);
+				m_cb->Bind();
+
+				m_tex->SetSlot(0);
+				m_tex->Bind(0);
+
 
 				Hazel::RenderCommandX::CmdDrawIndexted(m_ibk->GetCount());
 				//std::dynamic_pointer_cast<Hazel::D3D11Context>(cc)->CmdDrawIndexted_impl(6);

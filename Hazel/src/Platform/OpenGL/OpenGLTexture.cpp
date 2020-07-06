@@ -35,13 +35,14 @@ namespace Hazel {
 		stbi_uc* data = nullptr;
 		{
 			HZ_PROFILE_SCOPE("stbi_load - OpenGLTexture2D::OpenGLTexture2D(const std:string&)");
-			data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+			data = stbi_load(path.c_str(), &width, &height, &channels, STBI_rgb_alpha);// 0);
 		}
 		HZ_CORE_ASSERT(data, "Failed to load image!");
 		m_Widht = width;
 		m_Height = height;
 
 		GLenum internalFormat = 0, dataFormat = 0;
+		channels = 4;
 		if (channels == 4)
 		{
 			internalFormat = GL_RGBA8;

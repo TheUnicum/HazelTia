@@ -31,7 +31,18 @@ namespace Hazel {
 
 	void D3D11ConstantBuffer::Update(const void* data, uint32_t size)
 	{
-		HZ_CORE_ASSERT(false, "NOT IMPLEMETED YET")
+		//HZ_CORE_ASSERT(false, "NOT IMPLEMETED YET")
+		//INFOMAN(gfx);
+
+		D3D11_MAPPED_SUBRESOURCE msr;
+
+		_c.GetPP().m_pContext->Map(
+			m_pConstantBuffer.Get(), 0u,
+			D3D11_MAP_WRITE_DISCARD, 0u,
+			&msr
+		);
+		memcpy(msr.pData, data, size);
+		_c.GetPP().m_pContext->Unmap(m_pConstantBuffer.Get(), 0u);
 	}
 
 	void D3D11ConstantBuffer::SetSlot(uint32_t slot, uint32_t target)
