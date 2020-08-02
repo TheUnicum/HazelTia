@@ -124,6 +124,7 @@ project "Sandbox"
         "Hazel/src",
         "Hazel/vendor",
         "%{IncludeDir.glm}",
+        "%{IncludeDir.entt}",
     }
 
     links
