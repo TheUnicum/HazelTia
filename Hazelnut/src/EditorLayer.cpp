@@ -157,7 +157,7 @@ namespace Hazel {
 		Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);
 
 		ImVec2 viewportPannelSize = ImGui::GetContentRegionAvail();
-		if (m_ViewportSize != *((glm::vec2*) & viewportPannelSize))
+		if (m_ViewportSize != *((glm::vec2*)&viewportPannelSize) && viewportPannelSize.x > 0 && viewportPannelSize.y > 0)
 		{
 			m_Framebuffer->Resize((uint32_t)viewportPannelSize.x, (uint32_t)viewportPannelSize.y);
 			m_ViewportSize = { viewportPannelSize.x, viewportPannelSize.y };
