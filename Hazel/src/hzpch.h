@@ -1,5 +1,5 @@
 #pragma once
-
+#define NOMINMAX // FIX bug with entt and MIN MAX MACRO Definition!!
 #include <iostream>
 #include <memory>
 #include <utility>
