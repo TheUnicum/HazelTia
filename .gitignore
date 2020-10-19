@@ -3,7 +3,7 @@
 bin/
 bin-int/
 
-!/vendor/bin
+!vendor/premake/bin/
 
 # Files
 *.user
