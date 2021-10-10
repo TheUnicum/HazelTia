@@ -2,11 +2,8 @@
 
 #include <filesystem>
 
-<<<<<<< HEAD
-=======
 #include "Hazel/Renderer/Texture.h"
 
->>>>>>> content-browser
 namespace Hazel {
 
 	class ContentBrowserPanel
@@ -17,12 +14,9 @@ namespace Hazel {
 		void OnImGuiRender();
 	private:
 		std::filesystem::path m_CurrentDirectory;
-<<<<<<< HEAD
-=======
 
 		Ref<Texture2D> m_DirectoryIcon;
 		Ref<Texture2D> m_FileIcon;
->>>>>>> content-browser
 	};
 
 }

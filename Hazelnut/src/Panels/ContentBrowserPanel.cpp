@@ -5,14 +5,6 @@
 
 namespace Hazel {
 
-<<<<<<< HEAD
-	// Once we have project, change this
-	static const std::filesystem::path s_AssetsPath = "assets";
-
-	ContentBrowserPanel::ContentBrowserPanel()
-		: m_CurrentDirectory(s_AssetsPath)
-	{
-=======
 	// Once we have projects, change this
 	extern const std::filesystem::path g_AssetPath = "assets";
 
@@ -21,18 +13,13 @@ namespace Hazel {
 	{
 		m_DirectoryIcon = Texture2D::Create("Resources/Icons/ContentBrowser/DirectoryIcon.png");
 		m_FileIcon = Texture2D::Create("Resources/Icons/ContentBrowser/FileIcon.png");
->>>>>>> content-browser
 	}
 
 	void ContentBrowserPanel::OnImGuiRender()
 	{
 		ImGui::Begin("Content Browser");
 
-<<<<<<< HEAD
-		if (m_CurrentDirectory != std::filesystem::path(s_AssetsPath))
-=======
 		if (m_CurrentDirectory != std::filesystem::path(g_AssetPath))
->>>>>>> content-browser
 		{
 			if (ImGui::Button("<-"))
 			{
@@ -40,32 +27,6 @@ namespace Hazel {
 			}
 		}
 
-<<<<<<< HEAD
-		for (auto& directoryEntry : std::filesystem::directory_iterator(m_CurrentDirectory))
-		{
-			const auto& path = directoryEntry.path();
-			auto relativePath = std::filesystem::relative(path, s_AssetsPath);
-			std::string filenameString = relativePath.filename().string();
-			if (directoryEntry.is_directory())
-			{
-				if (ImGui::Button(filenameString.c_str()))
-				{
-					m_CurrentDirectory /= path.filename();
-				}
-			}
-			else
-			{
-				if (ImGui::Button(filenameString.c_str()))
-				{
-				}
-			}
-		}
-
-		ImGui::End();
-	}
-
-}
-=======
 		static float padding = 16.0f;
 		static float thumbnailSize = 128.0f;
 		float cellSize = thumbnailSize + padding;
@@ -119,4 +80,3 @@ namespace Hazel {
 	}
 
 }
->>>>>>> content-browser

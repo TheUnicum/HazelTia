@@ -72,12 +72,9 @@ namespace Hazel {
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 		ContentBrowserPanel m_ContentBrowserPanel;
-<<<<<<< HEAD
-=======
 
 		// Editor resources
 		Ref<Texture2D> m_IconPlay, m_IconStop;
->>>>>>> content-browser
 	};
 
 }
